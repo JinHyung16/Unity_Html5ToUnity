@@ -6,9 +6,8 @@
 ```
 HtmlToUnity/
 ├─ README.md                 ← 지금 이 파일
-├─ install.sh                ← 이 폴더를 .claude/ 에 설치한다
-├─ skills/htmltounity/       ← 스킬 본문 (SKILL.md + references 15종)
-└─ 원장/                      ← 게임별 작업 원장 (이관 기록 · 게이트 판정 숫자)
+├─ sync.sh                   ← .claude/skills/ 와 내용을 맞춘다
+└─ skills/htmltounity/       ← 스킬 본문 (SKILL.md + references 15종)
 ```
 
 ## 왜 같은 것이 두 곳에 있나
@@ -29,7 +28,8 @@ bash HtmlToUnity/sync.sh --from-claude   # .claude → HtmlToUnity
 bash HtmlToUnity/sync.sh --check         # 둘이 같은지 확인 — 작업 끝에 반드시
 ```
 
-⚠ **원장은 한 곳뿐이다** (`HtmlToUnity/원장/`). 작업 기록이라 사본이 생기면 어느 쪽이 최신인지 갈린다.
+⚠ **원장은 여기 없다.** 원장(`.claude/HtmlToUnity_작업내역_<게임명>.md`)은
+**그 사람이 그 게임을 돌린 기록**이라 사람마다 다르다 — 오케스트레이션이 아니다.
 
 ⚠ **이 스크립트는 커밋하지 않는다.** 커밋은 **사람이 시킬 때만** 한다.
 
@@ -66,7 +66,8 @@ bash HtmlToUnity/sync.sh     # .claude/skills/ 로 복사 → Claude Code 가 �
 
 ## 실제로 돌려 본 결과 (첫 게임)
 
-`원장/HtmlToUnity_작업내역_Candy-Crush-Game.md` 에 전 과정이 숫자로 남아 있다.
+전 과정은 그때의 원장(`.claude/HtmlToUnity_작업내역_Candy-Crush-Game.md`)에 숫자로 남았다.
+**원장은 개인 기록이라 여기 담지 않는다** — 아래 표는 「이 오케스트레이션이 무엇을 판정하는가」의 예시다.
 
 | 게이트 | 결과 |
 |---|---|
