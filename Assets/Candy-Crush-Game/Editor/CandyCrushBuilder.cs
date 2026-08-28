@@ -68,7 +68,7 @@ namespace JinHyung.EditorTools
         private static readonly Color ModeButtonBlue = Hex("87CEEB"); // style.css:96
         private static readonly Color ChangeModeRed = Hex("FF6347");  // style.css:111
 
-        private const string ResourceRoot = "Assets/Resources/UI";
+        private const string ResourceRoot = "Assets/Candy-Crush-Game/Resources/UI";
         private const string ArtRoot = "Assets/Candy-Crush-Game/Art";
         private const string FontAssetPath = ArtRoot + "/Font/Montserrat-Regular SDF.asset";
         private const string ScenePath = "Assets/Candy-Crush-Game/Scenes/CandyCrush.unity";
@@ -134,10 +134,8 @@ namespace JinHyung.EditorTools
             GameObject root = NewUI("ModeSelectWindow", null, Vector2.zero);
             Stretch(root);
 
-            // 덮개는 «풀블리드» — 노치까지 덮어야 한다. 그래서 SafeArea 밖이다.
-            Image bg = root.AddComponent<Image>();
-            bg.color = ModeSelectBg;
-            bg.raycastTarget = true;
+            // 덮개는 «풀블리드» — 노치까지 덮어야 한다. 그래서 SafeArea «밖»의 형제다.
+            NewBackground(root.transform, ModeSelectBg, blocksInput: true);
 
             GameObject safe = NewSafeArea(root.transform);
 
@@ -174,6 +172,8 @@ namespace JinHyung.EditorTools
             GameObject root = NewUI("GameWindow", null, Vector2.zero);
             Stretch(root);
 
+            // ⚠ 이 창에는 BG 가 없다 — 배경(타일)이 «씬»에 있고 창 뒤로 비쳐야 하기 때문이다.
+            //   창에 배경을 깔면 원본에서 판 뒤로 보이던 하늘·언덕이 가려진다.
             GameObject safe = NewSafeArea(root.transform);
 
             // ── 스코어보드 (원본 style.css:40~54)
@@ -277,10 +277,8 @@ namespace JinHyung.EditorTools
             Stretch(root);
 
             // 원본 alert 는 페이지 입력을 막는다. 보이는 딤은 «원본에 없으므로» 넣지 않고
-            // 투명 블로커로 입력만 막는다.
-            Image blocker = root.AddComponent<Image>();
-            blocker.color = new Color(0f, 0f, 0f, 0f);
-            blocker.raycastTarget = true;
+            // 투명 블로커로 입력만 막는다. 화면을 «꽉» 막아야 하므로 SafeArea 밖의 형제다.
+            NewBackground(root.transform, new Color(0f, 0f, 0f, 0f), blocksInput: true);
 
             GameObject safe = NewSafeArea(root.transform);
 
@@ -403,12 +401,38 @@ namespace JinHyung.EditorTools
 
         // ══════════════════════════════ 유틸
 
-        /// <summary>창 안의 «콘텐츠가 사는 자리». 노치·제스처 바를 피한다.</summary>
+        /// <summary>
+        /// 창의 <b>배경(덮개)</b>. <c>SafeArea</c> «밖»의 형제로 만든다 —
+        /// 배경은 <b>노치까지 덮어 화면을 꽉 채워야</b> 하기 때문이다.
+        ///
+        /// <para>
+        /// ⚠ 배경을 <c>SafeArea</c> 안에 넣으면 <b>노치 기기에서 가장자리에 빈 띠</b>가 생긴다.
+        /// 창 구조는 언제나 <c>Window → BG · SafeArea</c> 다.
+        /// </para>
+        /// </summary>
+        private static Image NewBackground(Transform parent, Color color, bool blocksInput)
+        {
+            GameObject go = NewUI("BG", parent, Vector2.zero);
+            Stretch(go);
+
+            var image = go.AddComponent<Image>();
+            image.color = color;
+            image.raycastTarget = blocksInput;
+            return image;
+        }
+
+        /// <summary>
+        /// 창 안의 «콘텐츠가 사는 자리». 노치·제스처 바를 피한다.
+        ///
+        /// <para>
+        /// ⚠ <b>BG 다음에</b> 만든다 — 형제 순서가 그리는 순서이고, 배경이 먼저 깔려야 한다.
+        /// </para>
+        /// </summary>
         private static GameObject NewSafeArea(Transform parent)
         {
             GameObject go = NewUI("SafeArea", parent, Vector2.zero);
             Stretch(go);
-            go.AddComponent<SafeAreaPanel>();
+            go.AddComponent<SafeArea>();
             return go;
         }
 
