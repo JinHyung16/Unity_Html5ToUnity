@@ -1,0 +1,10 @@
+[
+  {
+    "Id": 1,
+    "BoardWidth": 8,
+    "ScoreMatchThree": 3,
+    "ScoreMatchFour": 4,
+    "TimedSeconds": 120,
+    "TickIntervalMs": 100
+  }
+]
