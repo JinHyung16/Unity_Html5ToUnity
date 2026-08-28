@@ -70,9 +70,6 @@ bash HtmlToUnity/sync.sh     # .claude/skills/ 로 복사 → Claude Code 가 �
 
 ## 실제로 돌려 본 결과 (첫 게임)
 
-전 과정은 그때의 원장(`.claude/HtmlToUnity_작업내역_Candy-Crush-Game.md`)에 숫자로 남았다.
-**원장은 개인 기록이라 여기 담지 않는다** — 아래 표는 「이 오케스트레이션이 무엇을 판정하는가」의 예시다.
-
 | 게이트 | 결과 |
 |---|---|
 | G0 착수 확정 + 설정 반영 | 확정표 20행 · 「미확인」 0 |
