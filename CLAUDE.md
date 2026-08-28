@@ -8,7 +8,7 @@ HTML5 게임을 Unity 로 이관하는 저장소다. **게임을 여러 개 이�
 |---|---|
 | **이관 오케스트레이션** | **`HtmlToUnity/`** — 스킬 본문. **이 저장소의 본체이자 커밋 대상** |
 | Unity 프로젝트 | 저장소 루트 (`Assets/` · `Packages/` · `ProjectSettings/`) · Unity 6000.3.13f1 · URP 17.3.0 |
-| 원본 HTML5 게임 풀 | `C:\jinhyeong_project\Html Games 모음\` |
+| 원본 HTML5 게임 풀 | **`Html Games 모음/`** (저장소 안) — 출처: [he-is-talha/html-css-javascript-games](https://github.com/he-is-talha/html-css-javascript-games) · MIT |
 | 스킬 **작업본** | `.claude/skills/htmltounity/` — 내용은 위와 **같게 유지**한다 (`HtmlToUnity/sync.sh`) |
 | 게임별 원장 | `.claude/HtmlToUnity_작업내역_<게임명>.md` — **개인 작업 기록이라 커밋하지 않는다** |
 
