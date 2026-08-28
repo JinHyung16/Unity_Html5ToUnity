@@ -20,8 +20,8 @@ HTML5 게임을 Unity 로 이관하는 저장소다. **게임을 여러 개 이�
 
 | 어디 | 왜 필요한가 | 커밋 |
 |---|---|---|
-| `.claude/skills/htmltounity/` | Claude Code 가 스킬을 여기서 찾는다 | ❌ (`.gitignore`) |
-| `HtmlToUnity/skills/htmltounity/` | 커밋되고 남의 손에 건네진다 | ✅ **여기만 커밋한다** |
+| `.claude/skills/htmltounity/` | Claude Code 가 스킬을 여기서 찾는다 — **폴더 이름이 곧 스킬 이름**이라 이 한 겹은 뺄 수 없다 | ❌ (`.gitignore`) |
+| **`HtmlToUnity/skills/`** | 커밋되고 남의 손에 건네진다. md 를 **바로 아래 평평하게** 둔다 | ✅ **여기만 커밋한다** |
 
 **문서를 고치면 두 곳을 «같이» 최신화한다.** 한쪽만 고치면 다음 게임이 낡은 쪽을 읽는다.
 
@@ -56,7 +56,7 @@ bash HtmlToUnity/sync.sh --check         # 둘이 같은지 확인 (작업 끝�
 **HTML5 → Unity 이관·파리티 검증 요청이면 `htmltounity` 스킬을 먼저 연다.**
 
 절차는 여기 적지 않는다. 두 곳에 있으면 한쪽이 반드시 낡는다 —
-확정 · 배분 · 게이트 · QA 는 전부 `HtmlToUnity/skills/htmltounity/references/PD.md` 가 정본이다.
+확정 · 배분 · 게이트 · QA 는 전부 `HtmlToUnity/skills/PD.md` 가 정본이다.
 
 ---
 
@@ -308,7 +308,7 @@ Log.Error("데이터 행 수가 원본과 다르다");
 ## 확정값을 적는 자리
 
 **게임별 확정값(해상도·배율·색공간·합격 기준)은 그 게임의 원장에만 적는다.**
-`HtmlToUnity/skills/htmltounity/references/*.md` 는 **게임을 넘어 재사용되는 문서**라
+`HtmlToUnity/skills/*.md` 는 **게임을 넘어 재사용되는 문서**라
 특정 게임의 고유명사·실측치를 적으면 다음 게임에서 오염이 된다 (세트의 금칙).
 
 담당자는 착수 전 3단계에서 원장을 읽으므로 확정표를 자동으로 본다.

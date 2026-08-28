@@ -5,9 +5,9 @@
 
 ```
 HtmlToUnity/
-├─ README.md                 ← 지금 이 파일
-├─ sync.sh                   ← .claude/skills/ 와 내용을 맞춘다
-└─ skills/htmltounity/       ← 스킬 본문 (SKILL.md + references 15종)
+├─ README.md      ← 지금 이 파일
+├─ sync.sh        ← .claude/skills/ 와 내용을 맞춘다
+└─ skills/        ← 스킬 문서 16종 (SKILL.md + 나머지 15종) — «바로 아래» 평평하다
 ```
 
 ## 왜 같은 것이 두 곳에 있나
@@ -17,8 +17,12 @@ HtmlToUnity/
 
 | 어디 | 왜 필요한가 | 커밋 |
 |---|---|---|
-| `.claude/skills/htmltounity/` | Claude Code 가 스킬을 여기서 찾는다 | ❌ (`.gitignore`) |
-| `HtmlToUnity/skills/htmltounity/` | 커밋되고 남의 손에 건네진다 | ✅ **여기만** |
+| **`HtmlToUnity/skills/`** | 커밋되고 남의 손에 건네진다. md 가 **바로 아래 평평하게** 있다 | ✅ **여기만** |
+| `.claude/skills/htmltounity/` | Claude Code 가 스킬을 찾는 곳 | ❌ (`.gitignore`) |
+
+⚠ **`.claude` 쪽에만 폴더가 한 겹 더 있다.** Claude Code 는 **폴더 이름을 스킬 이름으로** 쓴다 —
+`.claude/skills/` 바로 아래에 `SKILL.md` 를 두면 이름이 없어 **스킬로 인식되지 않는다.**
+그 한 겹은 `sync.sh` 가 알아서 만든다 — **사람은 평평한 쪽만 보면 된다.**
 
 **둘을 같이 최신화한다.** 한쪽만 고치면 다음 게임이 낡은 쪽을 읽는다.
 
@@ -46,14 +50,14 @@ bash HtmlToUnity/sync.sh     # .claude/skills/ 로 복사 → Claude Code 가 �
 | 문서 | 무엇 |
 |---|---|
 | `SKILL.md` | 언제 이 스킬을 여는가 · 목적 세 가지 · 첫 턴에 하는 일 |
-| `references/PD.md` | **정본.** 착수 확정표 · 역할 배분 · 게이트 G0~G7 · QA |
-| `references/분석로직.md` | 원본을 읽는 순서 · 학습 단계 완료 판정 |
-| `references/공통절차.md` | 재는 법 — 실측 절차 · 배치모드 · 재생 검사 · 결정적 캡처 |
-| `references/재발방지.md` | **같은 사고를 두 번 내지 않기 위한 등재 목록** (현재 24건) |
-| `references/GameFramework.md` · `UIFramework.md` · `DataFramework.md` | 유니티 쪽 뼈대 규칙 |
-| `references/Design.md` · `Client.md` · `Fx.md` · `UIUX.md` | 지식 역할별 규칙 |
-| `references/Transfer_*.md` | 이관 담당 역할별 규칙 |
-| `references/ResourceRule.md` · `PrefabRule.md` | 리소스 굽기 · 프리팹 규칙 |
+| `PD.md` | **정본.** 착수 확정표 · 역할 배분 · 게이트 G0~G7 · QA |
+| `분석로직.md` | 원본을 읽는 순서 · 학습 단계 완료 판정 |
+| `공통절차.md` | 재는 법 — 실측 절차 · 배치모드 · 재생 검사 · 결정적 캡처 |
+| `재발방지.md` | **같은 사고를 두 번 내지 않기 위한 등재 목록** (현재 24건) |
+| `GameFramework.md` · `UIFramework.md` · `DataFramework.md` | 유니티 쪽 뼈대 규칙 |
+| `Design.md` · `Client.md` · `Fx.md` · `UIUX.md` | 지식 역할별 규칙 |
+| `Transfer_*.md` | 이관 담당 역할별 규칙 |
+| `ResourceRule.md` · `PrefabRule.md` | 리소스 굽기 · 프리팹 규칙 |
 
 ## 이 오케스트레이션이 지키려는 것 셋
 

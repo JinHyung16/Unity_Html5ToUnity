@@ -2,8 +2,13 @@
 # ─────────────────────────────────────────────────────────────
 # 오케스트레이션 문서를 «두 곳에 똑같이» 유지한다.
 #
-#   .claude/skills/htmltounity/   ← Claude Code 가 스킬을 여기서만 찾는다
-#   HtmlToUnity/skills/htmltounity/ ← 커밋되는 곳 (.claude/ 는 .gitignore 에 있다)
+#   HtmlToUnity/skills/           ← 커밋되는 곳. md 를 «바로 아래» 평평하게 둔다
+#   .claude/skills/htmltounity/   ← Claude Code 가 스킬을 찾는 곳
+#
+#   ⚠ .claude 쪽에만 폴더가 한 겹 더 있는 이유:
+#     Claude Code 는 «폴더 이름»을 스킬 이름으로 쓴다.
+#     .claude/skills/ 바로 아래에 SKILL.md 를 두면 «이름이 없어» 스킬로 인식되지 않는다.
+#     그 한 겹은 이 스크립트가 알아서 만든다 — 사람은 평평한 쪽만 보면 된다.
 #
 #   둘 다 최신이어야 한다. 한쪽만 고치면 «다음 게임에서 낡은 쪽을 읽는다».
 #
@@ -17,7 +22,7 @@
 set -eu
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-REPO="$ROOT/HtmlToUnity/skills/htmltounity"
+REPO="$ROOT/HtmlToUnity/skills"
 CLAUDE="$ROOT/.claude/skills/htmltounity"
 
 MODE="${1:-to-claude}"
@@ -48,9 +53,9 @@ if [ ! -f "$SRC/SKILL.md" ]; then
   exit 1
 fi
 
-mkdir -p "$(dirname "$DST")"
 rm -rf "$DST"
-cp -r "$SRC" "$DST"
+mkdir -p "$DST"
+cp "$SRC"/*.md "$DST"/
 
 echo "동기화 완료 — $LABEL"
 echo "  문서 $(find "$DST" -name '*.md' | wc -l) 개"
