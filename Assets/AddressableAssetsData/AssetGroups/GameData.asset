@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: GameData
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: GameData
+  m_GUID: 42d88665a7c8e1b4880f07b591617a8b
+  m_SerializeEntries:
+  - m_GUID: 562d88a877b776c4a98b0337de1d490b
+    m_Address: CandyTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_data
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: be1fdeb1368b0554eb880bd26a807403
+    m_Address: GameConfigTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_data
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 2e134cad0b4fc5540a3ae785303447bb, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 4d8d1febabd41594da327708e43c1c8e, type: 2}
+    - {fileID: 11400000, guid: b14c1ead9462bda4e9deb68ba310dfe2, type: 2}

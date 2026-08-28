@@ -1,0 +1,95 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: GameArt
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: GameArt
+  m_GUID: b6aca3ff9b531844bac40cfa0e803484
+  m_SerializeEntries:
+  - m_GUID: 119e70ba3e84107468a25244a04eb746
+    m_Address: bg_tile
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1e432fdc2fea2ac4897a164fc8e9ed21
+    m_Address: ui_round_16
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 42430b0f6a3f4484ba4bb03e57e6306b
+    m_Address: candy_red
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 805f37d44ff5f74468c078fd7206f5ab
+    m_Address: ui_board
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 81fc56e341b32ac4587f3a9e53afd57b
+    m_Address: Montserrat-Regular SDF
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 834303624269a9f4ea1ee007f72ab639
+    m_Address: ui_round_8
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cc7ca64da173e5d43b49054662e6c67e
+    m_Address: candy_green
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e3b6cb69ebc066d48bcf9122e2b33c23
+    m_Address: candy_yellow
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: eadd472cbfa905c4b82808de11be4473
+    m_Address: ui_round_32
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ef107f911343b534cb6219303da89699
+    m_Address: candy_blue
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f88fa7783377c924a84c555def4aba64
+    m_Address: candy_purple
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ff37283ad4153234893cb6db35c2137f
+    m_Address: candy_orange
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 2e134cad0b4fc5540a3ae785303447bb, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 7fb50b9e45ab382438683433beeccc8f, type: 2}
+    - {fileID: 11400000, guid: e61db35286f954546bacb05ebe441928, type: 2}
