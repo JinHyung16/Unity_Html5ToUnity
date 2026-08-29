@@ -59,6 +59,73 @@ open_editor() {
   nohup "$UNITY_EXE" -projectPath "$PROJ_WIN" >/dev/null 2>&1 &
 }
 
+# ─────────────────────────────────────────────────────────────
+# ★★ 에디터가 열려 있으면 «닫지 않고» 열려 있는 에디터에게 시킨다.
+#
+#   EditorCommandBridge 가 요청 파일을 보고 ① 에셋 새로고침 ② 컴파일 대기
+#   ③ 실행 ④ 로그와 함께 응답을 쓴다. 끄고 켜는 과정이 통째로 사라진다.
+#
+#   ⚠ 다리 스크립트가 아직 컴파일 안 된 첫 회, 또는 에디터가 멈춘 경우에는
+#     응답이 안 온다 → 그때만 기존 방식(CLOSE_EDITOR=1)으로 안내한다.
+#   ⚠ BRIDGE=0 으로 강제 배치모드를 쓸 수 있다.
+# ─────────────────────────────────────────────────────────────
+try_bridge() {
+  local BR="$ROOT/Library/EditorBridge"
+  local ID="$(date +%s%N)"
+  mkdir -p "$BR"
+  rm -f "$BR/request.json" "$BR/refreshed"
+
+  echo "{ \"id\": \"$ID\", \"method\": \"$METHOD\" }" > "$BR/request.json"
+  echo "▶ $METHOD  (열려 있는 에디터에게 시킨다 — 다리)"
+
+  local WAITED=0
+  local LIMIT="${BRIDGE_TIMEOUT:-300}"
+
+  while [ ! -f "$BR/response-$ID.json" ]; do
+    sleep 1
+    WAITED=$((WAITED+1))
+
+    if [ "$WAITED" -ge "$LIMIT" ]; then
+      rm -f "$BR/request.json" "$BR/refreshed"
+      echo "⚠ ${LIMIT}초 안에 응답이 없다 — 다리가 아직 컴파일 전이거나 에디터가 멈췄다." >&2
+      echo "  에디터 창을 한 번 클릭(포커스)하면 새 스크립트를 먹는다." >&2
+      echo "  그래도 안 되면 CLOSE_EDITOR=1 로 배치모드를 쓴다." >&2
+      return 1
+    fi
+  done
+
+  echo "── 결과 (에디터 콘솔 캡처) ──"
+  sed 's/<[^>]*>//g' "$BR/response-$ID.log" | sed -n '1,140p'
+  sed 's/<[^>]*>//g' "$BR/response-$ID.log" | grep -E "═══ .*(통과|완료|diff)" | tail -3
+
+  local OK=1
+  grep -q '"ok": true' "$BR/response-$ID.json" && OK=0
+  rm -f "$BR/response-$ID.json" "$BR/response-$ID.log"
+  return $OK
+}
+
+if editor_running && [ "${BRIDGE:-1}" = "1" ] && [ "${CLOSE_EDITOR:-0}" != "1" ] && [ "${PLAYMODE:-0}" != "1" ]; then
+  # 검증 소스 스테이징 (배치 경로와 같은 규칙 — 실행 동안만 Assets 에 들여놓는다)
+  BSTAGED=0
+  BCLASS="$(echo "$METHOD" | awk -F. '{print $(NF-1)}')"
+  if [ -f "$VERIFY_SRC/$BCLASS.cs" ]; then
+    mkdir -p "$VERIFY_STAGE"
+    cp "$VERIFY_SRC"/*.cs "$VERIFY_STAGE"/ 2>/dev/null
+    BSTAGED=1
+    echo "검증 소스 스테이징: $(ls "$VERIFY_STAGE"/*.cs | wc -l) 개 → Assets/Editor.Verify.Temp"
+  fi
+
+  try_bridge
+  BSTATUS=$?
+
+  if [ "$BSTAGED" = "1" ]; then
+    rm -rf "$VERIFY_STAGE" "$VERIFY_STAGE.meta"
+    echo "검증 소스 제거함 (이관 결과물에 남기지 않는다)"
+  fi
+
+  exit $BSTATUS
+fi
+
 if editor_running; then
   if [ "${CLOSE_EDITOR:-0}" = "1" ]; then
     # ⚠ 저장 안 된 작업이 날아갈 수 있다 — 부르는 쪽이 «먼저» 사람에게 알린 뒤에만 켠다.
