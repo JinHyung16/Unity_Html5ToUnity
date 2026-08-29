@@ -9,7 +9,7 @@ namespace JinHyung.Data
     /// 여기 등록하지 않으면 <b>JSON 이 있어도 아무도 안 읽는다</b> — 그런데 에러도 안 난다.
     /// </para>
     /// </summary>
-    public static class ContainerRegister
+    public static class CandyContainerRegister
     {
         public static void RegisterAll()
         {

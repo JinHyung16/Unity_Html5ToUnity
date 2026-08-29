@@ -49,8 +49,8 @@ namespace JinHyung.CandyCrush
             // ① UI 루트·카메라를 물린다. 이게 안 되면 창을 만들 자리가 없다.
             WindowManagement.Instance.BindEnvironment(_uiRoot, _uiCamera);
 
-            // ② 데이터. 등록 목록은 사람이 들고 있는 ContainerRegister 하나다.
-            ContainerRegister.RegisterAll();
+            // ② 데이터. 등록 목록은 사람이 들고 있는 CandyContainerRegister 하나다.
+            CandyContainerRegister.RegisterAll();
             await DataManager.Instance.InitializeAsync(cancellationToken);
 
             if (cancellationToken.IsCancellationRequested)
