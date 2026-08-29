@@ -9,6 +9,7 @@ HTML5 게임을 Unity 로 이관하는 저장소다. **게임을 여러 개 이�
 | **이관 오케스트레이션** | **`HtmlToUnity/`** — 스킬 본문. **이 저장소의 본체이자 커밋 대상** |
 | Unity 프로젝트 | 저장소 루트 (`Assets/` · `Packages/` · `ProjectSettings/`) · Unity 6000.3.13f1 · URP 17.3.0 |
 | 원본 HTML5 게임 풀 | **`Html Games 모음/`** (저장소 안) — 출처: [he-is-talha/html-css-javascript-games](https://github.com/he-is-talha/html-css-javascript-games) · MIT |
+| **URL 원본 게임 풀 (코드 없음)** | **`Html Games URL 모음/`** — 시중 서비스 링크만 있는 상용 게임. 게임당 `<NN>-<게임명>/` (`00_원본정보.md` · `HtmlToUnityLogic/` · `Html_Screenshot/`). **코드가 없으므로 라이브 URL 실측이 원본이다** — 절차는 `PD.md` 「원본 형태 판정」. ⚠ 원본 에셋을 뜯어 넣지 않는다 (저작권) |
 | 스킬 **작업본** | `.claude/skills/htmltounity/` — 내용은 위와 **같게 유지**한다 (`HtmlToUnity/sync.sh`) |
 | 게임별 원장 | `.claude/HtmlToUnity_작업내역_<게임명>.md` — **개인 작업 기록이라 커밋하지 않는다** |
 
@@ -269,6 +270,7 @@ Log.Error("데이터 행 수가 원본과 다르다");
 | **Unity 재생(Play) 검사** | **된다** | `PLAYMODE=1 Tools/unity-batch.sh …` — 배치에서 재생에 들어가 **실제 포인터 이벤트**를 흘린다. ⚠ **입력·레이캐스트는 여기서만 잰다** — 편집 모드에서는 캔버스가 안 그려져 레이캐스트가 **원리적으로 빈다** |
 | 브라우저 스크린샷 | **된다** — 크롬 헤드리스 | 사람 없이 찍는다. **결정적**으로 만들려면 시드 고정 + 주기 진행 차단 + 레이아웃 크기 못 박기 (`공통절차.md`) |
 | 원본을 **살려서** 띄우기 | **된다** | ⚠ `file://` 은 «정적 스냅샷»이 되어 스크립트가 안 돈다 → **로컬 HTTP 서버**로 연다 |
+| **URL 원본(상용 웹 게임) 실측** | **된다** — 로컬 Playwright | ⚠ 내장 브라우저(CDP)는 **단발 클릭만** 전달되고 「누르고 있기(HOLD)」가 0ms 로 압축된다 — 홀드·드래그 조작 게임은 **Playwright 로 `mouse.down()` → 대기 → `mouse.up()`** 을 직접 제어한다 (`channel: 'chrome'` 으로 시스템 크롬 사용, 브라우저 바이너리 다운로드 불필요). 게임 iframe 직접 접속은 핫링크 차단에 걸린다 — **서비스 페이지째로 연다** |
 | 이미지 비교 | Pillow 12.3.0 | 픽셀 일치율 측정 가능 |
 
 ## ★ 사람에게 유니티 조작을 요구하지 않는다
