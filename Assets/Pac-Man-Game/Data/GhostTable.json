@@ -1,0 +1,4 @@
+[
+  { "Id": 1, "StartCol": 13, "StartRow": 14, "DirX": 1,  "DirY": 0, "ColorHex": "FF4B4B" },
+  { "Id": 2, "StartCol": 14, "StartRow": 14, "DirX": -1, "DirY": 0, "ColorHex": "4BC6FF" }
+]

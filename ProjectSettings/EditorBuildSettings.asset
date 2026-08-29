@@ -6,8 +6,8 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Candy-Crush-Game/Scenes/CandyCrush.unity
-    guid: 2754edddbe215194fa533d43622f61ab
+    path: Assets/Pac-Man-Game/Scenes/PacMan.unity
+    guid: c2537540f7e55c04195011e37ba84afe
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: c0a679c1c8f091c4a9ced2b8d73e1e9e, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}

@@ -1,0 +1,19 @@
+[
+  {
+    "Id": 1,
+    "Cols": 28,
+    "Rows": 31,
+    "TileSize": 16,
+    "CorridorScale": 1.25,
+    "PacSpeed": 8.0,
+    "GhostSpeed": 6.0,
+    "AlignWindow": 0.35,
+    "CollideDistance": 0.7,
+    "PelletScore": 10,
+    "PowerPelletScore": 50,
+    "StartLives": 3,
+    "PacStartCol": 1,
+    "PacStartRow": 29,
+    "ChompSpeed": 18.0
+  }
+]

@@ -21,6 +21,24 @@ MonoBehaviour:
     m_SerializedLabels:
     - game_data
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5c62bbea02304aa429df9f41cf275a61
+    m_Address: MazeTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_data
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8dd2c3e36d23ce041bec67951fd29786
+    m_Address: GhostTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_data
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8f6ecdc81a91cac4080512ce7752725f
+    m_Address: PacConfigTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_data
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: be1fdeb1368b0554eb880bd26a807403
     m_Address: GameConfigTable
     m_ReadOnly: 0

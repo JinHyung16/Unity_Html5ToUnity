@@ -21,8 +21,26 @@ MonoBehaviour:
     m_SerializedLabels:
     - game_art
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 15ec38a97845119438ce552141f1fdb2
+    m_Address: pac_7
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1e432fdc2fea2ac4897a164fc8e9ed21
     m_Address: ui_round_16
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2ba3ad6740981da4b9416f534e64deb7
+    m_Address: tile_power
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 39cdac174fc626c458d23bca15d786df
+    m_Address: tile_pellet
     m_ReadOnly: 0
     m_SerializedLabels:
     - game_art
@@ -33,8 +51,26 @@ MonoBehaviour:
     m_SerializedLabels:
     - game_art
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5809b10d5b2eaff45872036c27f8073e
+    m_Address: pac_4
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 647f5d0ea28c26649aa6d588ac910d21
+    m_Address: pac_6
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 805f37d44ff5f74468c078fd7206f5ab
     m_Address: ui_board
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 808a0f11346856a46b12831dafba1096
+    m_Address: pac_2
     m_ReadOnly: 0
     m_SerializedLabels:
     - game_art
@@ -47,6 +83,36 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 834303624269a9f4ea1ee007f72ab639
     m_Address: ui_round_8
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 86b5d5a2a3b169b4a88db6a5e75a2cf7
+    m_Address: ghost
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9da834d3107b8af4391f2ea05ce08ad6
+    m_Address: pac_0
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: afc0076421803f34c92eb09a92020c09
+    m_Address: tile_wall
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ca27700720740054383aec5945195963
+    m_Address: pac_3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cb09538154e475649bffdfbdde6d57e9
+    m_Address: pac_5
     m_ReadOnly: 0
     m_SerializedLabels:
     - game_art
@@ -77,6 +143,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f88fa7783377c924a84c555def4aba64
     m_Address: candy_purple
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fccfd84f45452d448ae6d113df93e67a
+    m_Address: pac_1
     m_ReadOnly: 0
     m_SerializedLabels:
     - game_art
