@@ -1,0 +1,81 @@
+Error: poki test error
+✅ ESI: empty recent games
+%cGoogle Analytics is blocked by Poki, refer to our privacy statement (https://poki.com/kr/privacy) background:rgb(0, 156, 255);color:#fff
+%cPOKI:%c Ad libraries not yet loaded background-color: red; border-radius: 3px; color: white; padding: 1px 5px 
+%cPOKI:%c Ad libraries not yet loaded background-color: red; border-radius: 3px; color: white; padding: 1px 5px 
+%cPOKI:%c Ad libraries not yet loaded background-color: red; border-radius: 3px; color: white; padding: 1px 5px 
+Failed to load resource: the server responded with a status of 401 ()
+Origin trial controlled feature not enabled: 'focus-without-user-activation'.
+Unrecognized feature: 'monetization'.
+Allow attribute will take precedence over 'allowfullscreen'.
+%cMade with Construct, the game and animation creation tool. Visit: https://www.construct.net font-weight: bold
+[C3 runtime] Hosted in DOM, rendering with WebGL 2 [ANGLE (NVIDIA, NVIDIA GeForce RTX 4060 Laptop GPU (0x000028E0) Direct3D11 vs_5_0 ps_5_0, D3D11)]
+Poki SDK supported, initializing...
+%cPOKI:%c PokiSDK.measure(game, loading, start) background-color: green; border-radius: 3px; color: white; padding: 1px 5px 
+Mobile Advert disabled
+%cPOKI:%c PokiSDK.init( background-color: green; border-radius: 3px; color: white; padding: 1px 5px  {} )
+Poki SDK successfully initialized
+%cPOKI:%c PokiSDK.setDebug( background-color: green; border-radius: 3px; color: white; padding: 1px 5px  false )
+%cPOKI:%c PokiSDK.gameLoadingFinished( background-color: green; border-radius: 3px; color: white; padding: 1px 5px  )
+%cPOKI:%c PokiSDK.measure(game, loading, complete) background-color: green; border-radius: 3px; color: white; padding: 1px 5px 
+Game loading is finished
+%cPOKI:%c PokiSDK.gameplayStart( background-color: green; border-radius: 3px; color: white; padding: 1px 5px   )
+Gameplay has started
+%cPOKI:%c PokiSDK.measure(SDK, Firsttime_Started, Start) background-color: green; border-radius: 3px; color: white; padding: 1px 5px 
+%cPOKI:%c PokiSDK.measure(Game, Start_Any_Game, ) background-color: green; border-radius: 3px; color: white; padding: 1px 5px 
+%cPOKI:%c PokiSDK.measure(Game, Start_1P_Game, ) background-color: green; border-radius: 3px; color: white; padding: 1px 5px 
+%cPOKI:%c PokiSDK.measure(Game, Level_Started, W1L1) background-color: green; border-radius: 3px; color: white; padding: 1px 5px 
+%cPOKI:%c PokiSDK.gameplayStop( background-color: green; border-radius: 3px; color: white; padding: 1px 5px   )
+Gameplay has stopped
+Attempting to show interstitial ad
+%cPOKI:%c PokiSDK.commercialBreak( background-color: green; border-radius: 3px; color: white; padding: 1px 5px  ()=>{} )
+%cPOKI:%c commercialBreak not possible before consent background-color: green; border-radius: 3px; color: white; padding: 1px 5px 
+%cPOKI:%c Ad libraries not yet loaded background-color: red; border-radius: 3px; color: white; padding: 1px 5px 
+%cPOKI:%c Ad libraries not yet loaded background-color: red; border-radius: 3px; color: white; padding: 1px 5px 
+%cPOKI:%c Ad libraries not yet loaded background-color: red; border-radius: 3px; color: white; padding: 1px 5px 
+Commercial break finished, proceeding to game
+%cPOKI:%c PokiSDK.gameplayStart( background-color: green; border-radius: 3px; color: white; padding: 1px 5px   )
+Gameplay has started
+%cPOKI:%c PokiSDK.measure(Game, Level_Started, W1L2) background-color: green; border-radius: 3px; color: white; padding: 1px 5px 
+%cPOKI:%c PokiSDK.gameplayStop( background-color: green; border-radius: 3px; color: white; padding: 1px 5px   )
+Gameplay has stopped
+Attempting to show interstitial ad
+%cPOKI:%c PokiSDK.commercialBreak( background-color: green; border-radius: 3px; color: white; padding: 1px 5px  ()=>{} )
+%cPOKI:%c commercialBreak too soon after previous one background-color: green; border-radius: 3px; color: white; padding: 1px 5px 
+%cPOKI:%c Ad libraries not yet loaded background-color: red; border-radius: 3px; color: white; padding: 1px 5px 
+%cPOKI:%c Ad libraries not yet loaded background-color: red; border-radius: 3px; color: white; padding: 1px 5px 
+%cPOKI:%c Ad libraries not yet loaded background-color: red; border-radius: 3px; color: white; padding: 1px 5px 
+Commercial break finished, proceeding to game
+%cPOKI:%c PokiSDK.gameplayStart( background-color: green; border-radius: 3px; color: white; padding: 1px 5px   )
+Gameplay has started
+%cPOKI:%c PokiSDK.measure(Game, Level_Started, W1L3) background-color: green; border-radius: 3px; color: white; padding: 1px 5px 
+%cPOKI:%c PokiSDK.gameplayStop( background-color: green; border-radius: 3px; color: white; padding: 1px 5px   )
+Gameplay has stopped
+Attempting to show interstitial ad
+%cPOKI:%c PokiSDK.commercialBreak( background-color: green; border-radius: 3px; color: white; padding: 1px 5px  ()=>{} )
+%cPOKI:%c commercialBreak too soon after previous one background-color: green; border-radius: 3px; color: white; padding: 1px 5px 
+Commercial break finished, proceeding to game
+%cPOKI:%c PokiSDK.gameplayStart( background-color: green; border-radius: 3px; color: white; padding: 1px 5px   )
+Gameplay has started
+%cPOKI:%c PokiSDK.measure(Game, Level_Started, W1L4) background-color: green; border-radius: 3px; color: white; padding: 1px 5px 
+%cPOKI:%c PokiSDK.gameplayStop( background-color: green; border-radius: 3px; color: white; padding: 1px 5px   )
+Gameplay has stopped
+Attempting to show interstitial ad
+%cPOKI:%c PokiSDK.commercialBreak( background-color: green; border-radius: 3px; color: white; padding: 1px 5px  ()=>{} )
+%cPOKI:%c commercialBreak too soon after previous one background-color: green; border-radius: 3px; color: white; padding: 1px 5px 
+%cPOKI:%c Ad libraries not yet loaded background-color: red; border-radius: 3px; color: white; padding: 1px 5px 
+%cPOKI:%c Ad libraries not yet loaded background-color: red; border-radius: 3px; color: white; padding: 1px 5px 
+%cPOKI:%c Ad libraries not yet loaded background-color: red; border-radius: 3px; color: white; padding: 1px 5px 
+Commercial break finished, proceeding to game
+%cPOKI:%c PokiSDK.gameplayStart( background-color: green; border-radius: 3px; color: white; padding: 1px 5px   )
+Gameplay has started
+%cPOKI:%c PokiSDK.measure(Game, Level_Started, W1L5) background-color: green; border-radius: 3px; color: white; padding: 1px 5px 
+%cPOKI:%c PokiSDK.gameplayStop( background-color: green; border-radius: 3px; color: white; padding: 1px 5px   )
+Gameplay has stopped
+Attempting to show interstitial ad
+%cPOKI:%c PokiSDK.commercialBreak( background-color: green; border-radius: 3px; color: white; padding: 1px 5px  ()=>{} )
+%cPOKI:%c commercialBreak too soon after previous one background-color: green; border-radius: 3px; color: white; padding: 1px 5px 
+Commercial break finished, proceeding to game
+%cPOKI:%c PokiSDK.gameplayStart( background-color: green; border-radius: 3px; color: white; padding: 1px 5px   )
+Gameplay has started
+%cPOKI:%c PokiSDK.measure(Game, Level_Started, W2L1) background-color: green; border-radius: 3px; color: white; padding: 1px 5px 

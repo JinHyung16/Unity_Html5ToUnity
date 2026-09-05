@@ -1,0 +1,22 @@
+[
+  {
+    "level": "W1L1",
+    "holdMs": 600
+  },
+  {
+    "level": "W1L2",
+    "holdMs": 800
+  },
+  {
+    "level": "W1L3",
+    "holdMs": 600
+  },
+  {
+    "level": "W1L4",
+    "holdMs": 200
+  },
+  {
+    "level": "W1L5",
+    "holdMs": 400
+  }
+]

@@ -20,6 +20,10 @@
 set -u
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+# ⚠ project_unity_pids() 가 이 값을 쓴다 — 정의가 «함수보다 앞»에 있어야 한다.
+#   (예전 판은 파일 끝쪽에서 정의해 `set -u` 아래서 매번 unbound 로 죽었고,
+#    그 탓에 editor_running() 이 «항상 거짓»이 되어 다리 경로가 통째로 안 쓰였다.)
+PROJ_WIN="$(echo "$ROOT" | sed 's|^/c/|C:\\|; s|/|\\|g')"
 UNITY_EXE="${UNITY_EXE:-/c/Program Files/Unity/Hub/Editor/6000.3.13f1/Editor/Unity.exe}"
 VERIFY_SRC="$ROOT/Tools/Verify"
 VERIFY_STAGE="$ROOT/Assets/Editor.Verify.Temp"
@@ -49,12 +53,84 @@ notice_restarting() {
   echo ""
 }
 
+# ⚠ 이 저장소는 «여러 유니티 프로젝트»가 열려 있는 기계에서 돈다.
+#   예전 판은 `Unity.exe` 를 이름으로만 찾아 «남의 프로젝트»까지 죽였다.
+#   그래서 이제 «이 프로젝트를 연» 프로세스만 고른다 — 못 가리면 아무도 안 죽인다.
+#
+# ⚠⚠ CR «만» 지운다. `tr -d '\r\n'` 은 «줄바꿈까지» 지워 PID 여러 개를 한 덩어리로 붙인다 —
+#   22100 + 24432 → 2210024432 가 되고, `grep '^[0-9]+$'` 는 그 가짜를 «PID 하나»로 통과시킨다.
+#   그러면 taskkill 이 아무도 못 죽이고, 우리는 「닫았다」고 믿은 채 배치를 띄워
+#   "another Unity instance is running" 으로 죽는다 — 로그에는 «닫는 문구조차» 안 남는다.
+#   ⚠ 이 프로젝트에 붙는 `Unity.exe` 는 «항상 하나가 아니다» (에디터 + AssetImportWorker N개).
+project_unity_pids() {
+  powershell.exe -NoProfile -NonInteractive -Command     "Get-CimInstance Win32_Process -Filter \"Name='Unity.exe'\" | Where-Object { \$_.CommandLine -match [regex]::Escape('$PROJ_WIN') } | ForEach-Object { \$_.ProcessId }"     2>/dev/null | tr -d '\r' | grep -E '^[0-9]+$'
+}
+
+# 이 프로젝트가 «열려 있는가» — 락파일이 진실이다 (PID 를 못 가려도 이건 안다).
+project_locked() {
+  [ -f "$ROOT/Temp/UnityLockfile" ]
+}
+
+# ⚠ 「락파일이 있다」는 «열려 있다»가 아니다 — 에디터가 비정상 종료하면 낡은 락이 남는다.
+#   그래서 «살아 있는 프로세스»만 «열림»으로 친다.
 editor_running() {
-  tasklist 2>/dev/null | grep -q "^Unity\.exe"
+  [ -n "$(project_unity_pids)" ]
+}
+
+# 이 프로젝트 프로세스가 하나도 없는데 락만 남아 있으면 «낡은 락»이다 — 치운다.
+clear_stale_lock() {
+  if project_locked && [ -z "$(project_unity_pids)" ]; then
+    rm -f "$ROOT/Temp/UnityLockfile" 2>/dev/null
+  fi
+}
+
+# 이 프로젝트의 에디터만 닫는다. ⚠ 못 가리면 «죽이지 않고» 실패한다 —
+#   남의 프로젝트를 저장 없이 날리는 것보다 여기서 멈추는 것이 낫다.
+kill_project_editor() {
+  local pids; pids="$(project_unity_pids)"
+  if [ -z "$pids" ]; then
+    clear_stale_lock
+    if project_locked; then
+      echo "" >&2
+      echo "⚠ 이 프로젝트 에디터가 열려 있는데 «어느 프로세스인지» 가릴 수 없습니다." >&2
+      echo "   남의 프로젝트를 죽이지 않으려고 «아무것도 닫지 않았습니다»." >&2
+      echo "   → 이 프로젝트의 유니티 창만 직접 닫아 주신 뒤 다시 실행해 주세요." >&2
+      return 1
+    fi
+    return 0
+  fi
+  # ★ 먼저 «곱게» — 다리로 저장 후 정상 종료를 시킨다. 이래야 다음에 열 때 「_recovery backup scene?」 이 안 뜬다.
+  if [ "${BRIDGE:-1}" = "1" ]; then
+    local BR="$ROOT/Library/EditorBridge"
+    local ID="shutdown-$(date +%s%N)"
+    mkdir -p "$BR"; rm -f "$BR/request.json" "$BR/refreshed"
+    echo "{ \"id\": \"$ID\", \"method\": \"JinHyung.EditorTools.EditorShutdown.SaveAndExit\" }" > "$BR/request.json"
+    echo "   저장 후 정상 종료를 시키는 중… (최대 ${SHUTDOWN_TIMEOUT:-180}초 — 재생 중이면 재생을 끝내고 저장한다)"
+    local W=0
+    while editor_running; do
+      sleep 1; W=$((W+1))
+      if [ "$W" -ge "${SHUTDOWN_TIMEOUT:-180}" ]; then break; fi
+    done
+    rm -f "$BR/request.json" "$BR/refreshed" "$BR/response-$ID.json" "$BR/response-$ID.log"
+    if ! editor_running; then
+      rm -rf "$ROOT/Temp/__Backupscenes" 2>/dev/null
+      return 0
+    fi
+    echo "   ⚠ 정상 종료 응답이 없어 강제 종료로 물러난다 (다음에 열 때 복구 대화상자는 러너가 «No» 로 처리한다)." >&2
+  fi
+  for p in $pids; do taskkill //F //PID "$p" >/dev/null 2>&1; done
+  return 0
 }
 
 open_editor() {
   notice_restarting
+  # ★ 강제 종료 뒤 남는 Temp/__Backupscenes 가 「_recovery backup scene?」 대화상자를 띄운다.
+  #   사람이 «No» 를 누르는 것과 같다 — 백업을 치우고 연다. (씬은 이미 디스크에 저장된 것을 쓴다)
+  clear_stale_lock
+  if [ -d "$ROOT/Temp/__Backupscenes" ]; then
+    rm -rf "$ROOT/Temp/__Backupscenes" 2>/dev/null
+    echo "   복구 백업 씬을 치웠습니다 (「_recovery backup scene?」 → No)."
+  fi
   echo "   유니티를 다시 여는 중입니다…"
   nohup "$UNITY_EXE" -projectPath "$PROJ_WIN" >/dev/null 2>&1 &
 }
@@ -104,7 +180,10 @@ try_bridge() {
   return $OK
 }
 
-if editor_running && [ "${BRIDGE:-1}" = "1" ] && [ "${CLOSE_EDITOR:-0}" != "1" ] && [ "${PLAYMODE:-0}" != "1" ]; then
+# ⚠ PLAYMODE=1 은 다리로 보내지 않는다 — «뒤에 있는» 에디터의 재생은 틱이 느려 검사가 몇 분씩 멈춘다(실측: 7분 무응답).
+#   재생 검사는 배치가 «필수»인 예외다. 그래도 «곱게» — 저장 후 정상 종료 → 배치 → 복구 백업을 치우고 다시 연다.
+#   (다리 자체는 재생을 지원한다 — 사람이 에디터를 «보고 있을 때»는 쓸 수 있다: BRIDGE_PLAY=1)
+if editor_running && [ "${BRIDGE:-1}" = "1" ] && [ "${CLOSE_EDITOR:-0}" != "1" ] && { [ "${PLAYMODE:-0}" != "1" ] || [ "${BRIDGE_PLAY:-0}" = "1" ]; }; then
   # 검증 소스 스테이징 (배치 경로와 같은 규칙 — 실행 동안만 Assets 에 들여놓는다)
   BSTAGED=0
   BCLASS="$(echo "$METHOD" | awk -F. '{print $(NF-1)}')"
@@ -132,9 +211,7 @@ if editor_running; then
     notice_restarting
     echo "   ⚠ 저장하지 않은 에디터 작업은 사라집니다."
 
-    for p in $(tasklist 2>/dev/null | awk '$1=="Unity.exe"{print $2}'); do
-      taskkill //F //PID "$p" >/dev/null 2>&1
-    done
+    kill_project_editor || exit 1
 
     for i in $(seq 1 20); do
       editor_running || break
@@ -142,6 +219,13 @@ if editor_running; then
     done
 
     rm -f "$ROOT/Temp/UnityLockfile" 2>/dev/null
+  elif [ "${PLAYMODE:-0}" = "1" ]; then
+    # ★ 재생 검사는 배치가 필수다 — 사람에게 되묻지 않고 «곱게» 닫았다 연다 (저장 후 종료 · 복구 백업 치우기 · REOPEN)
+    echo "▶ 재생 검사는 배치가 필요하다 — 에디터를 저장 후 정상 종료하고, 끝나면 다시 연다."
+    kill_project_editor || exit 1
+    for i in $(seq 1 20); do editor_running || break; sleep 1; done
+    rm -f "$ROOT/Temp/UnityLockfile" 2>/dev/null
+    REOPEN=1
   else
     echo "⚠ Unity 에디터가 실행 중이다. 배치모드는 같은 프로젝트를 못 연다." >&2
     echo "  저장 안 된 작업이 날아갈 수 있다는 것을 사람에게 먼저 알린 뒤" >&2
@@ -173,7 +257,6 @@ trap cleanup EXIT
 mkdir -p "$LOG_DIR"
 LOG_SH="$LOG_DIR/batch-$(echo "$METHOD" | tr '.' '_').log"
 LOG_WIN="$(echo "$LOG_SH" | sed 's|^/c/|C:\\|; s|/|\\|g')"
-PROJ_WIN="$(echo "$ROOT" | sed 's|^/c/|C:\\|; s|/|\\|g')"
 : > "$LOG_SH"
 
 echo "▶ $METHOD"
@@ -216,7 +299,7 @@ else
 
   if [ "$STATUS" = "124" ]; then
     echo "⚠ 시간 제한을 넘겨 강제로 끊었다 — 검사기가 스스로 안 끝냈다는 뜻이다." >&2
-    for p in $(tasklist 2>/dev/null | awk '$1=="Unity.exe"{print $2}'); do taskkill //F //PID "$p" >/dev/null 2>&1; done
+    kill_project_editor || true
   fi
 fi
 
