@@ -1,0 +1,73 @@
+[
+  {
+    "Id": 1,
+
+    "GravityY": 1500.0,
+    "AccelerationX": 0.0,
+    "MaxDeltaTime": 0.0333333333333333,
+    "PhysicsStepSeconds": 0.0083333333333333,
+    "SolverVelocityIterations": 12,
+    "SolverPositionIterations": 6,
+
+    "ForceShootStart": 10.0,
+    "ForceShootRatePerSecond": 55.0,
+    "ForceShootMax": 100.0,
+    "LaunchHoldThresholdMs": 124.0,
+
+    "LaunchTweenOffsetX": 0.2665,
+    "LaunchTweenOffsetY": 9.8386,
+    "LaunchAngularVelocityDegreesPerSecond": -200.0,
+
+    "BallRadius": 43.5,
+    "BallDensity": 1.0,
+    "BallRestitution": 0.7,
+    "BallFriction": 0.5,
+    "BallLinearDamping": 0.0,
+    "BallAngularDamping": 0.01,
+
+    "BlockCollisionWidth": 84.0,
+    "BlockCollisionHeight": 58.983051321428576,
+    "BlockGridPitch": 50.0,
+    "BlockRestitution": 0.0,
+    "BlockFriction": 0.5,
+
+    "HoopPostRadius": 20.11,
+    "HoopRestitution": 0.7,
+    "HoopFriction": 0.5,
+
+    "BlobCollisionWidth": 87.13590823980422,
+    "BlobCollisionHeight": 50.0,
+    "BlobDensity": 100.0,
+    "BlobRestitution": 0.2,
+    "BlobFriction": 0.5,
+
+    "BounceThresholdSpeed": 50.0,
+    "PolygonSkinThickness": 0.5,
+    "LinearSlop": 0.25,
+
+    "GoalPostOffsetX": 75.0,
+    "GoalPostOffsetY": 0.0,
+    "GoalNetOffsetX": 0.0,
+    "GoalNetOffsetY": 88.0,
+    "DetectorSize": 50.0,
+    "BallDetectionBoxSize": 87.0,
+    "DetectorTopOffsetX": -0.7,
+    "DetectorTopOffsetY": -10.53,
+    "DetectorBottomOffsetX": 0.0,
+    "DetectorBottomOffsetY": 100.0,
+
+    "BallParkX": 0.0,
+    "BallParkY": 10000.0,
+
+    "ReloadTriggerY": 1279.5,
+    "BallOutOfPlayY": 40000.0,
+
+    "DesignViewportWidth": 1280.0,
+    "DesignViewportHeight": 1280.0,
+
+    "PalmColorHex": "80E5FF",
+    "GoalRimLightColorHex": "FF3333",
+    "GoalRimShadeColorHex": "CC3366",
+    "GoalNetColorHex": "FFFFFF"
+  }
+]

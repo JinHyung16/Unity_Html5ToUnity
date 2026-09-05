@@ -1,0 +1,37 @@
+[
+  {
+    "Id": 1, "Code": "W1L1", "WorldNo": 1, "LevelNo": 1,
+    "AimRotatorValue": 300.0, "AimRotatorEstimated": false,
+    "LauncherBodyX": 150.0,  "LauncherHomeY": 602.0, "BallRestX": 200.106, "BallRestY": 476.804,
+    "GoalRimX": 825.0, "GoalRimY": 977.0, "DetectorOffsetDerived": false,
+    "BgColorHex": "E4FF85", "GridLineColorHex": "EBFFA3", "BlockFillColorHex": "FFFFFF", "BlockSquareColorHex": "FF3333", "BlockLeftCapColorHex": "01FF65"
+  },
+  {
+    "Id": 2, "Code": "W1L2", "WorldNo": 1, "LevelNo": 2,
+    "AimRotatorValue": 290.0, "AimRotatorEstimated": false,
+    "LauncherBodyX": 225.0,  "LauncherHomeY": 950.0, "BallRestX": 259.239, "BallRestY": 817.581,
+    "GoalRimX": 875.0, "GoalRimY": 1050.0, "DetectorOffsetDerived": false,
+    "BgColorHex": "47C8FF", "GridLineColorHex": "74D6FF", "BlockFillColorHex": "FFFFFF", "BlockSquareColorHex": "66FF33", "BlockLeftCapColorHex": "FF9BCB"
+  },
+  {
+    "Id": 3, "Code": "W1L3", "WorldNo": 1, "LevelNo": 3,
+    "AimRotatorValue": 300.0, "AimRotatorEstimated": false,
+    "LauncherBodyX": 1000.0, "LauncherHomeY": 350.0, "BallRestX": 1050.106, "BallRestY": 224.804,
+    "GoalRimX": 450.0, "GoalRimY": 775.0, "DetectorOffsetDerived": false,
+    "BgColorHex": "FFDB29", "GridLineColorHex": "FFE45E", "BlockFillColorHex": "FFFFFF", "BlockSquareColorHex": "FFAB01", "BlockLeftCapColorHex": "43BCFF"
+  },
+  {
+    "Id": 4, "Code": "W1L4", "WorldNo": 1, "LevelNo": 4,
+    "AimRotatorValue": 230.0, "AimRotatorEstimated": false,
+    "LauncherBodyX": 1050.0, "LauncherHomeY": 400.0, "BallRestX": 985.906, "BallRestY": 285.847,
+    "GoalRimX": 475.0, "GoalRimY": 925.0, "DetectorOffsetDerived": false,
+    "BgColorHex": "FFBDFD", "GridLineColorHex": "FFCDFD", "BlockFillColorHex": "FFFFFF", "BlockSquareColorHex": "3367CC", "BlockLeftCapColorHex": "FEFE6A"
+  },
+  {
+    "Id": 5, "Code": "W1L5", "WorldNo": 1, "LevelNo": 5,
+    "AimRotatorValue": 330.0, "AimRotatorEstimated": false,
+    "LauncherBodyX": 100.0,  "LauncherHomeY": 350.0, "BallRestX": 187.047, "BallRestY": 261.077,
+    "GoalRimX": 950.0, "GoalRimY": 1050.0, "DetectorOffsetDerived": false,
+    "BgColorHex": "FF7452", "GridLineColorHex": "FD9651", "BlockFillColorHex": "FFFFFF", "BlockSquareColorHex": "49B2FF", "BlockLeftCapColorHex": "32349A"
+  }
+]
