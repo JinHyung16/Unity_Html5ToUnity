@@ -94,8 +94,14 @@ namespace JinHyung.EditorTools
                     + $"(오류 {summary.totalErrors}건)");
             }
 
+            // ⚠ <b>summary.totalSize 는 «배포물 크기»가 아니다</b> — Android 는 gradle 중간 산출물까지 세어
+            //   47 MB 짜리 APK 를 «1041 MB» 로 찍는다. 사람은 그 숫자를 보고 이관이 잘못됐다고 읽는다.
+            //   실제로 나가는 파일을 재서 찍는다.
+            var built = new System.IO.FileInfo(outPath);
+            long bytes = built.Exists ? built.Length : (long)summary.totalSize;
+
             Log.Success($"[GameBuild] {profile.ProductName} 완료 — {outPath} "
-                        + $"({summary.totalSize / (1024 * 1024)} MB · {summary.totalTime.TotalSeconds:F0}초)");
+                        + $"({bytes / (1024 * 1024)} MB · {summary.totalTime.TotalSeconds:F0}초)");
         }
 
         // ────────────────────────────── 확인

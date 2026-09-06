@@ -153,20 +153,51 @@ namespace JinHyung.EditorTools
                 return;
             }
 
+            // ⚠ 원본은 «완전» 고정폭이 아니다 [실측] — 한글이 좁고 숫자·기호가 넓다.
+            //   문구마다 (글리프 폭 ÷ 글자수 ÷ fontSize) 를 재니 한글 0.92~0.95 · 그 밖 1.04~1.11 이었다.
+            //   전부 1em 으로 두면 한글 문구는 넓어지고 숫자열은 좁아진다.
             int changed = 0;
 
             foreach (Glyph glyph in fontAsset.glyphTable)
+                changed++;
+
+            foreach (TMP_Character ch in fontAsset.characterTable)
             {
+                Glyph glyph = ch.glyph;
+
+                if (glyph == null)
+                    continue;
+
+                float advance = em * AdvanceEmOf((char)ch.unicode);
                 GlyphMetrics m = glyph.metrics;
 
-                // 글리프를 1em 칸 «가운데»에 놓는다 — 폭만 늘리면 글자가 왼쪽으로 쏠린다
-                float bearingX = m.horizontalBearingX + (em - m.horizontalAdvance) * 0.5f;
+                // 글리프를 그 칸 «가운데»에 놓는다 — 폭만 늘리면 글자가 왼쪽으로 쏠린다
+                float bearingX = m.horizontalBearingX + (advance - m.horizontalAdvance) * 0.5f;
 
-                glyph.metrics = new GlyphMetrics(m.width, m.height, bearingX, m.horizontalBearingY, em);
-                changed++;
+                glyph.metrics = new GlyphMetrics(m.width, m.height, bearingX, m.horizontalBearingY, advance);
             }
 
-            Log.Success($"글리프 {changed}자를 고정폭(1em = {em})으로 맞췄다 — 원본 서체가 고정폭이다 [실측]");
+            Log.Success($"글리프 {changed}자의 advance 를 원본 비율로 맞췄다 — 한글 {HangulAdvanceEm}em · 그 밖 {LatinAdvanceEm}em [실측]");
+        }
+
+        /// <summary>한글 자폭 [실측 — 문구별 0.92~0.95em].</summary>
+        private const float HangulAdvanceEm = 0.93f;
+
+        /// <summary>숫자·라틴·기호 자폭 [실측 — 1.04~1.11em].</summary>
+        private const float LatinAdvanceEm = 1.07f;
+
+        /// <summary>
+        /// 그 글자가 차지할 폭 (em 배수).
+        /// <para>⚠ 「고정폭이다/아니다」의 이분법이 아니다 — <b>글자 갈래마다 다른 고정폭</b>이 원본이다.</para>
+        /// </summary>
+        private static float AdvanceEmOf(char c)
+        {
+            // 한글 음절 · 자모 · 호환 자모
+            bool hangul = (c >= '가' && c <= '힣')
+                          || (c >= 'ᄀ' && c <= 'ᇿ')
+                          || (c >= '㄰' && c <= '㆏');
+
+            return hangul ? HangulAdvanceEm : LatinAdvanceEm;
         }
 
         /// <summary>

@@ -425,7 +425,7 @@
     "Cols": 8,
     "Rows": 1,
     "GridMeasured": true,
-    "Fps": 20.0,
+    "Fps": 18.0,
     "FpsMeasured": true,
     "Loop": true,
     "DisplayScaleX": 3,
@@ -438,7 +438,7 @@
     "Alpha": 1,
     "NineSlice": false,
     "Category": "Game",
-    "FrameTicks60": 3,
+    "FrameTicks60": 0,
     "UsedCols": 8
   },
   {
@@ -465,7 +465,7 @@
     "NineSlice": false,
     "Category": "Game",
     "FrameTicks60": 2,
-    "UsedCols": 10
+    "UsedCols": 4
   },
   {
     "Id": 19,
@@ -859,7 +859,7 @@
   },
   {
     "Id": 34,
-    "Code": "family",
+    "Code": "family_npc_1",
     "SheetWidth": 144,
     "SheetHeight": 72,
     "FrameWidth": 72,
@@ -1168,5 +1168,57 @@
     "Category": "Game",
     "FrameTicks60": 0,
     "UsedCols": 8
+  },
+  {
+    "Id": 46,
+    "Code": "family_npc_2",
+    "SheetWidth": 144,
+    "SheetHeight": 72,
+    "FrameWidth": 72,
+    "FrameHeight": 72,
+    "Cols": 2,
+    "Rows": 1,
+    "GridMeasured": true,
+    "Fps": 2.7,
+    "FpsMeasured": true,
+    "Loop": true,
+    "DisplayScaleX": 1.0,
+    "DisplayScaleY": 1.0,
+    "FlipsHorizontally": false,
+    "PivotX": 0.5,
+    "PivotY": 0.0,
+    "PivotMeasured": true,
+    "TintHex": "ffffff",
+    "Alpha": 1,
+    "NineSlice": false,
+    "Category": "Game",
+    "FrameTicks60": 0,
+    "UsedCols": 2
+  },
+  {
+    "Id": 47,
+    "Code": "family_npc_3",
+    "SheetWidth": 144,
+    "SheetHeight": 72,
+    "FrameWidth": 72,
+    "FrameHeight": 72,
+    "Cols": 2,
+    "Rows": 1,
+    "GridMeasured": true,
+    "Fps": 2.7,
+    "FpsMeasured": true,
+    "Loop": true,
+    "DisplayScaleX": 1.0,
+    "DisplayScaleY": 1.0,
+    "FlipsHorizontally": false,
+    "PivotX": 0.5,
+    "PivotY": 0.0,
+    "PivotMeasured": true,
+    "TintHex": "ffffff",
+    "Alpha": 1,
+    "NineSlice": false,
+    "Category": "Game",
+    "FrameTicks60": 0,
+    "UsedCols": 2
   }
 ]

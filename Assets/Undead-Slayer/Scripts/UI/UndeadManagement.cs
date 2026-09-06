@@ -106,6 +106,19 @@ namespace JinHyung.UndeadSlayer
             hud.SetGauge(sim.Gauge, sim.GaugeGoal);
             hud.SetElapsed(sim.ElapsedSeconds);
             hud.SetLevel(sim.Level);
+
+            // ★ 최고 기록은 «항상» 보인다 [소스 guiBestScore] — 대기 화면 전용이 아니다.
+            //   시간은 «지금 시간과 최고 중 큰 값»이라 신기록을 세우는 동안 실시간으로 올라간다.
+            UndeadTextDataContainer texts = GameRoot.Instance.UndeadTextDataContainer;
+            hud.SetBestRecord(texts.Ko("bestLevel"), UndeadRecord.BestLevel,
+                              texts.Ko("bestTime"), UndeadRecord.DisplayTimeSeconds(sim.ElapsedSeconds));
+
+            // [소스 clock.update] 1초마다 넘겼으면 저장한다 — 판이 끝날 때가 아니다
+            if (sim.ElapsedSeconds - _lastRecordSaveSeconds >= 1.0)
+            {
+                _lastRecordSaveSeconds = sim.ElapsedSeconds;
+                UndeadRecord.ReportTime(sim.ElapsedSeconds);
+            }
             // 포인터 [소스 bd.update] — 퀘스트가 켜져 있고 · 레벨업 카드가 안 떠 있고 · 대상이 화면 «밖»일 때만
             UndeadLevelUpWindow levelUp = GetWindow(UndeadLevelUpWindow.Key);
             bool pointerAllowed = sim.QuestActive && (levelUp == null || levelUp.IsOpen() == false);
@@ -149,8 +162,13 @@ namespace JinHyung.UndeadSlayer
             }
         }
 
+        /// <summary>최고 시간을 마지막으로 저장한 시각 — [소스] 1초 간격이다.</summary>
+        private double _lastRecordSaveSeconds;
+
         private void HandleLevelUp(int level)
         {
+            // [소스 incrementLevel] bestLevel = max(level, bestLevel)
+            UndeadRecord.ReportLevel(level);
             _root.GameFlow.ChangeScreen(EUndeadScreenType.LevelUp);
         }
 

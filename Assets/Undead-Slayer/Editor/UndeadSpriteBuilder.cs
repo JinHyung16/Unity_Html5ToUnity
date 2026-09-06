@@ -115,6 +115,21 @@ namespace JinHyung.EditorTools
 
         private static Texture2D Bake(UndeadArtData a)
         {
+            // ★★ 실측 규격이 있으면 «그것»으로 굽는다 — 실루엣과 팔레트를 목표로 삼는다.
+            //   손으로 찍은 도트 맵은 규격이 없는 것(타일셋·체력바처럼 원본 프레임이 없는 것)만 남는다.
+            UndeadArtSpecBaker.ArtSpec spec = UndeadArtSpecBaker.Find(a.Code);
+
+            if (spec != null)
+            {
+                Texture2D fromSpec = UndeadArtSpecBaker.Bake(a, spec, New, Put);
+
+                if (fromSpec != null)
+                {
+                    fromSpec.Apply();
+                    return fromSpec;
+                }
+            }
+
             switch (a.Code)
             {
                 // 인물·적·수집물 (.Characters)

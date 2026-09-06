@@ -68,6 +68,13 @@ namespace JinHyung.UndeadSlayer
 
         private Transform _questRoot;
         private SpriteRenderer _questWarrior;
+
+        /// <summary>전사는 <b>모드마다 시트가 다르다</b> [소스 <c>loadFrames</c>] — lay 4컷 · idle 4컷 · run 8컷.</summary>
+        private UndeadSpriteSet _warriorLaySet;
+
+        private UndeadSpriteSet _warriorIdleSet;
+
+        private UndeadSpriteSet _warriorRunSet;
         private SpriteRenderer _questBubble;
         private SpriteRenderer _questMage;
         private SpriteRenderer[] _questFragments;
@@ -89,7 +96,22 @@ namespace JinHyung.UndeadSlayer
 
         // ── 퀘스트 3·4 의 개체들. 하나씩뿐이라 풀이 아니다.
         private SpriteRenderer _boss;
-        private SpriteRenderer _family;
+        /// <summary>
+        /// 가족은 원본이 <b>«세 명»</b>이다 [소스 <c>createMembers</c>] —
+        /// <c>family_npc_1/2/3</c> 이 각기 다른 그림으로 <c>(−30,0)·(30,0)·(0,26)</c> 에 선다.
+        /// <para>⚠ 한 장을 한 자리에 두면 «가족»이 아니라 «사람 하나»가 된다.</para>
+        /// </summary>
+        private SpriteRenderer[] _family;
+
+        private UndeadSpriteSet[] _familySets;
+
+        /// <summary>[소스] 그룹 기준 상대 자리. 순서는 <c>family_npc_1 → 2 → 3</c> 이다.</summary>
+        private static readonly UndeadVec2[] FamilyOffsets =
+        {
+            new UndeadVec2(-30.0, 0.0),
+            new UndeadVec2(30.0, 0.0),
+            new UndeadVec2(0.0, 26.0),
+        };
         private SpriteRenderer _farmer;
         // ── 월드 오브젝트 — 지형이 놓는 나무·모닥불, 나무가 뿜는 유성 (풀)
         private UndeadSpriteSet _treeSet;
@@ -211,7 +233,7 @@ namespace JinHyung.UndeadSlayer
         /// 퀘스트 3·4 의 개체 — <b>보스 · 불덩이 · 가족 · 농부 · 양 · 모닥불</b> [소스].
         /// <para>보스와 NPC 는 판마다 하나씩이라 풀을 만들지 않는다. 불덩이만 풀이다.</para>
         /// </summary>
-        public void BindBossQuest(UndeadSpriteSet boss, UndeadSpriteSet fireball, UndeadSpriteSet family,
+        public void BindBossQuest(UndeadSpriteSet boss, UndeadSpriteSet fireball, UndeadSpriteSet[] family,
                                   UndeadSpriteSet farmer, UndeadSpriteSet sheep)
         {
             Transform root = NewRoot("BossQuest");
@@ -223,7 +245,13 @@ namespace JinHyung.UndeadSlayer
                 _boss = NewRenderer(root, boss);
 
             if (family != null)
-                _family = NewRenderer(root, family);
+            {
+                _familySets = family;
+                _family = new SpriteRenderer[family.Length];
+
+                for (int i = 0; i < family.Length; i++)
+                    _family[i] = family[i] == null ? null : NewRenderer(root, family[i]);
+            }
 
             if (farmer != null)
                 _farmer = NewRenderer(root, farmer);
@@ -276,7 +304,8 @@ namespace JinHyung.UndeadSlayer
         /// «한 번 놓고 끝»이 아니다. 여기서는 <b>매 프레임 시뮬 값을 옮겨 담기만</b> 한다.
         /// </para>
         /// </summary>
-        public void BindQuestTarget(UndeadSpriteSet warrior, UndeadSpriteSet bubble,
+        public void BindQuestTarget(UndeadSpriteSet warriorLay, UndeadSpriteSet warriorIdle,
+                                    UndeadSpriteSet warriorRun, UndeadSpriteSet bubble,
                                     UndeadSpriteSet mage, UndeadSpriteSet fragment,
                                     string helpText, TMP_FontAsset font)
         {
@@ -285,8 +314,13 @@ namespace JinHyung.UndeadSlayer
 
             _questRoot = NewRoot("Quest");
 
-            if (warrior != null)
-                _questWarrior = NewRenderer(_questRoot, warrior);
+            _warriorLaySet = warriorLay;
+            _warriorIdleSet = warriorIdle;
+            _warriorRunSet = warriorRun;
+
+            // ⚠ 모드마다 시트를 갈아끼우므로 «시간으로 도는 목록»에 넣지 않는다 — 아래에서 직접 진행시킨다
+            if (warriorLay != null)
+                _questWarrior = NewRenderer(_questRoot, warriorLay, timed: false);
 
             if (bubble != null)
                 _questBubble = NewRenderer(_questRoot, bubble);
@@ -331,6 +365,10 @@ namespace JinHyung.UndeadSlayer
                 Place(_questWarrior.transform, _sim.WarriorPosition, _questWarrior);
                 _questWarrior.sortingOrder = SortOrder(_sim.WarriorPosition.Y);
                 _questWarrior.enabled = _sim.QuestActive;   // 전사는 퀘스트가 «켜질 때» 놓인다 [소스 spawnWarrior]
+
+                // ★ 모드마다 «다른 시트»다 [소스 setMode] — 예전에는 누운 그림 하나로 따라다녔다
+                if (_questWarrior.enabled)
+                    ApplySet(_questWarrior, WarriorSet());
             }
 
             bool showHelp = _sim.QuestActive && _sim.QuestRescued == false;
@@ -726,12 +764,22 @@ namespace JinHyung.UndeadSlayer
             // 가족은 «보스 퀘스트 차례»에 나타나고, 끝나면 사라진다 [소스 — startFadeOut]
             if (_family != null)
             {
-                _family.enabled = _sim.CurrentQuest == EUndeadQuest.FirstBoss;
+                bool showFamily = _sim.CurrentQuest == EUndeadQuest.FirstBoss;
 
-                if (_family.enabled)
+                for (int i = 0; i < _family.Length; i++)
                 {
-                    Place(_family.transform, _sim.FamilyPosition, _family);
-                    _family.sortingOrder = SortOrder(_sim.FamilyPosition.Y);
+                    if (_family[i] == null)
+                        continue;
+
+                    _family[i].enabled = showFamily;
+
+                    if (showFamily == false)
+                        continue;
+
+                    // [소스 createMembers] 그룹 기준 상대 자리 — 셋이 서로 다른 자리에 선다
+                    UndeadVec2 at = _sim.FamilyPosition + FamilyOffsets[i % FamilyOffsets.Length];
+                    Place(_family[i].transform, at, _family[i]);
+                    _family[i].sortingOrder = SortOrder(at.Y);
                 }
             }
 
@@ -970,7 +1018,33 @@ namespace JinHyung.UndeadSlayer
             renderer.sprite = set.Get(0, Time.timeSinceLevelLoad * set.Data.Fps);
         }
 
-        private SpriteRenderer NewRenderer(Transform parent, UndeadSpriteSet set)
+        /// <summary>
+        /// 렌더러의 <b>세트를 갈아끼운다</b> — 시트마다 컷 수·fps·표시 배율이 다르다.
+        /// <para>⚠ 배율까지 같이 바꾼다. 안 바꾸면 이전 시트의 배율로 새 그림이 나온다.</para>
+        /// </summary>
+        private static void ApplySet(SpriteRenderer renderer, UndeadSpriteSet set)
+        {
+            if (renderer == null || set == null)
+                return;
+
+            double fps = set.Data.Fps;
+            renderer.sprite = set.Get(0, fps > 0.0 ? Time.timeSinceLevelLoad * fps : 0.0);
+            renderer.transform.localScale =
+                new Vector3((float)set.Data.DisplayScaleX, (float)set.Data.DisplayScaleY, 1f);
+        }
+
+        /// <summary>전사의 지금 시트 [소스 <c>setMode</c>].</summary>
+        private UndeadSpriteSet WarriorSet()
+        {
+            switch (_sim.WarriorMode)
+            {
+                case EUndeadWarriorMode.Run: return _warriorRunSet ?? _warriorIdleSet ?? _warriorLaySet;
+                case EUndeadWarriorMode.Idle: return _warriorIdleSet ?? _warriorLaySet;
+                default: return _warriorLaySet;
+            }
+        }
+
+        private SpriteRenderer NewRenderer(Transform parent, UndeadSpriteSet set, bool timed = true)
         {
             var go = new GameObject(set.Data.Code);
             go.transform.SetParent(parent, false);
@@ -987,7 +1061,7 @@ namespace JinHyung.UndeadSlayer
             // 컷이 여럿인데 시뮬이 프레임을 안 들고 있는 개체는 «시간»으로 돈다.
             // ⚠ 시뮬 프레임이 있는 개체(적·투사체·보석)는 뒤에서 덮어쓰므로 여기 있어도 무해하다 —
             //   AnimateTimed 가 Render 의 «첫머리»에서 돌기 때문이다.
-            if (set.Data.Fps > 0.0 && set.Data.UsedCols > 1)
+            if (timed && set.Data.Fps > 0.0 && set.Data.UsedCols > 1)
             {
                 _timedRenderers.Add(renderer);
                 _timedSets.Add(set);

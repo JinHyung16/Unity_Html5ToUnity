@@ -105,6 +105,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - game_art
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 15bd566963a289f409c1b32f3bce092e
+    m_Address: family_npc_2
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 15ec38a97845119438ce552141f1fdb2
     m_Address: pac_7
     m_ReadOnly: 0
@@ -327,6 +333,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - game_art
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 552b6e934407c9d4dbf2e1ec9087ee29
+    m_Address: family_npc_1
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 56284af3e81f0e04dbfb16c6611579bd
     m_Address: ui_dot_empty
     m_ReadOnly: 0
@@ -369,6 +381,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - game_art
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 63f5720f3dff77a448ad6ae5a9787ccf
+    m_Address: family_npc_3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 647f5d0ea28c26649aa6d588ac910d21
     m_Address: pac_6
     m_ReadOnly: 0
@@ -395,12 +413,6 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6fbd30e080e8e4f448e92dedb281f0be
     m_Address: mage
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - game_art
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 78a0674f66c415540a86f01a139b271a
-    m_Address: family
     m_ReadOnly: 0
     m_SerializedLabels:
     - game_art

@@ -26,8 +26,13 @@ namespace JinHyung.Data
         /// 두 장은 <b>원본에 있는데 우리에게 아예 없었다</b> — 구조된 전사가 «누운 그림»으로 따라다녔다
         /// [소스 <c>loadFrames</c> 직독].
         /// </para>
+        ///
+        /// <para>
+        /// 45 → <b>47</b> — 가족은 원본이 <b>«세 명»</b>이고 <b>각기 다른 시트</b>다
+        /// [소스 <c>createMembers</c> — <c>family_npc_1/2/3</c>]. 한 장으로 두면 세 명이 똑같이 보인다.
+        /// </para>
         /// </summary>
-        public const int MeasuredRowCount = 45;
+        public const int MeasuredRowCount = 47;
 
         /// <summary>월드 아트 = <c>Game</c> · UI 아트 = <c>Ui</c>. 다른 값이 들어오면 오류다.</summary>
         public const string CategoryGame = "Game";

@@ -176,6 +176,18 @@ namespace JinHyung.EditorTools
             SetRef(window, "_questArrow", arrow.GetComponent<RectTransform>());
             SetRef(window, "_questDistanceText", questText);
 
+            // ── 최고 기록 [소스 guiBestScore] — 여백 8 · 좌하단/우하단 · 글자 14 · 검정 + 흰 테두리 3 · 굵게
+            TMP_Text bestLevel = Text(root.transform, "BestLevel", "최고 레벨: 1", BestFont, Color.black);
+            CornerAt(bestLevel.rectTransform, left: true);
+            Outline(bestLevel, Color.white, BestStrokeWidth, BestFont);
+
+            TMP_Text bestTime = Text(root.transform, "BestTime", "최고 시간: 00:00", BestFont, Color.black);
+            CornerAt(bestTime.rectTransform, left: false);
+            Outline(bestTime, Color.white, BestStrokeWidth, BestFont);
+
+            SetRef(window, "_bestLevelText", bestLevel);
+            SetRef(window, "_bestTimeText", bestTime);
+
             SavePrefab(root, $"{UiPrefabRoot}/{nameof(UndeadBattleHudWindow)}.prefab");
         }
 
@@ -545,6 +557,43 @@ namespace JinHyung.EditorTools
             button.targetGraphic = image;
             button.transition = Selectable.Transition.None;
             return button;
+        }
+
+        /// <summary>최고 기록 글자 [소스 <c>fontSize 14</c> · <c>stroke width 3</c> · <c>padding 8</c>].</summary>
+        private const float BestFont = 14f;
+
+        private const float BestStrokeWidth = 3f;
+
+        private const float BestPadding = 8f;
+
+        /// <summary>
+        /// 화면 <b>아래 모서리</b>에 붙인다 — 원본 앵커가 <c>(0,1)</c>/<c>(1,1)</c>(좌·우 하단)이다.
+        /// <para>⚠ 가운데 정렬로 두면 문구 길이가 바뀔 때 «자리»가 흔들린다 — 모서리 기준이라 안 흔들린다.</para>
+        /// </summary>
+        private static void CornerAt(RectTransform rect, bool left)
+        {
+            float ax = left ? 0f : 1f;
+            rect.anchorMin = new Vector2(ax, 0f);
+            rect.anchorMax = new Vector2(ax, 0f);
+            rect.pivot = new Vector2(ax, 0f);
+            rect.sizeDelta = new Vector2(400f * Scale, BestFont * 1.6f * Scale);
+            rect.anchoredPosition = new Vector2((left ? BestPadding : -BestPadding) * Scale, BestPadding * Scale);
+
+            var text = rect.GetComponent<TMP_Text>();
+
+            if (text != null)
+                text.alignment = left ? TextAlignmentOptions.BottomLeft : TextAlignmentOptions.BottomRight;
+        }
+
+        /// <summary>
+        /// 글자 테두리 — 원본 <c>stroke.width</c> 는 «픽셀»이고 TMP 는 «글자 크기 대비 0~1» 이다.
+        /// <para>⚠ 그대로 넣으면 테두리가 글자를 덮는다 — 글자 크기로 나눈다.</para>
+        /// </summary>
+        private static void Outline(TMP_Text text, Color color, float strokePixels, float originFont)
+        {
+            text.fontStyle |= FontStyles.Bold;
+            text.outlineColor = color;
+            text.outlineWidth = Mathf.Clamp01(strokePixels / Mathf.Max(1f, originFont));
         }
 
         private static GameObject SpriteImage(Transform parent, string name, string art)

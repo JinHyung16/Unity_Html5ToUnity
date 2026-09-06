@@ -172,11 +172,17 @@ namespace JinHyung.UndeadSlayer
 
             Task<UndeadSpriteSet> projectileTask = UndeadSpriteSet.LoadAsync(art.Get("projectile1"));
             Task<UndeadSpriteSet> gemTask = UndeadSpriteSet.LoadAsync(art.Get("gem"));
-            Task<UndeadSpriteSet> warriorTask = UndeadSpriteSet.LoadAsync(art.Get("warrior_lay"));   // ★ 과제 목표 [실측 · 회차 8]
+            // ★ 전사는 «모드마다 시트»다 [소스 loadFrames] — 누움 · 서기 · 달리기
+            Task<UndeadSpriteSet> warriorTask = UndeadSpriteSet.LoadAsync(art.Get("warrior_lay"));
+            Task<UndeadSpriteSet> warriorIdleTask = UndeadSpriteSet.LoadAsync(art.Get("warrior_idle"));
+            Task<UndeadSpriteSet> warriorRunTask = UndeadSpriteSet.LoadAsync(art.Get("warrior_run"));
             Task<UndeadSpriteSet> bubbleTask = UndeadSpriteSet.LoadAsync(art.Get("bubble"));
             Task<UndeadSpriteSet> bossTask = UndeadSpriteSet.LoadAsync(art.Get("darksoul"));
             Task<UndeadSpriteSet> fireballTask = UndeadSpriteSet.LoadAsync(art.Get("fireball"));
-            Task<UndeadSpriteSet> familyTask = UndeadSpriteSet.LoadAsync(art.Get("family"));
+            // ★ 가족은 «세 명»이고 각기 다른 시트다 [소스 createMembers]
+            Task<UndeadSpriteSet> family1Task = UndeadSpriteSet.LoadAsync(art.Get("family_npc_1"));
+            Task<UndeadSpriteSet> family2Task = UndeadSpriteSet.LoadAsync(art.Get("family_npc_2"));
+            Task<UndeadSpriteSet> family3Task = UndeadSpriteSet.LoadAsync(art.Get("family_npc_3"));
             Task<UndeadSpriteSet> farmerTask = UndeadSpriteSet.LoadAsync(art.Get("farmer"));
             Task<UndeadSpriteSet> sheepTask = UndeadSpriteSet.LoadAsync(art.Get("sheep"));
             Task<UndeadSpriteSet> treeTask = UndeadSpriteSet.LoadAsync(art.Get("graveyard_evil_tree"));
@@ -224,7 +230,9 @@ namespace JinHyung.UndeadSlayer
                 _worldView.Bind(root.Game.Simulation, hero, enemySets, projectile, gem);
 
                 // ⚠ 말풍선 문구는 «문구 표»에서 온다 — 화면에 보이는 한국어를 코드에 박지 않는다.
-                _worldView.BindBossQuest(await bossTask, await fireballTask, await familyTask, await farmerTask, await sheepTask);
+                _worldView.BindBossQuest(await bossTask, await fireballTask,
+                                         new[] { await family1Task, await family2Task, await family3Task },
+                                         await farmerTask, await sheepTask);
 
                 // 지형이 놓는 나무·모닥불과 나무의 유성 [소스 — 청크 노이즈]
                 _worldView.BindWorldObjects(await treeTask, await treeOnTask, await treeOffTask, await meteorTask,
@@ -233,7 +241,8 @@ namespace JinHyung.UndeadSlayer
                 _worldView.BindLightning(await lightningTask);
                 _worldView.BindLifeBar(await hpTask, GameRoot.Instance.UndeadConfigDataContainer.Config.HeroMaxHp);
 
-                _worldView.BindQuestTarget(warrior, bubble, await mageTask, await fragmentTask,
+                _worldView.BindQuestTarget(warrior, await warriorIdleTask, await warriorRunTask,
+                                           bubble, await mageTask, await fragmentTask,
                                            GameRoot.Instance.UndeadTextDataContainer.Ko("helpMe"),
                                            UnityEngine.Resources.Load<TMPro.TMP_FontAsset>("Font/UndeadSlayer SDF"));
             }

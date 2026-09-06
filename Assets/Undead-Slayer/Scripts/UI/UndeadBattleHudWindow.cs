@@ -45,6 +45,14 @@ namespace JinHyung.UndeadSlayer
         [SerializeField] private TMP_Text _questDistanceText;
 
         /// <summary>
+        /// 최고 기록 [소스 <c>guiBestScore</c>] — <b>대기 화면 전용이 아니라 «항상» 떠 있다</b>.
+        /// <para>좌하단이 최고 레벨 · 우하단이 최고 시간. 여백 8 · 글자 14 · 검정 + 흰 테두리 3 · 굵게.</para>
+        /// </summary>
+        [SerializeField] private TMP_Text _bestLevelText;
+
+        [SerializeField] private TMP_Text _bestTimeText;
+
+        /// <summary>
         /// 게이지. <b>목표를 0 으로 주지 않는다</b> — 관측 범위를 넘으면 데이터가 없다는 뜻이라
         /// 그 자리는 배선이 판정한다.
         /// </summary>
@@ -65,6 +73,22 @@ namespace JinHyung.UndeadSlayer
 
             int total = Mathf.Max(0, Mathf.FloorToInt((float)seconds));
             _timerText.text = $"{total / 60:00}:{total % 60:00}";
+        }
+
+        /// <summary>
+        /// 최고 기록을 쓴다 [소스 <c>updateBestLevelDisplay</c> · <c>updateBestTimeDisplay</c>].
+        /// <para>형식은 <c>「문구: 값」</c> 이고 시간은 <c>MM:SS</c> 다.</para>
+        /// </summary>
+        public void SetBestRecord(string levelLabel, int bestLevel, string timeLabel, double displaySeconds)
+        {
+            if (_bestLevelText != null)
+                _bestLevelText.text = $"{levelLabel}: {bestLevel}";
+
+            if (_bestTimeText == null)
+                return;
+
+            int total = (int)displaySeconds;
+            _bestTimeText.text = $"{timeLabel}: {total / 60:00}:{total % 60:00}";
         }
 
         public void SetLevel(int level)

@@ -106,6 +106,12 @@ namespace JinHyung.UndeadSlayer
 
         public UndeadVec2 WarriorPosition { get; private set; }
 
+        /// <summary>
+        /// 전사의 표시 상태 [소스 <c>setMode</c>].
+        /// <para>⚠ <b>구조 «전»은 언제나 <see cref="EUndeadWarriorMode.Lay"/></b> — 원본도 그때는 따라오지 않는다.</para>
+        /// </summary>
+        public EUndeadWarriorMode WarriorMode { get; private set; }
+
         public UndeadVec2 MagePosition { get; private set; }
 
         public UndeadVec2 Fragment0Position { get; private set; }
@@ -233,6 +239,7 @@ namespace JinHyung.UndeadSlayer
 
             RescueSeconds = 0.0;
             QuestRescued = false;
+            WarriorMode = EUndeadWarriorMode.Lay;
             CurrentQuest = EUndeadQuest.None;
             QuestIntroRemaining = _config.QuestIntroDelaySeconds;
             MageMet = false;
@@ -319,10 +326,18 @@ namespace JinHyung.UndeadSlayer
             }
         }
 
-        /// <summary>구조된 전사는 히어로를 따라다닌다 [소스 — <c>followOffsetX −110</c>].</summary>
+        /// <summary>
+        /// 구조된 전사는 히어로를 따라다닌다 [소스 — <c>followOffsetX −110</c>].
+        ///
+        /// <para>
+        /// ★ 여기서 <b>표시 상태</b>도 정한다 — 우리 추종은 «즉시»라 전사와 히어로의 거리가 늘 같다.
+        /// 그래서 「전사가 움직이나」는 <b>「히어로가 움직이나」와 같은 말</b>이다 [소스는 거리로 가른다].
+        /// </para>
+        /// </summary>
         private void FollowWarrior()
         {
             WarriorPosition = new UndeadVec2(HeroPosition.X + _config.WarriorFollowOffsetX, HeroPosition.Y);
+            WarriorMode = HeroMoving ? EUndeadWarriorMode.Run : EUndeadWarriorMode.Idle;
         }
 
         // ══════════════════════════════ 퀘스트 1 — 전사
