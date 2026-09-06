@@ -15,6 +15,48 @@ MonoBehaviour:
   m_GroupName: GameData
   m_GUID: 42d88665a7c8e1b4880f07b591617a8b
   m_SerializeEntries:
+  - m_GUID: 19aedb78670c2564e87e538fcc9b93ab
+    m_Address: UndeadTextTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_data
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1ba532a18c1580f4fb7a1970e8ce0a73
+    m_Address: UndeadPopupTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_data
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2b46269eff59c1f4783b666d12ca29a4
+    m_Address: UndeadArtTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_data
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2ca995c22451359459c41e527a401f35
+    m_Address: BlumgiBlockTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_data
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 40e9e81050d0f7a44878889fada4f6a1
+    m_Address: BlumgiConfigTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_data
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 49e4d2428f303894195f2b3a1ff912fb
+    m_Address: UndeadLevelTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_data
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 54a459589dcd9a345a8810b4635599c2
+    m_Address: BlumgiLevelTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_data
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 562d88a877b776c4a98b0337de1d490b
     m_Address: CandyTable
     m_ReadOnly: 0
@@ -39,8 +81,26 @@ MonoBehaviour:
     m_SerializedLabels:
     - game_data
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a5fbb20b25837ef47b8451f6f582a437
+    m_Address: UndeadConfigTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_data
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: be1fdeb1368b0554eb880bd26a807403
     m_Address: GameConfigTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_data
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: deae00f0a922fd3419518893cde439ca
+    m_Address: UndeadUpgradeTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_data
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e2fd9cbb2aafec9468f080c2d7235c4a
+    m_Address: UndeadEnemyTable
     m_ReadOnly: 0
     m_SerializedLabels:
     - game_data

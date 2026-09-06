@@ -15,8 +15,92 @@ MonoBehaviour:
   m_GroupName: GameArt
   m_GUID: b6aca3ff9b531844bac40cfa0e803484
   m_SerializeEntries:
+  - m_GUID: 00a4584979229784eaef1e0fd19aec8c
+    m_Address: arcane_fragment
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 010d13637c6437341893dcbc2f158920
+    m_Address: farmer
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 02dffdd35333851449d4442a9a507ea1
+    m_Address: warrior_idle
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0348e7813a09caa419d8001fa2e0785c
+    m_Address: solid
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0471e08715a2b0242951d4a14e70d15b
+    m_Address: ui_btn_sound_on
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 06137e82423b62a479c16b8fd350013a
+    m_Address: gem
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0678a4422f70fff42a30b58882c3d68c
+    m_Address: fireball
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 077f93c480a40564d98a0b1a7b091420
+    m_Address: task_bg
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 078e9523d306cfb4f80d628c53f2fcb5
+    m_Address: fx_teleport_0
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 087e28c3870c2734f8f3dad1867f24dd
+    m_Address: icon_bullet_damage
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0f54d14550e00544ba0977892999e8a0
+    m_Address: graveyard_evil_tree_activated
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1046c8a5cbf7a4d428e5ad7cc2a7e25a
+    m_Address: ui_card
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1140b0004ff94df4f9bfdb9d09fba6dd
+    m_Address: sheep
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 119e70ba3e84107468a25244a04eb746
     m_Address: bg_tile
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 11d43bbe1ffb4cd4ebe8c6184e2950f8
+    m_Address: icon_hero_movespeed
     m_ReadOnly: 0
     m_SerializedLabels:
     - game_art
@@ -27,8 +111,80 @@ MonoBehaviour:
     m_SerializedLabels:
     - game_art
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 167fdc7678aeeef4bb7705df51c5865c
+    m_Address: block_skin_0
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1701df07f2ce6bf4d82213311298b3aa
+    m_Address: hoop_net
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1a5cd13a136c6c441bda3e0bca25e8c8
+    m_Address: lightning
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1bdd2ef972f405c4d9351a6a4ceb3c8d
+    m_Address: graveyard_evil_tree
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1cf2bf6922552d74390793d720779b28
+    m_Address: hp_segment
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1e432fdc2fea2ac4897a164fc8e9ed21
     m_Address: ui_round_16
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 20e61308baf9a134685822f9ac831330
+    m_Address: blob_body
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 239906dd3646a1841a8d36886997727b
+    m_Address: ui_btn_map
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 241c0b712b7df184490349bbb59336dc
+    m_Address: icon_lightning_damage
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2a5abe6b498ceaa4187caa2f874df0de
+    m_Address: btn_shadowed
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2ace89a3df880514dac70f4e668231e8
+    m_Address: confetti_rect
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2ad51c82925ebe849b8d9ca7b3abe783
+    m_Address: ui_tut_art
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2b55b8b27233f754cbb2936f3faee9fa
+    m_Address: ui_btn_retry
     m_ReadOnly: 0
     m_SerializedLabels:
     - game_art
@@ -39,8 +195,62 @@ MonoBehaviour:
     m_SerializedLabels:
     - game_art
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 30124caa6333a904195c7097075a153b
+    m_Address: BlumgiBlock
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 32dfda0c9d35100469807e690a5680a0
+    m_Address: icon_hero_collectradius
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 35712f4b16fc4c248b882a6f0b754b51
+    m_Address: sparkle
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 35ea00ebd2016524bb9675865ab430e1
+    m_Address: graveyard_evil_tree_inactive
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3640c2285b834d74da844d8d61773663
+    m_Address: ui_btn_home
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 368bbc7c01286a340aedc66f758c45f4
+    m_Address: BlumgiPalm
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 37363314107da0045ae4a24578571efb
+    m_Address: hero
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 39cdac174fc626c458d23bca15d786df
     m_Address: tile_pellet
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3f457240c1597ae488579ec6a217a2e7
+    m_Address: biome_graveyard_tiles
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 408028e83f5d39b49b96843870af425f
+    m_Address: ui_tut_art_b
     m_ReadOnly: 0
     m_SerializedLabels:
     - game_art
@@ -51,14 +261,170 @@ MonoBehaviour:
     m_SerializedLabels:
     - game_art
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4264492d921fde942b84b695c3168586
+    m_Address: goal_arrow
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 480d1cdea4d8d8e4da8183bdce80db64
+    m_Address: icon_lightning_speed
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 48c54762803394541ba3ea04279c0504
+    m_Address: palm_leaf
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4904a051293506c44b9872e5bc05e4bf
+    m_Address: BlumgiBall
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 49f441b93713a3f44898b640ebcec2de
+    m_Address: ball_ghost
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4c51b7b22ecd5fc468452d5fb913c77a
+    m_Address: meteor
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4d2caf521ef24d44ca96fe7bccda19c1
+    m_Address: icon_lightning
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4e01b98fdedf93f45a4bdd18fb899da1
+    m_Address: fx_teleport_4
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 50ce21913b33a6643aa46c73b9ad8132
+    m_Address: fx_teleport_2
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 52d43b02ea765cc4f9ec6affa48d3738
+    m_Address: enemy1
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 53625c9a956e5e0418d61038420057aa
+    m_Address: grid_tile
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 56284af3e81f0e04dbfb16c6611579bd
+    m_Address: ui_dot_empty
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 57000f8d6ce34f14fa39a57d36c1dea1
+    m_Address: quest_pointer
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 5809b10d5b2eaff45872036c27f8073e
     m_Address: pac_4
     m_ReadOnly: 0
     m_SerializedLabels:
     - game_art
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5841a579eb97a8547ace04855353c27c
+    m_Address: ui_mouse_down
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5d69647445e82b142834a593dbcb766b
+    m_Address: blob_eyes_angry
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5f52d0dcb6cbaca4186dc49cee58014e
+    m_Address: fire_inactive
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6109a96e2aa58484691ecf6396e00f92
+    m_Address: block_skin_4
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 647f5d0ea28c26649aa6d588ac910d21
     m_Address: pac_6
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 694fea3896981044882570efc59276bb
+    m_Address: warrior_run
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 697b3cac58d2b97419fd1f10a2c460d0
+    m_Address: blob_eyes_shout
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6e6574ca92bdad64295008f266959594
+    m_Address: BlumgiRestBall
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6fbd30e080e8e4f448e92dedb281f0be
+    m_Address: mage
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 78a0674f66c415540a86f01a139b271a
+    m_Address: family
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7b931d0ae5622bd4698ac781c27b4222
+    m_Address: darksoul
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7def66c66cbf9a640a03dc8390d534ec
+    m_Address: heart
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7f72667eb24a55844b14e7c82c32d291
+    m_Address: fx_teleport_1
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8038d55f12171364cb5c33a071f9bc39
+    m_Address: ui_tut_screen
     m_ReadOnly: 0
     m_SerializedLabels:
     - game_art
@@ -75,6 +441,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - game_art
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 81a6efa66b6513c4795e1d2e8cdafbea
+    m_Address: icon_clipperboard
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 81fc56e341b32ac4587f3a9e53afd57b
     m_Address: Montserrat-Regular SDF
     m_ReadOnly: 0
@@ -87,8 +459,50 @@ MonoBehaviour:
     m_SerializedLabels:
     - game_art
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 83a0927cb6e1945449168573c8b5569c
+    m_Address: skill_bg
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 86b5d5a2a3b169b4a88db6a5e75a2cf7
     m_Address: ghost
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8adbdb8ead2612049bdfd34b017532d8
+    m_Address: warrior_lay
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8b6b76fe652a4054d8d23f0d5400eb1b
+    m_Address: ui_gradient
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8c635a275e55db84291b758d2e2393da
+    m_Address: BlumgiLevelBackground
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 935434171dd70054a9e52d083db47fe6
+    m_Address: enemy2
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 94eb5bb3aefb9f346b64aa38db960645
+    m_Address: BlumgiBlob
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9a1f35c4f51a5584a93ddfb8299e84eb
+    m_Address: enemy_eye
     m_ReadOnly: 0
     m_SerializedLabels:
     - game_art
@@ -99,8 +513,68 @@ MonoBehaviour:
     m_SerializedLabels:
     - game_art
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a03b7e0dc3db5ac4cb186a9cc4e15625
+    m_Address: ui_dot_full
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a6926f6adc7a133428da9e8b7b4efc05
+    m_Address: BlumgiGoalBurst
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: aba9d56164c2a224fa0c3e928151af90
+    m_Address: ui_panel_9p
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: af156206214de594ca197200aaebd288
+    m_Address: reward_button_bg
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: afc0076421803f34c92eb09a92020c09
     m_Address: tile_wall
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b1500ddc3396a2f4aba047fc58e8010a
+    m_Address: BlumgiHoop
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c08f76aacab55874c870f62e58f4b03e
+    m_Address: palm_trunk
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c1997c50ccf50864bb86029b9fb11969
+    m_Address: bubble
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c1e9505dc64bf1e459b5e46044d4de65
+    m_Address: blob_eyes_idle
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c269de7bc9f35764cba7d557ba1f1e91
+    m_Address: block_skin_2
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c76fd68c101c9fc41bbedf70cf82b0e9
+    m_Address: BlumgiConfetti
     m_ReadOnly: 0
     m_SerializedLabels:
     - game_art
@@ -111,8 +585,38 @@ MonoBehaviour:
     m_SerializedLabels:
     - game_art
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ca35934310109cd4a8c7799cd78ab079
+    m_Address: hoop_rim
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ca6014235b4985746a90debf46879f55
+    m_Address: fx_teleport_3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: cb09538154e475649bffdfbdde6d57e9
     m_Address: pac_5
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cc0039560eb6801449fc45d1996da2f7
+    m_Address: ui_mouse_up
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cc240da4cc14cf8499844dabe22eae29
+    m_Address: block_skin_3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cc66f89825556fc4fb675e6a3527dc88
+    m_Address: BlumgiBallTrail
     m_ReadOnly: 0
     m_SerializedLabels:
     - game_art
@@ -123,8 +627,44 @@ MonoBehaviour:
     m_SerializedLabels:
     - game_art
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ce9b46008c9fba046bf8e0de5a68b02d
+    m_Address: fire
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cf5b8c8fec3ff694ebc4537077f19267
+    m_Address: projectile1
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: db9f9598295a09948a98a7181eecc408
+    m_Address: ball
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dd5db4b57860df64eb6bf620ccb30edc
+    m_Address: block_skin_1
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e394d33e77a574b418fef369187b7ac0
+    m_Address: icon_lightning_radius
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e3b6cb69ebc066d48bcf9122e2b33c23
     m_Address: candy_yellow
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ea7358c589d588b49bf672a0461afde9
+    m_Address: bar
     m_ReadOnly: 0
     m_SerializedLabels:
     - game_art
@@ -135,8 +675,32 @@ MonoBehaviour:
     m_SerializedLabels:
     - game_art
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ecf291f00c2dcf24094a5544792038e7
+    m_Address: ui_btn_sound_off
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ed334fe0eb6f1864ebabbf2f8d14fdb3
+    m_Address: enemy_revenant
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: edce2dd4eec0f6442b161986cb9e5833
+    m_Address: ui_hand
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ef107f911343b534cb6219303da89699
     m_Address: candy_blue
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f3cb7565723735541b970ee96f77ee92
+    m_Address: gem_icon
     m_ReadOnly: 0
     m_SerializedLabels:
     - game_art
@@ -147,14 +711,32 @@ MonoBehaviour:
     m_SerializedLabels:
     - game_art
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f9fc95779bd5def458c700089e21acbf
+    m_Address: enemy_bat
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: fccfd84f45452d448ae6d113df93e67a
     m_Address: pac_1
     m_ReadOnly: 0
     m_SerializedLabels:
     - game_art
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fdc2f8bc3d88ebf47a04c6379ddd6cad
+    m_Address: icon_bullets_firerate
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ff37283ad4153234893cb6db35c2137f
     m_Address: candy_orange
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ffc361fb8f1ac5b4ba8462558d8eae34
+    m_Address: lvl_bg
     m_ReadOnly: 0
     m_SerializedLabels:
     - game_art

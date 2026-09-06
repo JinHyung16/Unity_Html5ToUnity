@@ -43,10 +43,27 @@ namespace JinHyung.EditorTools
         private const string DrivingKey = "JinHyung.EditorBridge.Driving";
         private const string PendingIdKey = "JinHyung.EditorBridge.PendingId";
 
+        /// <summary>
+        /// 잡은 로그를 «파일에도» 쌓는다 — 재생으로 들어가면 도메인 리로드가 정적 버퍼를 비운다.
+        /// 재생 검사의 판정은 로그가 전부이므로, 리로드를 넘어 살아남는 곳은 파일뿐이다.
+        /// </summary>
+        private const string CapturePath = Dir + "/capture.log";
+
+        private const string SawCompileKey = "JinHyung.EditorBridge.SawCompile";
+
+        /// <summary>새로고침 뒤 컴파일이 «시작되기까지» 기다리는 틱 수 — 새 스크립트가 있어도 컴파일은 몇 프레임 뒤에 시작된다.</summary>
+        private const int CompileGraceTicks = 150;
+
+        private static int _ticksSinceRefresh;
+
         private static readonly StringBuilder _capturedLog = new StringBuilder();
         private static bool _capturing;
 
-        /// <summary>다리가 시킨 실행 중인가. 재생 검사기가 이걸 보고 «에디터를 끄지 않는다».</summary>
+        /// <summary>
+        /// 다리가 시킨 실행 중인가 — <b>편집 모드 실행 동안에도 참</b>이고, 재생 검사는 재생이 끝날 때까지 참이다.
+        /// 검사기는 이 값(SessionState <c>JinHyung.EditorBridge.Driving</c>)이 참이면 <b>에디터를 끄지 않는다</b>.
+        /// <para>⚠ 재생 검사만 참으로 두면 편집 모드 검사기가 끝에서 <c>Exit</c> 를 불러 사람 에디터가 꺼진다 (재발방지 #140 의 두 번째 사고).</para>
+        /// </summary>
         public static bool IsDriving
         {
             get { return SessionState.GetBool(DrivingKey, false); }
@@ -55,6 +72,11 @@ namespace JinHyung.EditorTools
         static EditorCommandBridge()
         {
             EditorApplication.update += Tick;
+            UnityEditor.Compilation.CompilationPipeline.compilationStarted += _ => SessionState.SetBool(SawCompileKey, true);
+
+            // 재생 검사 중 도메인 리로드가 났다 — 캡처를 다시 건다 (파일이 이어 받는다)
+            if (IsDriving)
+                StartCapture(false);
         }
 
         private static void Tick()
@@ -70,8 +92,8 @@ namespace JinHyung.EditorTools
                     SessionState.SetString(PendingIdKey, string.Empty);
                     StopCapture();
 
-                    // 재생 검사의 판정은 검사기가 남긴 로그가 전부다 — 콘솔 로그를 그대로 넘긴다.
-                    WriteResponse(pendingId, true, _capturedLog.ToString());
+                    // 재생 검사의 판정은 검사기가 남긴 로그가 전부다 — 리로드를 넘어 파일에 쌓인 로그를 넘긴다.
+                    WriteResponse(pendingId, true, ReadCapture());
                 }
             }
 
@@ -82,6 +104,8 @@ namespace JinHyung.EditorTools
             if (File.Exists(RefreshMarker) == false)
             {
                 File.WriteAllText(RefreshMarker, DateTime.Now.ToString("HH:mm:ss"));
+                SessionState.SetBool(SawCompileKey, false);
+                _ticksSinceRefresh = 0;
                 AssetDatabase.Refresh();
                 return;
             }
@@ -89,6 +113,15 @@ namespace JinHyung.EditorTools
             // ② 컴파일·임포트가 끝날 때까지 기다린다. 도메인 리로드가 나도
             //    요청 파일이 남아 있으므로 리로드 뒤 이 틱이 다시 이어받는다.
             if (EditorApplication.isCompiling || EditorApplication.isUpdating)
+            {
+                SessionState.SetBool(SawCompileKey, true);
+                return;
+            }
+
+            // ⚠ 새로고침 직후엔 «아직 컴파일이 시작 안 된» 틱이 있다 — 그때 실행하면 방금 들여온
+            //   검사기를 «메서드를 못 찾았다»로 놓친다. 컴파일을 한 번도 못 봤으면 잠깐 기다린다.
+            //   (도메인 리로드가 났으면 정적 카운터는 0 이지만 SessionState 가 «봤다»를 들고 있다)
+            if (SessionState.GetBool(SawCompileKey, false) == false && _ticksSinceRefresh++ < CompileGraceTicks)
                 return;
 
             string id;
@@ -117,6 +150,7 @@ namespace JinHyung.EditorTools
         private static void Execute(string id, string method)
         {
             StartCapture();
+            SessionState.SetBool(DrivingKey, true);   // 실행 동안 «다리가 시켰다» — 검사기가 Exit 를 안 부르게
 
             bool ok;
             string error = string.Empty;
@@ -140,14 +174,14 @@ namespace JinHyung.EditorTools
             // ── 재생으로 들어갔으면 응답을 미룬다 — 재생이 끝나야 결과가 있다.
             if (ok && EditorApplication.isPlayingOrWillChangePlaymode)
             {
-                SessionState.SetBool(DrivingKey, true);
                 SessionState.SetString(PendingIdKey, id);
-                return;   // 캡처는 계속 돈다 — 재생 로그까지 담는다
+                return;   // 캡처는 계속 돈다 — 재생 로그까지 담는다 (Driving 은 재생이 끝날 때 내린다)
             }
 
+            SessionState.SetBool(DrivingKey, false);
             StopCapture();
 
-            string log = _capturedLog.ToString();
+            string log = ReadCapture();
 
             if (ok == false)
                 log += "\n" + error;
@@ -186,13 +220,36 @@ namespace JinHyung.EditorTools
 
         private static void StartCapture()
         {
+            StartCapture(true);
+        }
+
+        private static void StartCapture(bool fresh)
+        {
             _capturedLog.Length = 0;
+
+            if (fresh)
+            {
+                Directory.CreateDirectory(Dir);
+                File.WriteAllText(CapturePath, string.Empty);
+            }
 
             if (_capturing)
                 return;
 
             _capturing = true;
             Application.logMessageReceived += OnLog;
+        }
+
+        private static string ReadCapture()
+        {
+            try
+            {
+                return File.Exists(CapturePath) ? File.ReadAllText(CapturePath) : _capturedLog.ToString();
+            }
+            catch (Exception)
+            {
+                return _capturedLog.ToString();
+            }
         }
 
         private static void StopCapture()
@@ -207,6 +264,15 @@ namespace JinHyung.EditorTools
         private static void OnLog(string condition, string stackTrace, LogType type)
         {
             _capturedLog.AppendLine(condition);
+
+            try
+            {
+                File.AppendAllText(CapturePath, condition + Environment.NewLine);
+            }
+            catch (Exception)
+            {
+                // 파일이 잠긴 순간은 버린다 — 정적 버퍼가 같은 줄을 들고 있다
+            }
         }
 
         // ────────────────────────────── 응답

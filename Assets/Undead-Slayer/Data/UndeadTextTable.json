@@ -1,0 +1,302 @@
+[
+  {
+    "Id": 1,
+    "Code": "bestLevel",
+    "Ko": "최고 레벨"
+  },
+  {
+    "Id": 2,
+    "Code": "bestTime",
+    "Ko": "최고 시간"
+  },
+  {
+    "Id": 3,
+    "Code": "bullets",
+    "Ko": "총알"
+  },
+  {
+    "Id": 4,
+    "Code": "choose",
+    "Ko": "선택"
+  },
+  {
+    "Id": 5,
+    "Code": "chooseAll",
+    "Ko": "모두 선택!"
+  },
+  {
+    "Id": 6,
+    "Code": "collectRadius",
+    "Ko": "수집 범위"
+  },
+  {
+    "Id": 7,
+    "Code": "continueRun",
+    "Ko": "계속"
+  },
+  {
+    "Id": 8,
+    "Code": "damage",
+    "Ko": "피해량"
+  },
+  {
+    "Id": 9,
+    "Code": "fireIsOut",
+    "Ko": "화염 소진!"
+  },
+  {
+    "Id": 10,
+    "Code": "fireRate",
+    "Ko": "발사 속도"
+  },
+  {
+    "Id": 11,
+    "Code": "fullHealth",
+    "Ko": "최대 체력"
+  },
+  {
+    "Id": 12,
+    "Code": "helpMe",
+    "Ko": "도와줘!"
+  },
+  {
+    "Id": 13,
+    "Code": "hero",
+    "Ko": "영웅"
+  },
+  {
+    "Id": 14,
+    "Code": "iFeelSomeDarkEnergy",
+    "Ko": "어두운 기운이 느껴져..."
+  },
+  {
+    "Id": 15,
+    "Code": "iHearSomebodyScreaming",
+    "Ko": "누군가 비명을 지르는 게 들려"
+  },
+  {
+    "Id": 16,
+    "Code": "iLostTwoArcaneFragments",
+    "Ko": "비전 파편 2개를 잃어버렸어"
+  },
+  {
+    "Id": 17,
+    "Code": "keyboardSpace",
+    "Ko": "스페이스"
+  },
+  {
+    "Id": 18,
+    "Code": "lightning",
+    "Ko": "번개"
+  },
+  {
+    "Id": 19,
+    "Code": "metersShort",
+    "Ko": "m"
+  },
+  {
+    "Id": 20,
+    "Code": "myHeroThankYou",
+    "Ko": "나의 영웅! 고마워!"
+  },
+  {
+    "Id": 21,
+    "Code": "mySheepAreInDanger",
+    "Ko": "내 양들이 위험해, 제발 다시 데려와 줘!"
+  },
+  {
+    "Id": 22,
+    "Code": "newLevel",
+    "Ko": "레벨 업!"
+  },
+  {
+    "Id": 23,
+    "Code": "newWeaponLightning",
+    "Ko": "새 무기: \"라이트닝\"!"
+  },
+  {
+    "Id": 24,
+    "Code": "no",
+    "Ko": "아니요"
+  },
+  {
+    "Id": 25,
+    "Code": "ok",
+    "Ko": "확인"
+  },
+  {
+    "Id": 26,
+    "Code": "portalGraveyardName",
+    "Ko": "묘지"
+  },
+  {
+    "Id": 27,
+    "Code": "portalWinterName",
+    "Ko": "겨울 황무지"
+  },
+  {
+    "Id": 28,
+    "Code": "portalWinterUnlockRequirement",
+    "Ko": "과제 보상 2개를 받아 잠금 해제"
+  },
+  {
+    "Id": 29,
+    "Code": "projectile",
+    "Ko": "투사체"
+  },
+  {
+    "Id": 30,
+    "Code": "radius",
+    "Ko": "범위"
+  },
+  {
+    "Id": 31,
+    "Code": "returnToLobby",
+    "Ko": "사원으로"
+  },
+  {
+    "Id": 32,
+    "Code": "revive",
+    "Ko": "부활"
+  },
+  {
+    "Id": 33,
+    "Code": "reward",
+    "Ko": "보상"
+  },
+  {
+    "Id": 34,
+    "Code": "runSpeed",
+    "Ko": "이동 속도"
+  },
+  {
+    "Id": 35,
+    "Code": "skillBlazingTrailName",
+    "Ko": "불타는 자취"
+  },
+  {
+    "Id": 36,
+    "Code": "skillDashName",
+    "Ko": "돌진"
+  },
+  {
+    "Id": 37,
+    "Code": "skillFlashMoveName",
+    "Ko": "섬광 이동"
+  },
+  {
+    "Id": 38,
+    "Code": "skillWinterPulseName",
+    "Ko": "겨울 파동"
+  },
+  {
+    "Id": 39,
+    "Code": "speed",
+    "Ko": "속도"
+  },
+  {
+    "Id": 40,
+    "Code": "start",
+    "Ko": "시작"
+  },
+  {
+    "Id": 41,
+    "Code": "swipeToDash",
+    "Ko": "스와이프하여 돌진"
+  },
+  {
+    "Id": 42,
+    "Code": "takeAll",
+    "Ko": "모두 받기!"
+  },
+  {
+    "Id": 43,
+    "Code": "taskActivateTreesRequirement",
+    "Ko": "묘지의 사악한 나무를 활성화하세요"
+  },
+  {
+    "Id": 44,
+    "Code": "taskActivateTreesTitle",
+    "Ko": "나무 활성화"
+  },
+  {
+    "Id": 45,
+    "Code": "taskCompletionMessage",
+    "Ko": "보상을 받으러 사원으로 돌아가거나 계속 전투하세요."
+  },
+  {
+    "Id": 46,
+    "Code": "taskCompletionTitle",
+    "Ko": "과제 완료!"
+  },
+  {
+    "Id": 47,
+    "Code": "taskKillEnemiesWithDashRequirement",
+    "Ko": "돌진을 사용해 적을 처치하세요"
+  },
+  {
+    "Id": 48,
+    "Code": "taskKillEnemiesWithDashTitle",
+    "Ko": "돌진으로 적 처치"
+  },
+  {
+    "Id": 49,
+    "Code": "taskProgressFeedback",
+    "Ko": "과제: {current}/{goal}"
+  },
+  {
+    "Id": 50,
+    "Code": "taskRestoreHpRequirement",
+    "Ko": "모닥불에서 체력을 회복하세요"
+  },
+  {
+    "Id": 51,
+    "Code": "taskRestoreHpTitle",
+    "Ko": "체력 회복"
+  },
+  {
+    "Id": 52,
+    "Code": "taskReward",
+    "Ko": "과제 보상"
+  },
+  {
+    "Id": 53,
+    "Code": "taskSaveSheepRequirement",
+    "Ko": "양을 농부에게 돌려보내세요"
+  },
+  {
+    "Id": 54,
+    "Code": "taskSaveSheepTitle",
+    "Ko": "양 구하기"
+  },
+  {
+    "Id": 55,
+    "Code": "thanksNowWeCanContinue",
+    "Ko": "고마워! 이제 우리도 계속 갈 수 있어"
+  },
+  {
+    "Id": 56,
+    "Code": "thanksPal",
+    "Ko": "고마워, 친구!"
+  },
+  {
+    "Id": 57,
+    "Code": "unlockNewWeapon",
+    "Ko": "새 무기 해금!"
+  },
+  {
+    "Id": 58,
+    "Code": "weCantPassDarkSoul",
+    "Ko": "이 어두운 영혼을 통과해서 지나갈 수 없어!"
+  },
+  {
+    "Id": 59,
+    "Code": "whatTheAnimals",
+    "Ko": "이게 뭐야... 동물들?"
+  },
+  {
+    "Id": 60,
+    "Code": "youSavedMeReward",
+    "Ko": "날 구해줬어, 이건 네 보상이야!"
+  }
+]

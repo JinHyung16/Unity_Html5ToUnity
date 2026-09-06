@@ -1,0 +1,84 @@
+id	parent	depth	name	x	y	sx	sy	alpha	visible	tint	frame	font	text	cx	cy	w	h
+0	-1	0	we	0	0	1	1	1	1	ffffff							
+1	0	1	np	0	0	1	1	1	1	ffffff							
+2	1	2	Fu	0	0	1	1	1	1	ffffff							
+3	1	2	Lh	515.5	310	1	1	1	1	ffffff							
+4	3	3	Qu	515.5	310	1	1	1	1	ffffff							
+5	4	4	Mesh	515.5	310	1	1	1	1	ffffff	456x2040						
+6	4	4	Mesh	515.5	310	1	1	1	1	ffffff	456x2040						
+7	4	4	Mesh	515.5	310	1	1	1	1	ffffff	456x2040						
+8	4	4	Mesh	515.5	310	1	1	1	1	ffffff	456x2040						
+9	3	3	Bl	515.5	310	1	1	1	1	ffffff							
+10	9	4	Xu	791	560	1	1	1	1	ffffff							
+11	10	5	lobby_task_npc_groundskeeper_01	791	560	1	1	1	1	ffffff	65x65			791	511.3	97.5	97.5
+12	10	5	Vu	791	560	1	1	1	0	ffffff							
+13	12	6	task_bg	651	346.5	1	1	1	0	ffffff	6x6						
+14	12	6	Graphics	791	560	1	1	1	0	ffffff							
+15	12	6	T:묘지의 사악한 나무를 활성화하세요	791	361.5	1	1	1	0	ffffff		16	묘지의 사악한 나무를 활성화하세요				
+16	12	6	T:3/13	791	416.5	1	1	1	0	ffffff		14	3/13				
+17	12	6	Graphics	791	560	1	1	1	0	ffffff							
+18	12	6	Graphics	791	560	1	1	1	0	ffffff							
+19	12	6	T:보상:	791	476.3	1	1	1	0	ffffff		16	보상:				
+20	12	6	skill_dash	691	519.5	1	1	1	0	ffffff	64x46						
+21	12	6	T:돌진	733	519.5	1	1	1	0	ffffff		14	돌진				
+22	9	4	Ad	515.5	310	1	1	1	0	ffffff							
+23	22	5	quest_progress_0	515.5	310	1	1	1	0	ffffff	36x36						
+24	9	4	Xu	960	560	1	1	1	1	ffffff							
+25	24	5	lobby_task_npc_herbalist_01	960	560	1	1	1	1	ffffff	65x65			960	511.3	97.5	97.5
+26	24	5	Vu	960	560	1	1	1	0	ffffff							
+27	26	6	task_bg	820	366.5	1	1	1	0	ffffff	6x6						
+28	26	6	Graphics	960	560	1	1	1	0	ffffff							
+29	26	6	T:모닥불에서 체력을 회복하세요	960	381.5	1	1	1	0	ffffff		16	모닥불에서 체력을 회복하세요				
+30	26	6	T:0/4	960	416.5	1	1	1	0	ffffff		14	0/4				
+31	26	6	Graphics	960	560	1	1	1	0	ffffff							
+32	26	6	Graphics	960	560	1	1	1	0	ffffff							
+33	26	6	T:보상:	960	476.3	1	1	1	0	ffffff		16	보상:				
+34	26	6	skill_blazing_trail	860	519.5	1	1	1	0	ffffff	64x46						
+35	26	6	T:불타는 자취	902	519.5	1	1	1	0	ffffff		14	불타는 자취				
+36	9	4	Ad	515.5	310	1	1	1	0	ffffff							
+37	36	5	quest_progress_0	515.5	310	1	1	1	0	ffffff	36x36						
+38	9	4	Ru	779	420	1	1	1	1	ffffff							
+39	38	5	Graphics	779	420	1	1	1	0	ffffff							
+40	38	5	lobby_portal_graveyard_open	779	420	1	1	1	1	ffffff	163x182			779	365.4	163	182
+41	38	5	hd	779	390	1	1	1	1	ffffff							
+42	41	6	ParticleContainer	779	380	1	1	1	1	ffffff	1x1						
+43	38	5	Tu	779	420	1	1	1	0	ffffff							
+44	43	6	skill_bg	681	356	1	1	1	0	ffffff	6x6						
+45	43	6	T:묘지	779	388	1	1	1	0	ffffff		17	묘지				
+46	43	6	T:	779	390	1	1	1	0	ffffff		12					
+47	43	6	T:	779	409	1	1	1	0	ffffff		14					
+48	9	4	Ru	971.5	420	1	1	1	1	ffffff							
+49	48	5	Graphics	971.5	420	1	1	1	0	ffffff							
+50	48	5	lobby_portal_winter_locked	971.5	420	1	1	1	1	ffffff	163x182			971.5	365.4	163	182
+51	48	5	hd	971.5	390	1	1	1	1	ffffff							
+52	51	6	ParticleContainer	971.5	380	1	1	1	1	ffffff	1x1						
+53	48	5	Tu	971.5	420	1	1	1	0	ffffff							
+54	53	6	skill_bg	873.5	356	1	1	1	0	ffffff	6x6						
+55	53	6	T:겨울 황무지	971.5	370	1	1	1	0	ffffff		17	겨울 황무지				
+56	53	6	T:과제 보상 2개를 받아 잠금 해제	971.5	390	1	1	1	0	ffffff		12	과제 보상 2개를 받아 잠금 해제				
+57	53	6	T:0/2	971.5	409	1	1	1	0	ffffff		14	0/2				
+58	9	4	_u	875	608	1	1	1	1	ffffff							
+59	58	5	hero	875	608	1	1	1	1	ffffff	16x16			875	584	48	48
+60	3	3	Nd	515.5	310	1	1	1	1	ffffff							
+61	3	3	zh	515.5	310	1	1	1	1	ffffff							
+62	1	2	ep	0	0	1	1	1	1	ffffff							
+63	1	2	Kd	0	0	1	1	1	1	ffffff							
+64	63	3	ip	0	0	1	1	1	0	ffffff							
+65	64	4	Graphics	0	0	1	1	1	0	ffffff							
+66	64	4	task_bg	295.5	145	1	1	1	0	ffffff	6x6						
+67	64	4	T:과제 보상	515.5	187	1	1	1	0	ffffff		25	과제 보상				
+68	64	4	T:	515.5	227	1	1	1	0	ffffff		30					
+69	64	4	we	515.5	292.9	1	1	1	0	ffffff							
+70	69	5	Sprite	515.5	292.9	1	1	1	0	ffffff	1x1						
+71	64	4	skillRewardPopupConfirmButton	435.5	367	1	1	1	0	ffffff							
+72	71	5	Graphics	435.5	367	1	1	1	0	ffffff							
+73	71	5	T:확인	515.5	391	1	1	1	0	ffffff		18	확인				
+74	63	3	jd	0	0	1	1	1	0	ffffff							
+75	74	4	we	0	0	1	1	1	0	ffffff							
+76	75	5	Graphics	0	0	1	1	1	0	ffffff							
+77	75	5	we	515.5	435	1	1	1	0	ffffff							
+78	77	6	btn_shadowed	377.1	379.6	1	1	1	0	ffffff	234x105						
+79	77	6	T:시작	515.5	437.1	1	1	1	0	ffffff		50	시작				
+80	1	2	Zu	0	0	1	1	1	1	ffffff							
+81	1	2	wu	0	0	1	1	1	1	ffffff							
+82	81	3	Sprite	0	0	1	1	0	0	000000	1x1						

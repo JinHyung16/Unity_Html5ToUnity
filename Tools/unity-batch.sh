@@ -281,10 +281,15 @@ fi
 #     대신 끝내는 것은 검사기 자신이다 (EditorApplication.Exit).
 #     그래도 안 꺼질 때를 대비해 바깥에서 시간 제한을 건다 — 배치가 영영 안 끝나면 안 된다.
 QUIT_ARG="-quit"
+SCREEN_ARGS=""
 if [ "${PLAYMODE:-0}" = "1" ]; then
   QUIT_ARG=""
   GFX_ARGS=""
-  echo "재생 모드로 들어간다 (-quit 없음 · 검사기가 스스로 끝낸다)"
+  # ★ 배치 재생의 기본 게임 뷰는 «4:3(640×480)» 이다.
+  #   가장자리에 붙는 HUD 가 통째로 다른 자리에 서므로 원본 화면비를 못 박는다
+  #   (공통절차 「우리 쪽 덤프는 원본 화면비에서 뜬다」).
+  SCREEN_ARGS="-screen-width ${SCREEN_W:-1920} -screen-height ${SCREEN_H:-1080} -screen-fullscreen 0"
+  echo "재생 모드로 들어간다 (-quit 없음 · 검사기가 스스로 끝낸다 · 화면 ${SCREEN_W:-1920}x${SCREEN_H:-1080})"
 fi
 
 if [ -n "$QUIT_ARG" ]; then
@@ -293,7 +298,7 @@ if [ -n "$QUIT_ARG" ]; then
   STATUS=$?
 else
   timeout --foreground "${PLAYMODE_TIMEOUT:-300}" \
-    "$UNITY_EXE" -batchmode $GFX_ARGS -silent-crashes \
+    "$UNITY_EXE" -batchmode $GFX_ARGS $SCREEN_ARGS -silent-crashes \
     -projectPath "$PROJ_WIN" -executeMethod "$METHOD" -logFile "$LOG_WIN"
   STATUS=$?
 
@@ -316,7 +321,12 @@ RESULT="$(sed -n '/<color=\|── \|═══ /,$p' "$LOG_SH" | sed 's/<[^>]*>/
 echo "$RESULT" | sed -n '1,140p'
 # ⚠ 요약 줄(N/N)이 잘리면 「통과했는지」를 못 읽는다. 마지막 줄을 항상 따로 찍는다.
 echo "$RESULT" | grep -E "═══ .*(통과|완료)" | tail -3
-echo "── 전문: $LOG_SH ── (⚠ 유니티가 시작할 때 Temp 를 비운다 — 다음 실행 전에 읽는다)"
+# ⚠ 유니티는 «시작할 때» Temp 를 비운다 — 아래 open_editor 가 이 로그를 지운다.
+#   그래서 «다시 열기 전에» 살려 둔다.
+mkdir -p "$ROOT/Tools/Verify/out"
+LOG_KEPT="$ROOT/Tools/Verify/out/$(basename "$LOG_SH")"
+cp "$LOG_SH" "$LOG_KEPT" 2>/dev/null
+echo "── 전문: $LOG_KEPT ── (Temp 사본은 다음 실행이 지운다)"
 
 # 여러 단계를 이어 돌릴 때는 «마지막 단계에서만» 연다 — 중간마다 열면 다음 단계가 락에 막힌다.
 if [ "${REOPEN:-0}" = "1" ]; then

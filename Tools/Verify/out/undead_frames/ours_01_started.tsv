@@ -1,0 +1,69 @@
+# label: 01_started
+# screen: 1920x1080  logical: 1031.11x580
+# sim: level=1 gauge=0/15 t=0.52 enemies=6 gems=0 paused=False
+kind	path	visible	alpha	cx	cy	w	h	sprite	text	fontSize	color
+ui	Canvas/UIRoot/Normal/UndeadBattleHudWindow/GaugeBar	1	1.00	512.56	27.00	957.11	20.00	skill_bg			FFFFFF
+ui	Canvas/UIRoot/Normal/UndeadBattleHudWindow/GaugeBar/Fill	1	1.00	513.06	27.00	956.11	18.00	bar			FFFFFF
+ui	Canvas/UIRoot/Normal/UndeadBattleHudWindow/GaugeText	1	1.00	512.56	28.00	48.00	14.40		0/15	12.00	FFFFFF
+ui	Canvas/UIRoot/Normal/UndeadBattleHudWindow/GemIcon	1	1.00	35.00	27.00	60.00	60.00	gem_icon			FFFFFF
+ui	Canvas/UIRoot/Normal/UndeadBattleHudWindow/LevelBg	1	1.00	995.11	27.00	72.00	72.00	lvl_bg			FFFFFF
+ui	Canvas/UIRoot/Normal/UndeadBattleHudWindow/LevelBg/LevelText	1	1.00	997.11	28.00	18.00	21.60		1	18.00	000000
+ui	Canvas/UIRoot/Normal/UndeadBattleHudWindow/QuestArrow	0	1.00	515.56	290.00	94.00	58.00	quest_pointer			FFFFFF
+ui	Canvas/UIRoot/Normal/UndeadBattleHudWindow/QuestDistanceText	0	1.00	515.56	290.00	120.00	22.40		0m	14.00	FFFFFF
+ui	Canvas/UIRoot/Normal/UndeadBattleHudWindow/TimerText	1	1.00	512.56	55.00	70.00	16.80		00:00	14.00	FFFFFF
+ui	Canvas/UIRoot/Normal/UndeadReadyWindow/Dimmer	0	0.50	515.56	290.00	1031.11	580.00				000000
+ui	Canvas/UIRoot/Normal/UndeadReadyWindow/Start	0	1.00	515.56	435.00	284.39	113.76	btn_shadowed			FFFFFF
+ui	Canvas/UIRoot/Normal/UndeadReadyWindow/Start/Label	0	1.00	516.70	437.19	70.22	39.38		시작	30.00	FFFFFF
+ui	Canvas/UIRoot/Popup/UndeadLevelUpWindow/Card0	0	0.90	515.56	148.00	420.00	92.00	reward_button_bg			FFFFFF
+ui	Canvas/UIRoot/Popup/UndeadLevelUpWindow/Card0/Icon	0	1.00	345.56	148.00	54.00	54.00	icon_bullet_damage			FFFFFF
+ui	Canvas/UIRoot/Popup/UndeadLevelUpWindow/Card0/Stat	0	1.00	545.56	161.00	300.00	22.40		피해량 +100%	14.00	FFFFFF
+ui	Canvas/UIRoot/Popup/UndeadLevelUpWindow/Card0/Target	0	1.00	545.56	136.00	300.00	28.80		총알	18.00	FFFFFF
+ui	Canvas/UIRoot/Popup/UndeadLevelUpWindow/Card1	0	0.90	515.56	255.00	420.00	92.00	reward_button_bg			FFFFFF
+ui	Canvas/UIRoot/Popup/UndeadLevelUpWindow/Card1/Icon	0	1.00	345.56	255.00	54.00	54.00	icon_bullet_damage			FFFFFF
+ui	Canvas/UIRoot/Popup/UndeadLevelUpWindow/Card1/Stat	0	1.00	545.56	268.00	300.00	22.40		피해량 +100%	14.00	FFFFFF
+ui	Canvas/UIRoot/Popup/UndeadLevelUpWindow/Card1/Target	0	1.00	545.56	243.00	300.00	28.80		총알	18.00	FFFFFF
+ui	Canvas/UIRoot/Popup/UndeadLevelUpWindow/Card2	0	0.90	515.56	362.00	420.00	92.00	reward_button_bg			FFFFFF
+ui	Canvas/UIRoot/Popup/UndeadLevelUpWindow/Card2/Icon	0	1.00	345.56	362.00	54.00	54.00	icon_bullet_damage			FFFFFF
+ui	Canvas/UIRoot/Popup/UndeadLevelUpWindow/Card2/Stat	0	1.00	545.56	375.00	300.00	22.40		피해량 +100%	14.00	FFFFFF
+ui	Canvas/UIRoot/Popup/UndeadLevelUpWindow/Card2/Target	0	1.00	545.56	350.00	300.00	28.80		총알	18.00	FFFFFF
+ui	Canvas/UIRoot/Popup/UndeadLevelUpWindow/Confirm	0	1.00	515.56	497.00	210.00	58.00	reward_button_bg			FFFFFF
+ui	Canvas/UIRoot/Popup/UndeadLevelUpWindow/Confirm/Label	0	1.00	515.56	497.00	210.00	58.00		선택	20.00	FFFFFF
+ui	Canvas/UIRoot/Popup/UndeadLevelUpWindow/Dimmer	0	0.70	515.56	290.00	1031.11	580.00				000000
+ui	Canvas/UIRoot/Popup/UndeadLevelUpWindow/Title	0	1.00	515.56	68.00	214.81	38.40		레벨 업!	24.00	FFFFFF
+world	World/UndeadWorldView/Enemies/enemy_bat	1	1.00	-35.38	451.14	48.00	51.00	enemy1_0_0			FFFFFF
+world	World/UndeadWorldView/Enemies/enemy_bat	1	1.00	1064.63	163.51	48.00	51.00	enemy1_0_0			FFFFFF
+world	World/UndeadWorldView/Enemies/enemy_bat	1	1.00	1066.69	466.02	48.00	51.00	enemy1_0_0			FFFFFF
+world	World/UndeadWorldView/Enemies/enemy_bat	1	1.00	1067.79	1.85	48.00	51.00	enemy1_0_0			FFFFFF
+world	World/UndeadWorldView/Enemies/enemy_bat	1	1.00	1080.06	198.12	48.00	51.00	enemy1_0_0			FFFFFF
+world	World/UndeadWorldView/Enemies/enemy_bat	1	1.00	879.95	594.00	48.00	51.00	enemy1_0_0			FFFFFF
+world	World/UndeadWorldView/Fireplaces/fire	1	1.00	-1500.44	-700.00	60.00	60.00	fire_0_2			FFFFFF
+world	World/UndeadWorldView/Fireplaces/fire	1	1.00	-1548.44	1628.00	60.00	60.00	fire_0_2			FFFFFF
+world	World/UndeadWorldView/Fireplaces/fire	1	1.00	-1620.44	-1588.00	60.00	60.00	fire_0_2			FFFFFF
+world	World/UndeadWorldView/Fireplaces/fire	1	1.00	-228.44	188.00	60.00	60.00	fire_0_2			FFFFFF
+world	World/UndeadWorldView/Fireplaces/fire	1	1.00	-348.44	548.00	60.00	60.00	fire_0_2			FFFFFF
+world	World/UndeadWorldView/Fireplaces/fire	1	1.00	-36.44	2132.00	60.00	60.00	fire_0_2			FFFFFF
+world	World/UndeadWorldView/Fireplaces/fire	1	1.00	-540.44	788.00	60.00	60.00	fire_0_2			FFFFFF
+world	World/UndeadWorldView/Fireplaces/fire	1	1.00	-588.44	-868.00	60.00	60.00	fire_0_2			FFFFFF
+world	World/UndeadWorldView/Fireplaces/fire	1	1.00	-852.44	1220.00	60.00	60.00	fire_0_2			FFFFFF
+world	World/UndeadWorldView/Fireplaces/fire	1	1.00	-900.44	-4.00	60.00	60.00	fire_0_2			FFFFFF
+world	World/UndeadWorldView/Fireplaces/fire	1	1.00	1307.56	-1588.00	60.00	60.00	fire_0_2			FFFFFF
+world	World/UndeadWorldView/Fireplaces/fire	1	1.00	1355.56	2060.00	60.00	60.00	fire_0_2			FFFFFF
+world	World/UndeadWorldView/Fireplaces/fire	1	1.00	1355.56	308.00	60.00	60.00	fire_0_2			FFFFFF
+world	World/UndeadWorldView/Fireplaces/fire	1	1.00	1451.56	-1156.00	60.00	60.00	fire_0_2			FFFFFF
+world	World/UndeadWorldView/Fireplaces/fire	1	1.00	1859.56	1484.00	60.00	60.00	fire_0_2			FFFFFF
+world	World/UndeadWorldView/Fireplaces/fire	1	1.00	1883.56	-604.00	60.00	60.00	fire_0_2			FFFFFF
+world	World/UndeadWorldView/Fireplaces/fire	1	1.00	539.56	452.00	60.00	60.00	fire_0_2			FFFFFF
+world	World/UndeadWorldView/Fireplaces/fire	1	1.00	59.56	-1612.00	60.00	60.00	fire_0_2			FFFFFF
+world	World/UndeadWorldView/Hero/hero	1	1.00	515.56	286.00	48.00	48.00	hero_0_1			FFFFFF
+world	World/UndeadWorldView/Trees/graveyard_evil_tree	1	1.00	-192.44	1247.87	117.83	119.26	graveyard_evil_tree			FFFFFF
+world	World/UndeadWorldView/Trees/graveyard_evil_tree	1	1.00	-360.44	-288.13	117.83	119.26	graveyard_evil_tree			FFFFFF
+world	World/UndeadWorldView/Trees/graveyard_evil_tree	1	1.00	-48.44	-168.41	118.00	120.02	graveyard_evil_tree			FFFFFF
+world	World/UndeadWorldView/Trees/graveyard_evil_tree	1	1.00	1271.56	-1632.12	117.83	119.25	graveyard_evil_tree			FFFFFF
+world	World/UndeadWorldView/Trees/graveyard_evil_tree	1	1.00	1343.56	-50.42	119.17	125.47	graveyard_evil_tree			FFFFFF
+world	World/UndeadWorldView/Trees/graveyard_evil_tree	1	1.00	1847.56	-288.22	117.88	119.50	graveyard_evil_tree			FFFFFF
+world	World/UndeadWorldView/Trees/graveyard_evil_tree	1	1.00	2255.56	-1825.86	118.84	123.95	graveyard_evil_tree			FFFFFF
+world	World/UndeadWorldView/Trees/graveyard_evil_tree	1	1.00	2255.56	1415.58	118.00	120.06	graveyard_evil_tree			FFFFFF
+world	World/UndeadWorldView/Trees/graveyard_evil_tree	1	1.00	527.56	-1802.84	119.41	126.58	graveyard_evil_tree			FFFFFF
+world	World/UndeadWorldView/Trees/graveyard_evil_tree	1	1.00	527.56	1654.29	118.75	123.54	graveyard_evil_tree			FFFFFF
+world	World/UndeadWorldView/Trees/graveyard_evil_tree	1	1.00	575.56	-339.12	119.58	127.36	graveyard_evil_tree			FFFFFF
+world	World/UndeadWorldView/Trees/graveyard_evil_tree	1	1.00	815.56	358.74	118.49	122.32	graveyard_evil_tree			FFFFFF

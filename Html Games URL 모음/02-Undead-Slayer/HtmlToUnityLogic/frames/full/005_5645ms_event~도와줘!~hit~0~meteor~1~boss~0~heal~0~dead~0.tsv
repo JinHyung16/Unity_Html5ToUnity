@@ -1,0 +1,187 @@
+id	parent	depth	name	x	y	sx	sy	alpha	visible	tint	frame	font	text	cx	cy	w	h
+0	-1	0	we	0	0	1	1	1	1	ffffff							
+1	0	1	vu	0	0	1	1	1	1	ffffff							
+2	1	2	Fd	0	0	1	1	1	1	ffffff							
+3	1	2	bu	0	0	1	1	1	1	ffffff							
+4	1	2	rl	0	0	1	1	1	1	ffffff							
+5	1	2	Uc	0	0	1	1	1	1	ffffff							
+6	1	2	Lh	515.5	310	1	1	1	1	ffffff							
+7	6	3	id	-1355.5	-779.6	1	1	1	1	ffffff							
+8	7	4	Mesh	-1355.5	-779.6	1	1	1	1	ffffff	456x2040			504.5	288.4	1224	792
+9	6	3	Nc	-1355.5	-779.6	1	1	1	1	ffffff							
+10	6	3	Hl	-1355.5	-779.6	1	1	1	1	ffffff							
+11	6	3	Pl	-1355.5	-779.6	1	1	1	1	ffffff							
+12	6	3	Oh	-1355.5	-779.6	1	1	1	1	ffffff							
+13	6	3	sd	-1355.5	-779.6	1	1	1	1	ffffff							
+14	6	3	Bl	-1355.5	-779.6	1	1	1	1	ffffff							
+15	14	4	ld	1092.5	-83.6	1	1	1	1	ffffff							
+16	15	5	graveyard_evil_tree	1092.5	-83.6	1.189	1.153	1	1	ffffff	99x103			1092.5	-127.5	117.8	118.8
+17	15	5	hd	1092.5	-183.6	1	1	1	1	ffffff							
+18	17	6	ParticleContainer	1092.5	-193.6	1.5	4	1	1	ffffff	1x1						
+19	14	4	kl	282.4	-71.7	1	1	1	1	ffffff							
+20	19	5	enemy1	282.4	-71.7	3	3	1	1	ffffff	16x17			282.4	-97.2	48	51
+21	14	4	kl	230.6	-64.6	1	1	1	1	ffffff							
+22	21	5	enemy1	230.6	-64.6	3	3	1	1	ffffff	16x17			230.6	-90.1	48	51
+23	14	4	kl	87	-42.1	1	1	1	1	ffffff							
+24	23	5	enemy1	87	-42.1	3	3	1	1	ffffff	16x17			87	-67.6	48	51
+25	14	4	kl	-94.9	186.7	1	1	1	1	ffffff							
+26	25	5	enemy1	-94.9	186.7	3	3	1	1	ffffff	16x17			-94.9	161.2	48	51
+27	14	4	Wl	1104.5	240.4	1	1	1	1	ffffff							
+28	27	5	fire	1104.5	240.4	2.5	2.5	1	1	ffffff	24x24			1104.5	228.4	60	60
+29	27	5	Gl	1104.5	220.4	1	1	1	1	ffffff							
+30	29	6	heart	1104.5	206.4	1.3	1.8	1	1	ffffff	32x32						
+31	14	4	kl	1034.1	268	1	1	1	1	ffffff							
+32	31	5	enemy1	1034.1	268	-3	3	1	1	ffffff	16x17			1034.1	242.5	48	51
+33	14	4	kl	-181.4	276.7	1	1	1	1	ffffff							
+34	33	5	enemy1	-181.4	276.7	3	3	1	1	ffffff	16x17			-181.4	251.2	48	51
+35	14	4	kl	-185.6	289.8	1	1	1	1	ffffff							
+36	35	5	enemy1	-185.6	289.8	3	3	1	1	ffffff	16x17			-185.6	264.3	48	51
+37	14	4	ic	515.9	300.6	1	1	1	1	ffffff							
+38	37	5	hero	515.9	300.6	3	3	1	1	ffffff	16x16			515.9	276.6	48	48
+39	37	5	Jl	515.9	300.6	1	1	1	1	ffffff							
+40	37	5	Kl	515.9	300.6	1	1	1	1	ffffff							
+41	37	5	Ql	515.9	240.6	1	1	0	0	ffffff							
+42	41	6	we	476.4	237.1	1	1	1	0	ffffff							
+43	42	7	Graphics	476.4	237.1	1	1	1	0	ffffff							
+44	42	7	Graphics	482.4	240.1	1	1	1	0	ffffff							
+45	41	6	we	488.4	237.1	1	1	1	0	ffffff							
+46	45	7	Graphics	488.4	237.1	1	1	1	0	ffffff							
+47	45	7	Graphics	494.4	240.1	1	1	1	0	ffffff							
+48	41	6	we	500.4	237.1	1	1	1	0	ffffff							
+49	48	7	Graphics	500.4	237.1	1	1	1	0	ffffff							
+50	48	7	Graphics	506.4	240.1	1	1	1	0	ffffff							
+51	41	6	we	512.4	237.1	1	1	1	0	ffffff							
+52	51	7	Graphics	512.4	237.1	1	1	1	0	ffffff							
+53	51	7	Graphics	518.4	240.1	1	1	1	0	ffffff							
+54	41	6	we	524.4	237.1	1	1	1	0	ffffff							
+55	54	7	Graphics	524.4	237.1	1	1	1	0	ffffff							
+56	54	7	Graphics	530.4	240.1	1	1	1	0	ffffff							
+57	41	6	we	536.4	237.1	1	1	1	0	ffffff							
+58	57	7	Graphics	536.4	237.1	1	1	1	0	ffffff							
+59	57	7	Graphics	542.4	240.1	1	1	1	0	ffffff							
+60	41	6	we	548.4	237.1	1	1	1	0	ffffff							
+61	60	7	Graphics	548.4	237.1	1	1	1	0	ffffff							
+62	60	7	Graphics	554.4	240.1	1	1	1	0	ffffff							
+63	14	4	Zl	562.8	332.6	0.67	0.67	1	1	ffffff							
+64	63	5	projectile1	562.8	332.6	0.804	0.804	1	1	ffffff	36x16			562.8	332.6	43.2	44.9
+65	14	4	ld	564.5	324.4	1	1	1	1	ffffff							
+66	65	5	graveyard_evil_tree_inactive	564.5	324.4	1.24	1.405	1	1	ffffff	99x103			564.5	278.7	118.8	123.6
+67	65	5	hd	564.5	224.4	1	1	1	1	ffffff							
+68	67	6	ParticleContainer	564.5	214.4	1.5	4	1	1	ffffff	1x1						
+69	14	4	Xc	769.7	349.6	1	1	1	1	ffffff							
+70	69	5	gem	769.7	349.6	2	2	1	1	ffffff	16x16			769.7	333.6	32	32
+71	14	4	Xc	761.2	364	1	1	1	1	ffffff							
+72	71	5	gem	761.2	364	2	2	1	1	ffffff	16x16			761.2	348	32	32
+73	14	4	Wl	288.5	384.4	1	1	1	1	ffffff							
+74	73	5	fire	288.5	384.4	2.5	2.5	1	1	ffffff	24x24			288.5	372.4	60	60
+75	73	5	Gl	288.5	364.4	1	1	1	1	ffffff							
+76	75	6	heart	288.5	350.4	1.3	1.8	1	1	ffffff	32x32						
+77	14	4	kl	683.1	488.5	1	1	1	1	ffffff							
+78	77	5	enemy1	683.1	488.5	-3	3	1	1	09dffd	16x17			683.1	463	48	51
+79	14	4	kl	145.2	615.9	1	1	1	1	ffffff							
+80	79	5	enemy1	145.2	615.9	3	3	1	1	ffffff	16x17			145.2	590.4	48	51
+81	14	4	rd	572.8	300.4	1	1	1	1	ffffff							
+82	81	5	meteor	572.8	300.4	1	1	1	1	ffffff	48x32			536.8	300.4	144	96
+83	14	4	rd	568.6	307.7	1	1	1	1	ffffff							
+84	83	5	meteor	568.6	307.7	1	1	1	1	ffffff	48x32			550.6	276.5	155.1	172.7
+85	14	4	rd	560.3	307.7	1	1	1	1	ffffff							
+86	85	5	meteor	560.3	307.7	1	1	1	1	ffffff	48x32			578.3	276.5	155.1	172.7
+87	14	4	rd	556.1	300.4	1	1	1	1	ffffff							
+88	87	5	meteor	556.1	300.4	1	1	1	1	ffffff	48x32			592.1	300.4	144	96
+89	14	4	rd	560.3	293.2	1	1	1	1	ffffff							
+90	89	5	meteor	560.3	293.2	1	1	1	1	ffffff	48x32			578.3	324.4	155.1	172.7
+91	14	4	rd	568.6	293.2	1	1	1	1	ffffff							
+92	91	5	meteor	568.6	293.2	1	1	1	1	ffffff	48x32			550.6	324.4	155.1	172.7
+93	6	3	Rd	-1355.5	-779.6	1	1	1	1	ffffff							
+94	6	3	Ld	-1355.5	-779.6	1	1	1	1	ffffff							
+95	6	3	Nd	-1355.5	-779.6	1	1	1	1	ffffff							
+96	95	4	$l	679.8	443.1	1.043	1.043	1	1	ffffff							
+97	96	5	T:-2	679.8	443.1	1.043	1.043	1	1	ffffff		14	-2	679.8	443.1	31.5	18.3
+98	6	3	zh	-1355.5	-779.6	1	1	1	1	ffffff							
+99	98	4	dc	319.2	2488.7	1	1	1	1	ffffff							
+100	99	5	we	319.2	2484.9	1	1	1	1	ffffff							
+101	100	6	bubble	319.2	2484.9	1.25	1.25	1	1	ffffff	140x42			319.2	2458.7	175	52.5
+102	100	6	T:도와줘!	319.2	2458.7	1	1	1	1	ffffff		16	도와줘!	319.2	2458.7	60.2	18
+103	1	2	yu	0	0	1	1	1	1	ffffff							
+104	1	2	cd	0	0	1	1	1	1	ffffff							
+105	1	2	jc	0	0	1	1	1	1	ffffff							
+106	1	2	Wh	0	0	1	1	1	1	ffffff							
+107	1	2	Qc	0	5	1	1	1	1	ffffff							
+108	107	3	we	0	5	1	1	1	1	ffffff							
+109	108	4	skill_bg	34	17	1	1	1	1	ffffff	6x6			512.5	27	957	20
+110	108	4	bar	35	18	1	1	1	0	ffffff	16x16						
+111	108	4	gem_icon	35	27	3.75	3.75	1	1	ffffff	16x16			35	27	60	60
+112	108	4	lvl_bg	995	27	4.5	4.5	1	1	ffffff	16x16			995	27	72	72
+113	108	4	T:1	997	28	1	1	1	1	ffffff		18	1	997	28	20	22
+114	108	4	T:0/15	512.5	28	1	1	1	1	ffffff		12	0/15	512.5	28	50	14
+115	108	4	T:00:02	512.5	55	1	1	1	1	ffffff		14	00:02	512.5	55	75	19
+116	1	2	Hd	1019	484	1	1	1	1	ffffff							
+117	116	3	we	1019	484	1	1	1	1	ffffff							
+118	1	2	Kc	0	0	1	1	1	0	ffffff							
+119	118	3	we	0	0	1	1	1	0	ffffff							
+120	119	4	Graphics	0	0	1	1	1	0	ffffff							
+121	119	4	T:레벨 업!	515.5	68	1	1	1	0	ffffff		24	레벨 업!				
+122	119	4	we	0	0	1	1	1	0	ffffff							
+123	122	5	reward_button_bg	-105	-29	1	1	0.96	0	48b461	34x34						
+124	122	5	T:선택	0	0	1	1	1	0	ffffff		20	선택				
+125	119	4	we	0	0	0.95	0.95	1	0	ffffff							
+126	125	5	reward_button_bg	-116.4	-27.5	0.95	0.95	1	0	facc15	34x34						
+127	125	5	icon_clipperboard	-100.2	-2.8	0.711	0.711	1	0	ffffff	76x79						
+128	125	5	T:모두 받기!	19	0	0.95	0.95	1	0	ffffff		20	모두 받기!				
+129	119	4	we	515.5	148	1	1	1	0	ffffff							
+130	129	5	reward_button_bg	305.5	102	1	1	0.9	0	34d399	34x34						
+131	129	5	icon_hero_movespeed	345.5	148	1.7	1.7	1	0	ffffff	32x32						
+132	129	5	T:영웅	395.5	136	1	1	1	0	ffffff		18	영웅				
+133	129	5	T:이동 속도 +15%	395.5	160	1	1	1	0	ffffff		14	이동 속도 +15%				
+134	119	4	we	515.5	255	1	1	1	0	ffffff							
+135	134	5	reward_button_bg	305.5	209	1	1	0.9	0	a3e635	34x34						
+136	134	5	icon_hero_collectradius	345.5	255	1.7	1.7	1	0	ffffff	32x32						
+137	134	5	T:영웅	395.5	243	1	1	1	0	ffffff		18	영웅				
+138	134	5	T:수집 범위 +30%	395.5	267	1	1	1	0	ffffff		14	수집 범위 +30%				
+139	119	4	we	515.5	362	1	1	1	0	ffffff							
+140	139	5	reward_button_bg	305.5	316	1	1	0.9	0	f59e0b	34x34						
+141	139	5	icon_bullets_firerate	345.5	362	1.7	1.7	1	0	ffffff	32x32						
+142	139	5	T:총알	395.5	350	1	1	1	0	ffffff		18	총알				
+143	139	5	T:발사 속도 +30%	395.5	374	1	1	1	0	ffffff		14	발사 속도 +30%				
+144	1	2	bd	266.2	532	-0.715	-0.715	1	1	ffffff							
+145	144	3	we	263	535.2	-0.715	-0.715	1	1	ffffff							
+146	145	4	quest_pointer	263	535.2	-0.715	-0.715	1	1	ffffff	94x58			263	535.2	107.8	107.1
+147	145	4	T:90m	270.1	528.2	1	1	1	1	ffffff		14	90m	270.1	528.2	47	19
+148	1	2	Kd	0	0	1	1	1	1	ffffff							
+149	148	3	Ed	0	0	1	1	1	0	ffffff							
+150	149	4	we	0	0	1	1	1	0	ffffff							
+151	150	5	Graphics	0	0	1	1	1	0	ffffff							
+152	150	5	Graphics	0	0	1	1	1	0	ffffff							
+153	150	5	T:과제 보상	515.5	188	1	1	1	0	ffffff		18	과제 보상				
+154	150	5	T:새 무기: "라이트닝"!	515.5	222	1	1	1	0	ffffff		24	새 무기: "라이트닝"!				
+155	150	5	icon_lightning	515.5	294	4	4	1	0	ffffff	32x32						
+156	150	5	we	435.5	364	1	1	1	0	ffffff							
+157	156	6	Graphics	435.5	364	1	1	1	0	ffffff							
+158	156	6	T:확인	515.5	388	1	1	1	0	ffffff		18	확인				
+159	148	3	Od	0	0	1	1	1	0	ffffff							
+160	159	4	we	0	0	1	1	1	0	ffffff							
+161	160	5	Graphics	0	0	1	1	1	0	ffffff							
+162	160	5	Graphics	0	0	1	1	1	0	ffffff							
+163	160	5	T:부활?	515.5	182	1	1	1	0	ffffff		28	부활?				
+164	160	5	T:8	515.5	256	1	1	1	0	ffffff		65	8				
+165	160	5	we	515.5	344	1	1	1	0	ffffff							
+166	165	6	reward_button_bg	400.5	315	1	1	1	0	facc15	34x34						
+167	165	6	icon_clipperboard	418.5	341	0.81	0.81	1	0	ffffff	76x79						
+168	165	6	T:부활	535.5	344	1	1	1	0	ffffff		20	부활				
+169	160	5	we	515.5	412	1	1	1	0	ffffff							
+170	169	6	reward_button_bg	400.5	383	1	1	1	0	a53a3a	34x34						
+171	169	6	T:아니요	515.5	412	1	1	1	0	ffffff		20	아니요				
+172	148	3	Xd	0	0	1	1	1	0	ffffff							
+173	172	4	Graphics	0	0	1	1	1	0	ffffff							
+174	172	4	task_bg	245.5	144	1	1	1	0	ffffff	6x6						
+175	172	4	T:과제 완료!	515.5	196	1	1	1	0	ffffff		30	과제 완료!				
+176	172	4	T:보상을 받으러 사원으로 돌아가거나 계속 전투	515.5	268	1	1	1	0	ffffff		21	보상을 받으러 사원으로 돌아가거나 계속 전투하세요.				
+177	172	4	taskCompletionReturnButton	269.5	348	1	1	1	0	ffffff							
+178	177	5	Graphics	269.5	348	1	1	1	0	8a3f32							
+179	177	5	T:사원으로	388.5	378	1	1	1	0	ffffff		20	사원으로				
+180	172	4	taskCompletionContinueButton	523.5	348	1	1	1	0	ffffff							
+181	180	5	Graphics	523.5	348	1	1	1	0	2e7d32							
+182	180	5	T:계속	647.5	378	1	1	1	0	ffffff		20	계속				
+183	1	2	sc	0	0	1	1	1	1	ffffff							
+184	183	3	Graphics	0	0	1	1	1	0	ffffff							
+185	1	2	qd	0	0	1	1	1	1	ffffff							

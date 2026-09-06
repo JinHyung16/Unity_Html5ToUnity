@@ -1,0 +1,31 @@
+# event:|hit:0|meteor:0|boss:0|heal:0|dead:0 @75726ms prev=도와줘!|hit:0|meteor:0|boss:0|heal:0|dead:0 state={"hero":[875,608],"enemies":0,"gems":0,"meters":null}
+we @0,0
+  np @0,0
+    Fu @0,0
+    Lh @515.5,310
+      Qu @515.5,310
+        Mesh @515.5,310
+        Mesh @515.5,310
+        Mesh @515.5,310
+        Mesh @515.5,310
+      Bl @515.5,310
+        Xu @791,560
+          lobby_task_npc_groundskeeper_01 @791,560
+        Xu @960,560
+          lobby_task_npc_herbalist_01 @960,560
+        Ru @779,420
+          lobby_portal_graveyard_open @779,420
+          hd @779,390
+            ParticleContainer @779,380
+        Ru @971.5,420
+          lobby_portal_winter_locked @971.5,420
+          hd @971.5,390
+            ParticleContainer @971.5,380
+        _u @875,608
+          hero @875,608
+      Nd @515.5,310
+      zh @515.5,310
+    ep @0,0
+    Kd @0,0
+    Zu @0,0
+    wu @0,0

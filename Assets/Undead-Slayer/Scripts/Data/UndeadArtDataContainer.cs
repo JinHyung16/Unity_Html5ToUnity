@@ -1,0 +1,149 @@
+using System.Collections.Generic;
+using System.Text;
+using JinHyung.Core;
+using JinHyung.Extensions;
+
+namespace JinHyung.Data
+{
+    /// <summary>
+    /// 아트 표 — 원본 씬 그래프에서 <b>실측한 22종</b>.
+    ///
+    /// <para>
+    /// ⚠ <b>아틀라스 79프레임 전부가 아니다.</b> 이관 회차에 화면에 실제로 나온 것만 든다 —
+    /// 못 본 것을 추정으로 채우면 그게 오염이다. 그릴 일이 생기면 그때 재서 넣는다.
+    /// </para>
+    /// </summary>
+    public class UndeadArtDataContainer : DictionaryContainer<string, UndeadArtData>
+    {
+        /// <summary>
+        /// 실측한 아트 종류 수.
+        ///
+        /// <para>회차 8 에 <b><c>warrior_lay</c></b> 를 더해 23 → <b>24</b> — 과제 목표 개체가 관측됐다
+        /// (씬에서 <c>(169.3, 2559.3)</c> 로 잡혔고 아틀라스 실측 192×48).</para>
+        ///
+        /// <para>
+        /// 43 → <b>45</b> — <b><c>warrior_idle</c>(4컷)·<c>warrior_run</c>(8컷)</b> 을 더했다.
+        /// 두 장은 <b>원본에 있는데 우리에게 아예 없었다</b> — 구조된 전사가 «누운 그림»으로 따라다녔다
+        /// [소스 <c>loadFrames</c> 직독].
+        /// </para>
+        /// </summary>
+        public const int MeasuredRowCount = 45;
+
+        /// <summary>월드 아트 = <c>Game</c> · UI 아트 = <c>Ui</c>. 다른 값이 들어오면 오류다.</summary>
+        public const string CategoryGame = "Game";
+
+        public const string CategoryUi = "Ui";
+
+        private List<UndeadArtData> _game = new List<UndeadArtData>(16);
+        private List<UndeadArtData> _ui = new List<UndeadArtData>(16);
+
+        public override string Name
+        {
+            get { return "UndeadArtTable"; }
+        }
+
+        /// <summary>월드에 그리는 아트.</summary>
+        public IReadOnlyList<UndeadArtData> GameArt
+        {
+            get { return _game; }
+        }
+
+        /// <summary>캔버스에 그리는 아트.</summary>
+        public IReadOnlyList<UndeadArtData> UiArt
+        {
+            get { return _ui; }
+        }
+
+        protected override void SubCollectionConstructor(int count)
+        {
+            _game = new List<UndeadArtData>(count);
+            _ui = new List<UndeadArtData>(count);
+        }
+
+        protected override void SubCollectionAdd(string key, UndeadArtData value)
+        {
+            if (value.Category == CategoryUi)
+                _ui.Add(value);
+            else
+                _game.Add(value);
+        }
+
+        public override bool Validate(out string errorMessage)
+        {
+            var sb = new StringBuilder();
+
+            if (base.Validate(out string baseError) == false)
+                sb.AppendLine(baseError);
+
+            if (Count != MeasuredRowCount)
+                sb.AppendLine($"행 수 {Count} — 실측 {MeasuredRowCount}");
+
+            for (int i = 0; i < AllValues.Count; i++)
+            {
+                UndeadArtData v = AllValues[i];
+
+                if (v.Code.IsNullOrEmpty())
+                    sb.AppendLine($"Id {v.Id}: Code 가 비었다");
+
+                if (v.Category != CategoryGame && v.Category != CategoryUi)
+                    sb.AppendLine($"{v.Code}: Category '{v.Category}' 가 {CategoryGame}/{CategoryUi} 가 아니다");
+
+                if (v.SheetWidth <= 0 || v.SheetHeight <= 0)
+                    sb.AppendLine($"{v.Code}: 시트 크기 {v.SheetWidth}x{v.SheetHeight} 가 0 이하다");
+
+                // ★ 격자가 시트와 «곱»으로 맞아야 한다 — 안 맞으면 컷 수를 잘못 센 것이다.
+                if (v.FrameWidth * v.Cols != v.SheetWidth || v.FrameHeight * v.Rows != v.SheetHeight)
+                {
+                    sb.AppendLine($"{v.Code}: 컷 {v.FrameWidth}x{v.FrameHeight} × 격자 {v.Cols}x{v.Rows} 이 " +
+                                  $"시트 {v.SheetWidth}x{v.SheetHeight} 과 안 맞는다");
+                }
+
+                // ★ 안 잰 값에 «0 이 아닌 숫자»가 들어오면 추정이 새어 들어온 것이다.
+                if (v.FpsMeasured == false && v.Fps != 0.0)
+                    sb.AppendLine($"{v.Code}: fps 를 안 쟀는데 {v.Fps} 가 적혀 있다");
+
+                if (v.FpsMeasured && v.Fps <= 0.0)
+                    sb.AppendLine($"{v.Code}: fps 를 쟀다면서 {v.Fps} 다");
+
+                // ★ 컷이 여럿인데 fps 가 없으면 «움직일 수 없다» — 그리기 전에 재야 한다.
+                if (v.UsedCols <= 0 || v.UsedCols > v.Cols)
+                    sb.AppendLine($"{v.Code}: UsedCols {v.UsedCols} 가 1~{v.Cols} 밖이다");
+
+                // ★ fps 의 «뿌리»는 원본의 재생 속도(틱당 진행 컷 수)다 — <c>fps = 속도 × 60</c>.
+                //   대개 정수 분주가 되지만(0.2 → 12fps = 5틱) <b>항상 그런 것은 아니다</b> —
+                //   회차 9 에 번개가 <c>0.3 → 18fps</c> 로 나왔고 이는 3.33틱이라 정수가 아니다.
+                //   ⚠ 그래서 <c>FrameTicks60</c> 은 «정수 분주일 때만» 채우고, 아니면 0 이다.
+                if (v.FpsMeasured && v.FrameTicks60 > 0
+                    && System.Math.Abs(v.Fps - (60.0 / v.FrameTicks60)) > 0.01)
+                {
+                    sb.AppendLine($"{v.Code}: fps {v.Fps} 가 60/{v.FrameTicks60} 과 다르다 "
+                                  + "— 정수 분주가 아니면 FrameTicks60 을 0 으로 둔다");
+                }
+
+                // ★★ 「fps 를 재라」는 «돌리는» 것에만 건다.
+                //   ⚠ 판정 기준은 <c>Cols</c> 가 아니라 <b><c>UsedCols</c></b> 다 —
+                //     시트에 컷이 여럿이어도 «원본이 돌리는 것을 못 봤으면» 우리는 한 컷만 그리고,
+                //     그때는 fps 라는 값 자체가 쓰이지 않는다. 반대로 <b>UsedCols 가 2 이상이면</b>
+                //     fps 없이는 «몇 초에 한 컷»인지 정할 수 없어 반드시 추측이 된다.
+                if (v.UsedCols * v.Rows > 1 && v.FpsMeasured == false)
+                    sb.AppendLine($"{v.Code}: 돌리는 컷이 {v.UsedCols * v.Rows} 개인데 fps 가 미측정이다 — 그리기 전에 잰다");
+
+                if (v.DisplayScaleX <= 0.0 || v.DisplayScaleY <= 0.0)
+                    sb.AppendLine($"{v.Code}: 표시 배율 {v.DisplayScaleX}x{v.DisplayScaleY} 가 0 이하다 " +
+                                  $"— 좌우 반전은 FlipsHorizontally 로 든다, 음수 배율로 들지 않는다");
+
+                if (v.PivotX < 0.0 || v.PivotX > 1.0 || v.PivotY < 0.0 || v.PivotY > 1.0)
+                    sb.AppendLine($"{v.Code}: 피벗 {v.PivotX},{v.PivotY} 가 0~1 밖이다");
+
+                if (v.TintHex == null || v.TintHex.Length != 6)
+                    sb.AppendLine($"{v.Code}: TintHex '{v.TintHex}' 가 6자리 hex 가 아니다");
+
+                if (v.Alpha < 0.0 || v.Alpha > 1.0)
+                    sb.AppendLine($"{v.Code}: 알파 {v.Alpha} 가 0~1 밖이다");
+            }
+
+            errorMessage = sb.ToString();
+            return errorMessage.Length == 0;
+        }
+    }
+}

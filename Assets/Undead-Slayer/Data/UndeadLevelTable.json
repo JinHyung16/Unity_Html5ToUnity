@@ -1,0 +1,12 @@
+[
+  {
+    "Id": 1,
+    "Level2Goal": 15,
+    "Level3Goal": 40,
+    "BaseFactor": 30.0,
+    "TierEvery": 5,
+    "TierStep": 1.0,
+    "SteepEvery": 10,
+    "SteepStep": 0.5
+  }
+]

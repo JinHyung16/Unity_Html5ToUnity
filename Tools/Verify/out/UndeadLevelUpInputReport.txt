@@ -1,0 +1,52 @@
+화면 640x480
+  ✔ 게임 루트가 섰다
+  ✔ EventSystem 이 있다
+  canvas Canvas mode=ScreenSpaceCamera order=0 raycaster=True
+  ✔ 대기 창이 떴다
+  ✔ [대조군] 「시작」 버튼이 있다
+  ▸ [대조군] 시작 Canvas/UIRoot/Normal/UndeadReadyWindow/Start
+      활성=True 화면점=(320.00, 120.00) 월드=(0.00, -2.50, 0.00)
+      graphic=Image raycastTarget=True depth=1 cull=False color.a=1
+      canvas=Canvas camera=UICamera group.blocks=True group.alpha=1.00 group.interactable=True
+      rect size=(484.14, 193.66) anchoredPos=(0.00, -810.00) scale=(1.09, 1.09, 1.09)
+  ✔ [대조군] 「시작」이 레이캐스트에 맞는다
+  ✔ [대조군] 「시작」으로 전투가 시작됐다
+  ✔ 레벨 업 창이 떴다
+레벨 업 시점 — 레벨 2 · Paused=True · timeScale=1
+  ✔ 카드 버튼을 찾았다
+「선택」 버튼 오브젝트 = Confirm · 활성=False
+  ▸ 카드0 Canvas/UIRoot/Popup/UndeadLevelUpWindow/Card0
+      활성=True 화면점=(320.00, 357.52) 월드=(0.00, 2.45, 0.00)
+      graphic=Image raycastTarget=True depth=9 cull=False color.a=0.9
+      canvas=Canvas camera=UICamera group.blocks=True group.alpha=1.00 group.interactable=True
+      rect size=(782.07, 171.31) anchoredPos=(0.00, -275.59) scale=(1.00, 1.00, 1.00)
+  ▸ 카드1 Canvas/UIRoot/Popup/UndeadLevelUpWindow/Card1
+      활성=True 화면점=(320.00, 268.97) 월드=(0.00, 0.60, 0.00)
+      graphic=Image raycastTarget=True depth=13 cull=False color.a=0.9
+      canvas=Canvas camera=UICamera group.blocks=True group.alpha=1.00 group.interactable=True
+      rect size=(782.07, 171.31) anchoredPos=(0.00, -474.83) scale=(1.00, 1.00, 1.00)
+  ▸ 카드2 Canvas/UIRoot/Popup/UndeadLevelUpWindow/Card2
+      활성=True 화면점=(320.00, 180.41) 월드=(0.00, -1.24, 0.00)
+      graphic=Image raycastTarget=True depth=17 cull=False color.a=0.9
+      canvas=Canvas camera=UICamera group.blocks=True group.alpha=1.00 group.interactable=True
+      rect size=(782.07, 171.31) anchoredPos=(0.00, -674.07) scale=(1.00, 1.00, 1.00)
+카드0 화면점 (320.00, 357.52) · RaycastAll 첫 결과 = Canvas/UIRoot/Popup/UndeadLevelUpWindow/Card0
+      RaycastAll 2개
+        [0] Canvas/UIRoot/Popup/UndeadLevelUpWindow/Card0 depth=9 sortingOrder=0
+        [1] Canvas/UIRoot/Popup/UndeadLevelUpWindow/Dimmer depth=7 sortingOrder=0
+  ✔ 카드0 이 레이캐스트에 맞는다
+  ✔ 카드0 을 누르면 «고른» 상태가 된다
+  ✔ 카드를 고르면 「선택」이 나타난다
+  ▸ 선택 Canvas/UIRoot/Popup/UndeadLevelUpWindow/Confirm
+      활성=True 화면점=(320.00, 68.69) 월드=(0.00, -3.57, 0.00)
+      graphic=Image raycastTarget=True depth=21 cull=False color.a=1
+      canvas=Canvas camera=UICamera group.blocks=True group.alpha=1.00 group.interactable=True
+      rect size=(391.03, 108.00) anchoredPos=(0.00, -925.45) scale=(1.01, 1.01, 1.01)
+  ✔ 「선택」이 레이캐스트에 맞는다
+      RaycastAll 2개
+        [0] Canvas/UIRoot/Popup/UndeadLevelUpWindow/Confirm depth=21 sortingOrder=0
+        [1] Canvas/UIRoot/Popup/UndeadLevelUpWindow/Dimmer depth=7 sortingOrder=0
+  ✔ 「선택」으로 레벨 업 창이 닫힌다
+  ✔ 「선택」으로 전투가 재개된다
+  ✔ 고른 업그레이드가 실제로 적용된다
+═══ 레벨 업 입력 검사 15/15 통과 ═══

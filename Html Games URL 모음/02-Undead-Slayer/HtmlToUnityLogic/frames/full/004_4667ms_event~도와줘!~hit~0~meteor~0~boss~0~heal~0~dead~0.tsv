@@ -1,0 +1,165 @@
+id	parent	depth	name	x	y	sx	sy	alpha	visible	tint	frame	font	text	cx	cy	w	h
+0	-1	0	we	0	0	1	1	1	1	ffffff							
+1	0	1	vu	0	0	1	1	1	1	ffffff							
+2	1	2	Fd	0	0	1	1	1	1	ffffff							
+3	1	2	bu	0	0	1	1	1	1	ffffff							
+4	1	2	rl	0	0	1	1	1	1	ffffff							
+5	1	2	Uc	0	0	1	1	1	1	ffffff							
+6	1	2	Lh	515.5	310	1	1	1	1	ffffff							
+7	6	3	id	-1285.5	-748.7	1	1	1	1	ffffff							
+8	7	4	Mesh	-1285.5	-748.7	1	1	1	1	ffffff	456x2040			502.5	295.3	1224	792
+9	6	3	Nc	-1285.5	-748.7	1	1	1	1	ffffff							
+10	6	3	Hl	-1285.5	-748.7	1	1	1	1	ffffff							
+11	6	3	Pl	-1285.5	-748.7	1	1	1	1	ffffff							
+12	6	3	Oh	-1285.5	-748.7	1	1	1	1	ffffff							
+13	6	3	sd	-1285.5	-748.7	1	1	1	1	ffffff							
+14	6	3	Bl	-1285.5	-748.7	1	1	1	1	ffffff							
+15	14	4	kl	331	-76.3	1	1	1	1	ffffff							
+16	15	5	enemy1	331	-76.3	3	3	1	1	ffffff	16x17			331	-101.8	48	51
+17	14	4	kl	278	-63.6	1	1	1	1	ffffff							
+18	17	5	enemy1	278	-63.6	3	3	1	1	ffffff	16x17			278	-89.1	48	51
+19	14	4	kl	124.1	-38	1	1	1	1	ffffff							
+20	19	5	enemy1	124.1	-38	3	3	1	1	ffffff	16x17			124.1	-63.5	48	51
+21	14	4	kl	-60.1	211	1	1	1	1	ffffff							
+22	21	5	enemy1	-60.1	211	3	3	1	1	ffffff	16x17			-60.1	185.5	48	51
+23	14	4	Zl	658	302.3	0.99	0.99	1	1	ffffff							
+24	23	5	projectile1	658	302.3	1.189	1.189	1	1	ffffff	36x16			658	302.3	45.4	25
+25	14	4	kl	-152	306.2	1	1	1	1	ffffff							
+26	25	5	enemy1	-152	306.2	3	3	1	1	ffffff	16x17			-152	280.7	48	51
+27	14	4	kl	-155.1	320	1	1	1	1	ffffff							
+28	27	5	enemy1	-155.1	320	3	3	1	1	ffffff	16x17			-155.1	294.5	48	51
+29	14	4	ic	533.8	327.5	1	1	1	1	ffffff							
+30	29	5	hero	533.8	327.5	3	3	1	1	ffffff	16x16			533.8	303.5	48	48
+31	29	5	Jl	533.8	327.5	1	1	1	1	ffffff							
+32	29	5	Kl	533.8	327.5	1	1	1	1	ffffff							
+33	29	5	Ql	533.8	267.5	1	1	0	0	ffffff							
+34	33	6	we	494.3	264	1	1	1	0	ffffff							
+35	34	7	Graphics	494.3	264	1	1	1	0	ffffff							
+36	34	7	Graphics	500.3	267	1	1	1	0	ffffff							
+37	33	6	we	506.3	264	1	1	1	0	ffffff							
+38	37	7	Graphics	506.3	264	1	1	1	0	ffffff							
+39	37	7	Graphics	512.3	267	1	1	1	0	ffffff							
+40	33	6	we	518.3	264	1	1	1	0	ffffff							
+41	40	7	Graphics	518.3	264	1	1	1	0	ffffff							
+42	40	7	Graphics	524.3	267	1	1	1	0	ffffff							
+43	33	6	we	530.3	264	1	1	1	0	ffffff							
+44	43	7	Graphics	530.3	264	1	1	1	0	ffffff							
+45	43	7	Graphics	536.3	267	1	1	1	0	ffffff							
+46	33	6	we	542.3	264	1	1	1	0	ffffff							
+47	46	7	Graphics	542.3	264	1	1	1	0	ffffff							
+48	46	7	Graphics	548.3	267	1	1	1	0	ffffff							
+49	33	6	we	554.3	264	1	1	1	0	ffffff							
+50	49	7	Graphics	554.3	264	1	1	1	0	ffffff							
+51	49	7	Graphics	560.3	267	1	1	1	0	ffffff							
+52	33	6	we	566.3	264	1	1	1	0	ffffff							
+53	52	7	Graphics	566.3	264	1	1	1	0	ffffff							
+54	52	7	Graphics	572.3	267	1	1	1	0	ffffff							
+55	14	4	Xc	839.7	352.7	1	1	1	1	ffffff							
+56	55	5	gem	839.7	352.7	2	2	1	1	ffffff	16x16			839.7	336.7	32	32
+57	14	4	ld	634.5	355.3	1	1	1	1	ffffff							
+58	57	5	graveyard_evil_tree_activated	634.5	355.3	1.217	1.294	1	1	ffffff	99x103			634.5	306.6	120.3	131.8
+59	57	5	hd	634.5	255.3	1	1	1	1	ffffff							
+60	59	6	ParticleContainer	634.5	245.3	1.5	4	1	1	ffffff	1x1						
+61	14	4	kl	830.3	364.8	1	1	1	1	ffffff							
+62	61	5	enemy1	830.3	364.8	-3	3	1	1	ffffff	16x17			830.3	339.3	48	51
+63	14	4	Wl	358.5	415.3	1	1	1	1	ffffff							
+64	63	5	fire	358.5	415.3	2.5	2.5	1	1	ffffff	24x24			358.5	403.3	60	60
+65	63	5	Gl	358.5	395.3	1	1	1	1	ffffff							
+66	65	6	heart	358.5	381.3	1.3	1.8	1	1	ffffff	32x32						
+67	14	4	kl	772.3	539.6	1	1	1	1	ffffff							
+68	67	5	enemy1	772.3	539.6	-3	3	1	1	ffffff	16x17			772.3	514.1	48	51
+69	6	3	Rd	-1285.5	-748.7	1	1	1	1	ffffff							
+70	6	3	Ld	-1285.5	-748.7	1	1	1	1	ffffff							
+71	6	3	Nd	-1285.5	-748.7	1	1	1	1	ffffff							
+72	71	4	$l	821.8	287.9	0.969	0.969	0.01	1	ffffff							
+73	72	5	T:-2	821.8	287.9	0.969	0.969	1	1	ffffff		14	-2	821.8	287.9	30.9	18
+74	71	4	$l	815.3	302	1.078	1.078	1	1	ffffff							
+75	74	5	T:-2	815.3	302	1.078	1.078	1	1	ffffff		14	-2	815.3	302	33.9	19.7
+76	6	3	zh	-1285.5	-748.7	1	1	1	1	ffffff							
+77	76	4	dc	-966.2	1749.5	1	1	1	1	ffffff							
+78	77	5	we	-966.2	1749.8	1	1	1	1	ffffff							
+79	78	6	bubble	-966.2	1749.8	1	1	1	1	ffffff	140x42			-966.2	1723.6	175	52.5
+80	78	6	T:도와줘!	-966.2	1723.6	1	1	1	1	ffffff		16	도와줘!	-966.2	1723.6	60.2	18
+81	1	2	yu	0	0	1	1	1	1	ffffff							
+82	1	2	cd	0	0	1	1	1	1	ffffff							
+83	1	2	jc	0	0	1	1	1	1	ffffff							
+84	1	2	Wh	0	0	1	1	1	1	ffffff							
+85	1	2	Qc	0	5	1	1	1	1	ffffff							
+86	85	3	we	0	5	1	1	1	1	ffffff							
+87	86	4	skill_bg	34	17	1	1	1	1	ffffff	6x6			512.5	27	957	20
+88	86	4	bar	35	18	1	1	1	0	ffffff	16x16						
+89	86	4	gem_icon	35	27	3.75	3.75	1	1	ffffff	16x16			35	27	60	60
+90	86	4	lvl_bg	995	27	4.5	4.5	1	1	ffffff	16x16			995	27	72	72
+91	86	4	T:1	997	28	1	1	1	1	ffffff		18	1	997	28	20	22
+92	86	4	T:0/15	512.5	28	1	1	1	1	ffffff		12	0/15	512.5	28	50	14
+93	86	4	T:00:02	512.5	55	1	1	1	1	ffffff		14	00:02	512.5	55	75	19
+94	1	2	Hd	1019	484	1	1	1	1	ffffff							
+95	94	3	we	1019	484	1	1	1	1	ffffff							
+96	1	2	Kc	0	0	1	1	1	0	ffffff							
+97	96	3	we	0	0	1	1	1	0	ffffff							
+98	97	4	Graphics	0	0	1	1	1	0	ffffff							
+99	97	4	T:레벨 업!	515.5	68	1	1	1	0	ffffff		24	레벨 업!				
+100	97	4	we	0	0	1	1	1	0	ffffff							
+101	100	5	reward_button_bg	-105	-29	1	1	0.96	0	48b461	34x34						
+102	100	5	T:선택	0	0	1	1	1	0	ffffff		20	선택				
+103	97	4	we	0	0	0.95	0.95	1	0	ffffff							
+104	103	5	reward_button_bg	-116.4	-27.5	0.95	0.95	1	0	facc15	34x34						
+105	103	5	icon_clipperboard	-100.2	-2.8	0.711	0.711	1	0	ffffff	76x79						
+106	103	5	T:모두 받기!	19	0	0.95	0.95	1	0	ffffff		20	모두 받기!				
+107	97	4	we	515.5	148	1	1	1	0	ffffff							
+108	107	5	reward_button_bg	305.5	102	1	1	0.9	0	34d399	34x34						
+109	107	5	icon_hero_movespeed	345.5	148	1.7	1.7	1	0	ffffff	32x32						
+110	107	5	T:영웅	395.5	136	1	1	1	0	ffffff		18	영웅				
+111	107	5	T:이동 속도 +15%	395.5	160	1	1	1	0	ffffff		14	이동 속도 +15%				
+112	97	4	we	515.5	255	1	1	1	0	ffffff							
+113	112	5	reward_button_bg	305.5	209	1	1	0.9	0	a3e635	34x34						
+114	112	5	icon_hero_collectradius	345.5	255	1.7	1.7	1	0	ffffff	32x32						
+115	112	5	T:영웅	395.5	243	1	1	1	0	ffffff		18	영웅				
+116	112	5	T:수집 범위 +30%	395.5	267	1	1	1	0	ffffff		14	수집 범위 +30%				
+117	97	4	we	515.5	362	1	1	1	0	ffffff							
+118	117	5	reward_button_bg	305.5	316	1	1	0.9	0	f59e0b	34x34						
+119	117	5	icon_bullets_firerate	345.5	362	1.7	1.7	1	0	ffffff	32x32						
+120	117	5	T:총알	395.5	350	1	1	1	0	ffffff		18	총알				
+121	117	5	T:발사 속도 +30%	395.5	374	1	1	1	0	ffffff		14	발사 속도 +30%				
+122	1	2	bd	282.9	531.4	1	1	1	1	ffffff							
+123	122	3	we	282.3	531.9	1	1	1	1	ffffff							
+124	123	4	quest_pointer	282.3	531.9	1	1	1	1	ffffff	94x58			282.3	531.9	106.8	108.1
+125	123	4	T:88m	289.2	524.7	1	1	1	1	ffffff		14	88m	289.2	524.7	47	19
+126	1	2	Kd	0	0	1	1	1	1	ffffff							
+127	126	3	Ed	0	0	1	1	1	0	ffffff							
+128	127	4	we	0	0	1	1	1	0	ffffff							
+129	128	5	Graphics	0	0	1	1	1	0	ffffff							
+130	128	5	Graphics	0	0	1	1	1	0	ffffff							
+131	128	5	T:과제 보상	515.5	188	1	1	1	0	ffffff		18	과제 보상				
+132	128	5	T:새 무기: "라이트닝"!	515.5	222	1	1	1	0	ffffff		24	새 무기: "라이트닝"!				
+133	128	5	icon_lightning	515.5	294	4	4	1	0	ffffff	32x32						
+134	128	5	we	435.5	364	1	1	1	0	ffffff							
+135	134	6	Graphics	435.5	364	1	1	1	0	ffffff							
+136	134	6	T:확인	515.5	388	1	1	1	0	ffffff		18	확인				
+137	126	3	Od	0	0	1	1	1	0	ffffff							
+138	137	4	we	0	0	1	1	1	0	ffffff							
+139	138	5	Graphics	0	0	1	1	1	0	ffffff							
+140	138	5	Graphics	0	0	1	1	1	0	ffffff							
+141	138	5	T:부활?	515.5	182	1	1	1	0	ffffff		28	부활?				
+142	138	5	T:8	515.5	256	1	1	1	0	ffffff		65	8				
+143	138	5	we	515.5	344	1	1	1	0	ffffff							
+144	143	6	reward_button_bg	400.5	315	1	1	1	0	facc15	34x34						
+145	143	6	icon_clipperboard	418.5	341	0.81	0.81	1	0	ffffff	76x79						
+146	143	6	T:부활	535.5	344	1	1	1	0	ffffff		20	부활				
+147	138	5	we	515.5	412	1	1	1	0	ffffff							
+148	147	6	reward_button_bg	400.5	383	1	1	1	0	a53a3a	34x34						
+149	147	6	T:아니요	515.5	412	1	1	1	0	ffffff		20	아니요				
+150	126	3	Xd	0	0	1	1	1	0	ffffff							
+151	150	4	Graphics	0	0	1	1	1	0	ffffff							
+152	150	4	task_bg	245.5	144	1	1	1	0	ffffff	6x6						
+153	150	4	T:과제 완료!	515.5	196	1	1	1	0	ffffff		30	과제 완료!				
+154	150	4	T:보상을 받으러 사원으로 돌아가거나 계속 전투	515.5	268	1	1	1	0	ffffff		21	보상을 받으러 사원으로 돌아가거나 계속 전투하세요.				
+155	150	4	taskCompletionReturnButton	269.5	348	1	1	1	0	ffffff							
+156	155	5	Graphics	269.5	348	1	1	1	0	8a3f32							
+157	155	5	T:사원으로	388.5	378	1	1	1	0	ffffff		20	사원으로				
+158	150	4	taskCompletionContinueButton	523.5	348	1	1	1	0	ffffff							
+159	158	5	Graphics	523.5	348	1	1	1	0	2e7d32							
+160	158	5	T:계속	647.5	378	1	1	1	0	ffffff		20	계속				
+161	1	2	sc	0	0	1	1	1	1	ffffff							
+162	161	3	Graphics	0	0	1	1	1	0	ffffff							
+163	1	2	qd	0	0	1	1	1	1	ffffff							
