@@ -75,8 +75,9 @@ Assets/
 │   └─ Editor/                 공용 에디터 툴 · 프리팹 빌더 베이스
 └─ <게임명>/                 ← 게임 하나당 한 폴더
     ├─ Scripts/ · Art/ · Data/ · Scenes/
-    ├─ Resources/              UI 프리팹·폰트 (로드 규칙 참고)
+    ├─ Resources/              UI 프리팹 · **구운** 폰트 에셋 (로드 규칙 참고)
     └─ Editor/                 그 게임의 프리팹 빌더 · 굽는 «입력» 데이터(빌드에 안 들어간다)
+                               — 원본 TTF · 실측 규격 JSON 처럼 «굽고 나면 안 쓰는» 것
 ```
 
 - **게임 폴더 이름에서 번호를 뗀다.** `01-Candy-Crush-Game` → **`Assets/Candy-Crush-Game/`**
@@ -134,8 +135,14 @@ Assets/
 | 무엇 | 어디서 |
 |---|---|
 | **UI 프리팹** (Window · Panel · Component) | **Resources** |
+| **구운 폰트 에셋** (TMP SDF) | **Resources** — UI 프리팹이 참조한다 |
+| **원본 서체 파일 (TTF/OTF)** | **`Editor/`** — 굽는 «입력»이다 |
 | **그 밖의 아트** (스프라이트 · 배경 · 이펙트 · 사운드) | **Addressables** |
 | **데이터 JSON** | Addressables 라벨 (`DataManager` 가 라벨 하나로 읽는다) |
+
+⚠⚠ **«굽는 입력»을 `Resources/` 에 두지 않는다 — 쓰지 않아도 빌드에 들어간다.**
+구운 폰트 에셋은 소스 TTF 를 런타임에 참조하지 않는다(정적 아틀라스면 그 참조가 비어 있다) —
+그래서 TTF 는 `Editor/` 가 제자리다. 실측 사례로 **안 쓰는 서체 한 벌이 통째로 실려** 있었다.
 
 **섞이는 것은 의도된 것이다.** 다만 코드에서 어느 쪽인지 보여야 한다 —
 어드레서블 키에 `~Address`/`~Key` 를 붙여 Resources 경로와 구분한다.
