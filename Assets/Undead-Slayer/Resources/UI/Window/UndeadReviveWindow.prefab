@@ -74,7 +74,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
+  m_PixelsPerUnitMultiplier: 0.537037
 --- !u!1 &1537957737419153802
 GameObject:
   m_ObjectHideFlags: 0
@@ -86,6 +86,7 @@ GameObject:
   - component: {fileID: 4976944412447587704}
   - component: {fileID: 5824054733642316685}
   - component: {fileID: 555033203681956913}
+  - component: {fileID: 5475614065625403448}
   m_Layer: 0
   m_Name: Label
   m_TagString: Untagged
@@ -143,7 +144,7 @@ MonoBehaviour:
   m_text: "\uBD80\uD65C"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ce5ec5f8034f0c847bf039029c716c73, type: 2}
-  m_sharedMaterial: {fileID: -3378076885598456707, guid: ce5ec5f8034f0c847bf039029c716c73, type: 2}
+  m_sharedMaterial: {fileID: -7889550937217886405, guid: ce5ec5f8034f0c847bf039029c716c73, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -212,6 +213,20 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &5475614065625403448
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1537957737419153802}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b859c94afd2e804bb85b7b02e719feb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::JinHyung.UI.Fx.UiTextFit
+  _boxWidth: 290.48276
+  _boxHeight: 44.689655
 --- !u!1 &1983073257510760605
 GameObject:
   m_ObjectHideFlags: 0
@@ -287,7 +302,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!1 &2978707927331094916
+--- !u!1 &2637228417143022927
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -295,9 +310,10 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 8441378481312554165}
-  - component: {fileID: 4284771979658747490}
-  - component: {fileID: 3786906358953877013}
+  - component: {fileID: 4437344978702902234}
+  - component: {fileID: 8038461103603598123}
+  - component: {fileID: 2663395751970984676}
+  - component: {fileID: 2440542689165221038}
   m_Layer: 0
   m_Name: Label
   m_TagString: Untagged
@@ -305,13 +321,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!224 &8441378481312554165
+--- !u!224 &4437344978702902234
 RectTransform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2978707927331094916}
+  m_GameObject: {fileID: 2637228417143022927}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -324,21 +340,21 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &4284771979658747490
+--- !u!222 &8038461103603598123
 CanvasRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2978707927331094916}
+  m_GameObject: {fileID: 2637228417143022927}
   m_CullTransparentMesh: 1
---- !u!114 &3786906358953877013
+--- !u!114 &2663395751970984676
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2978707927331094916}
+  m_GameObject: {fileID: 2637228417143022927}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
@@ -355,7 +371,7 @@ MonoBehaviour:
   m_text: "\uC544\uB2C8\uC694"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ce5ec5f8034f0c847bf039029c716c73, type: 2}
-  m_sharedMaterial: {fileID: -3378076885598456707, guid: ce5ec5f8034f0c847bf039029c716c73, type: 2}
+  m_sharedMaterial: {fileID: -7889550937217886405, guid: ce5ec5f8034f0c847bf039029c716c73, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -424,6 +440,20 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &2440542689165221038
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2637228417143022927}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b859c94afd2e804bb85b7b02e719feb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::JinHyung.UI.Fx.UiTextFit
+  _boxWidth: 368.68967
+  _boxHeight: 44.689655
 --- !u!1 &4224975832499510343
 GameObject:
   m_ObjectHideFlags: 0
@@ -502,7 +532,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
+  m_PixelsPerUnitMultiplier: 0.537037
 --- !u!114 &1472007405157994972
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -587,6 +617,7 @@ GameObject:
   - component: {fileID: 827061335889485601}
   - component: {fileID: 22700584690268359}
   - component: {fileID: 7454686098057304154}
+  - component: {fileID: 4450426895505508010}
   m_Layer: 0
   m_Name: Title
   m_TagString: Untagged
@@ -644,7 +675,7 @@ MonoBehaviour:
   m_text: "\uBD80\uD65C?"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ce5ec5f8034f0c847bf039029c716c73, type: 2}
-  m_sharedMaterial: {fileID: -3378076885598456707, guid: ce5ec5f8034f0c847bf039029c716c73, type: 2}
+  m_sharedMaterial: {fileID: -7889550937217886405, guid: ce5ec5f8034f0c847bf039029c716c73, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -713,6 +744,20 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &4450426895505508010
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5038691169551390858}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b859c94afd2e804bb85b7b02e719feb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::JinHyung.UI.Fx.UiTextFit
+  _boxWidth: 1651.0221
+  _boxHeight: 63.310345
 --- !u!1 &5166258412255144826
 GameObject:
   m_ObjectHideFlags: 0
@@ -786,7 +831,7 @@ MonoBehaviour:
   _reviveButton: {fileID: 1472007405157994972}
   _reviveText: {fileID: 555033203681956913}
   _declineButton: {fileID: 6723548697410221557}
-  _declineText: {fileID: 3786906358953877013}
+  _declineText: {fileID: 2663395751970984676}
 --- !u!1 &7444659296907968663
 GameObject:
   m_ObjectHideFlags: 0
@@ -820,7 +865,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 8441378481312554165}
+  - {fileID: 4437344978702902234}
   m_Father: {fileID: 7331071452060076179}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
@@ -865,7 +910,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
+  m_PixelsPerUnitMultiplier: 0.537037
 --- !u!114 &6723548697410221557
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -950,6 +995,7 @@ GameObject:
   - component: {fileID: 5554781288531341462}
   - component: {fileID: 7340864088559432941}
   - component: {fileID: 5660859356573336016}
+  - component: {fileID: 680609678113529318}
   m_Layer: 0
   m_Name: Countdown
   m_TagString: Untagged
@@ -1007,7 +1053,7 @@ MonoBehaviour:
   m_text: 8
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ce5ec5f8034f0c847bf039029c716c73, type: 2}
-  m_sharedMaterial: {fileID: -3378076885598456707, guid: ce5ec5f8034f0c847bf039029c716c73, type: 2}
+  m_sharedMaterial: {fileID: -7889550937217886405, guid: ce5ec5f8034f0c847bf039029c716c73, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1076,3 +1122,17 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &680609678113529318
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8636260163080898784}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b859c94afd2e804bb85b7b02e719feb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::JinHyung.UI.Fx.UiTextFit
+  _boxWidth: 297.93103
+  _boxHeight: 189.93105

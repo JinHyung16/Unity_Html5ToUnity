@@ -520,14 +520,49 @@ namespace JinHyung.EditorTools
         }
 
         /// <summary>체력바 한 칸 12×6 [소스] — 빨강, 아래 한 줄 어둡게.</summary>
-        private static Texture2D BakeHpSegment(UndeadArtData a)
+        /// <summary>
+        /// 체력 칸 <b>바탕</b> — 목숨이 줄어도 <b>남는다</b>
+        /// [소스 <c>rect(0,0,12,6)</c> · <c>fill 0x4A0D0D</c> · <c>stroke {color:0, width:1, pixelLine}</c>].
+        ///
+        /// <para>
+        /// ⚠ 원본은 이 그림을 <b>아틀라스가 아니라 코드로</b> 그린다 — 그래서 실측 규격이 없고,
+        /// <b>소스의 사각형·색·선폭</b>이 곧 규격이다 (표의 <c>DrawnByCode</c>).
+        /// </para>
+        ///
+        /// <para>⚠ [사고] 예전에는 색을 <c>E24040</c> 으로 «지어냈고» 명암 두 줄도 우리가 넣은 것이었다.</para>
+        /// </summary>
+        private static Texture2D BakeHpSegmentBg(UndeadArtData a)
         {
             Texture2D tex = New(a.SheetWidth, a.SheetHeight);
-            Rect(tex, 0, 0, a.SheetWidth, a.SheetHeight, Outline);
-            Rect(tex, 1, 1, a.SheetWidth - 2, a.SheetHeight - 2, Hex("E24040"));
-            Rect(tex, 1, 1, a.SheetWidth - 2, 1, Hex("9E2424"));
-            Rect(tex, 1, a.SheetHeight - 2, a.SheetWidth - 2, 1, Hex("FF8A8A"));
+            Rect(tex, 0, 0, a.SheetWidth, a.SheetHeight, HpSegmentBack);
+            Outline1(tex, a.SheetWidth, a.SheetHeight, Color.black);
             return tex;
+        }
+
+        /// <summary>
+        /// 체력 칸 <b>채움</b> — 목숨 수만큼만 보인다
+        /// [소스 <c>rect</c> (12−2)×(6−2) · <c>fill 0xFF2B2B</c> · 여백 <c>padding 1</c>].
+        /// </summary>
+        private static Texture2D BakeHpSegmentFill(UndeadArtData a)
+        {
+            Texture2D tex = New(a.SheetWidth, a.SheetHeight);
+            Rect(tex, 0, 0, a.SheetWidth, a.SheetHeight, HpSegmentFill);
+            return tex;
+        }
+
+        /// <summary>체력 칸 바탕색 [소스 — <c>4853005</c> = <c>#4A0D0D</c>].</summary>
+        private static readonly Color HpSegmentBack = Hex("4A0D0D");
+
+        /// <summary>체력 칸 채움색 [소스 — <c>16722731</c> = <c>#FF2B2B</c>].</summary>
+        private static readonly Color HpSegmentFill = Hex("FF2B2B");
+
+        /// <summary>1px 테두리 — <c>stroke({width:1, pixelLine:true})</c> 는 «안쪽 한 줄»이다.</summary>
+        private static void Outline1(Texture2D tex, int w, int h, Color color)
+        {
+            Rect(tex, 0, 0, w, 1, color);
+            Rect(tex, 0, h - 1, w, 1, color);
+            Rect(tex, 0, 0, 1, h, color);
+            Rect(tex, w - 1, 0, 1, h, color);
         }
 
         // ══════════════════════════════ NPC — 48×48 프레임 안에 «사람 크기» 도트 (16 폭 · 약 30 높이)

@@ -68,6 +68,33 @@ namespace JinHyung.UndeadSlayer
             await InitAsync(_cts.Token);
         }
 
+        /// <summary>
+        /// 전사가 하는 말 <b>다섯 마디</b> [소스 <c>helpMe</c> · <c>thanksPal</c> · <c>introduction.bubbleTextKey</c> 셋].
+        ///
+        /// <para>
+        /// ⚠ 순서가 <see cref="UndeadWorldView"/> 의 규약이다 —
+        /// <b>도와줘 · 고마워 · 마법사 예고 · 첫 보스 예고 · 농부 예고</b>.
+        /// </para>
+        ///
+        /// <para>
+        /// ⚠ [사고] 뒤의 네 키는 <b>문구 표에 있었는데 읽는 곳이 없었다</b> — 전사가 한 마디밖에 못 했다
+        /// (재발방지 #131 · #159 — 「표에 넣고 읽는 곳이 없다」).
+        /// </para>
+        /// </summary>
+        private static string[] WarriorSpeechTexts()
+        {
+            JinHyung.Data.UndeadTextDataContainer texts = GameRoot.Instance.UndeadTextDataContainer;
+
+            return new[]
+            {
+                texts.Ko("helpMe"),
+                texts.Ko("thanksPal"),
+                texts.Ko("iHearSomebodyScreaming"),
+                texts.Ko("iFeelSomeDarkEnergy"),
+                texts.Ko("whatTheAnimals"),
+            };
+        }
+
         private void OnDestroy()
         {
             _cts.Cancel();
@@ -176,7 +203,13 @@ namespace JinHyung.UndeadSlayer
             Task<UndeadSpriteSet> warriorTask = UndeadSpriteSet.LoadAsync(art.Get("warrior_lay"));
             Task<UndeadSpriteSet> warriorIdleTask = UndeadSpriteSet.LoadAsync(art.Get("warrior_idle"));
             Task<UndeadSpriteSet> warriorRunTask = UndeadSpriteSet.LoadAsync(art.Get("warrior_run"));
+            // ★ 구조된 전사가 던지는 쿠나이 [소스 class Pd]
+            Task<UndeadSpriteSet> kunaiTask = UndeadSpriteSet.LoadAsync(art.Get("kunai"));
             Task<UndeadSpriteSet> bubbleTask = UndeadSpriteSet.LoadAsync(art.Get("bubble"));
+            // ★ 전사가 «다음 과제를 예고»할 때 쓰는 큰 말풍선 [소스 variant "medium"]
+            Task<UndeadSpriteSet> bubbleMediumTask = UndeadSpriteSet.LoadAsync(art.Get("bubble_medium"));
+            // ★ 쓰러진 전사 곁에서 차오르는 구조 진행 링 [소스 class Ad]
+            Task<UndeadSpriteSet> questProgressTask = UndeadSpriteSet.LoadAsync(art.Get("quest_progress"));
             Task<UndeadSpriteSet> bossTask = UndeadSpriteSet.LoadAsync(art.Get("darksoul"));
             Task<UndeadSpriteSet> fireballTask = UndeadSpriteSet.LoadAsync(art.Get("fireball"));
             // ★ 가족은 «세 명»이고 각기 다른 시트다 [소스 createMembers]
@@ -193,7 +226,9 @@ namespace JinHyung.UndeadSlayer
             Task<UndeadSpriteSet> fireOffTask = UndeadSpriteSet.LoadAsync(art.Get("fire_inactive"));
             Task<UndeadSpriteSet> heartTask = UndeadSpriteSet.LoadAsync(art.Get("heart"));
             Task<UndeadSpriteSet> lightningTask = UndeadSpriteSet.LoadAsync(art.Get("lightning"));
-            Task<UndeadSpriteSet> hpTask = UndeadSpriteSet.LoadAsync(art.Get("hp_segment"));
+            Task<UndeadSpriteSet> hpTask = UndeadSpriteSet.LoadAsync(art.Get("hp_segment_bg"));
+            // ★ 체력 칸은 «두 겹»이다 — 어두운 바탕은 늘 있고 빨간 채움만 줄었다 늘었다 한다 [소스 rebuildSegments]
+            Task<UndeadSpriteSet> hpFillTask = UndeadSpriteSet.LoadAsync(art.Get("hp_segment_fill"));
             Task<UndeadSpriteSet> mageTask = UndeadSpriteSet.LoadAsync(art.Get("mage"));
             Task<UndeadSpriteSet> fragmentTask = UndeadSpriteSet.LoadAsync(art.Get("arcane_fragment"));
 
@@ -239,11 +274,13 @@ namespace JinHyung.UndeadSlayer
                                             await fireTask, await fireOffTask, await heartTask);
 
                 _worldView.BindLightning(await lightningTask);
-                _worldView.BindLifeBar(await hpTask, GameRoot.Instance.UndeadConfigDataContainer.Config.HeroMaxHp);
+                _worldView.BindLifeBar(await hpTask, await hpFillTask, GameRoot.Instance.UndeadConfigDataContainer.Config.HeroMaxHp);
 
                 _worldView.BindQuestTarget(warrior, await warriorIdleTask, await warriorRunTask,
                                            bubble, await mageTask, await fragmentTask,
-                                           GameRoot.Instance.UndeadTextDataContainer.Ko("helpMe"),
+                                           await kunaiTask, await bubbleMediumTask,
+                                           await questProgressTask,
+                                           WarriorSpeechTexts(),
                                            UnityEngine.Resources.Load<TMPro.TMP_FontAsset>("Font/UndeadSlayer SDF"));
             }
 

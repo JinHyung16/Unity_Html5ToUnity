@@ -64,6 +64,21 @@ namespace JinHyung.EditorTools
             /// <para>⚠ 실루엣·팔레트만으로는 «그림»이 안 나온다 — 그 둘이 완전히 맞아도 픽셀 일치가 13~34% 였다.</para>
             /// </summary>
             [JsonProperty("pix")] public List<string> Pix { get; set; }
+
+            /// <summary>
+            /// 알파 <b>단계 표</b> — 없으면 <b>전부 불투명</b>이다.
+            ///
+            /// <para>
+            /// ⚠ [사고] 알파를 «있다/없다» 둘로만 담았더니, 원본의 <b>부드러운 그림자</b>(알파 7~181)가
+            /// 전부 <b>불투명</b>이 되어 버튼 뒤에 <b>검은 판</b>이 생겼다.
+            /// 실루엣·팔레트·픽셀 배치가 다 맞는데도 그림이 달랐다 —
+            /// <b>알파는 «색»이 아니라 따로 재야 하는 축</b>이다.
+            /// </para>
+            /// </summary>
+            [JsonProperty("apal")] public List<int> AlphaPalette { get; set; }
+
+            /// <summary>알파 배치 — 글자 하나가 <see cref="AlphaPalette"/> 인덱스다 (<c>'.'</c> 는 투명).</summary>
+            [JsonProperty("apix")] public List<string> AlphaPix { get; set; }
         }
 
         [Serializable]
@@ -117,7 +132,11 @@ namespace JinHyung.EditorTools
             Texture2D tex = newTexture(a.SheetWidth, a.SheetHeight);
             int perRow = Math.Max(1, a.Cols);
             int want = Math.Max(1, a.UsedCols) * Math.Max(1, a.Rows);
-            int count = Math.Min(want, spec.Cuts.Count);
+
+            // ★ 원본이 «앞에서부터» 안 쓰는 시트가 있다 [표 CutOffset — warrior_lay 는 2번 컷부터].
+            //   ⚠ 이걸 빼먹으면 «다른 자세»가 조용히 구워진다 — 크기도 컷 수도 맞아서 검사에 안 걸린다.
+            int from = Math.Max(0, a.CutOffset);
+            int count = Math.Min(want, Math.Max(0, spec.Cuts.Count - from));
 
             for (int i = 0; i < count; i++)
             {
@@ -128,7 +147,7 @@ namespace JinHyung.EditorTools
                 // ⚠ 유니티 텍스처는 «아래»가 0 이다 — 시트의 첫 줄이 위로 가게 뒤집어 놓는다
                 int oy = a.SheetHeight - (row + 1) * a.FrameHeight;
 
-                DrawCut(tex, ox, oy, spec.Cuts[i], put);
+                DrawCut(tex, ox, oy, spec.Cuts[from + i], put);
             }
 
             // 컷이 모자라면 마지막 것을 반복한다 — 빈 칸은 «투명 프레임»이 되어 깜빡인다
@@ -137,7 +156,7 @@ namespace JinHyung.EditorTools
                 int col = i % perRow;
                 int row = i / perRow;
                 DrawCut(tex, col * a.FrameWidth, a.SheetHeight - (row + 1) * a.FrameHeight,
-                        spec.Cuts[count - 1], put);
+                        spec.Cuts[from + count - 1], put);
             }
 
             return tex;
@@ -385,10 +404,12 @@ namespace JinHyung.EditorTools
             }
 
             int h = cut.Pix.Count;
+            bool hasAlpha = cut.AlphaPalette != null && cut.AlphaPix != null && cut.AlphaPix.Count == h;
 
             for (int y = 0; y < h; y++)
             {
                 string line = cut.Pix[y];
+                string aline = hasAlpha ? cut.AlphaPix[y] : null;
 
                 for (int x = 0; x < line.Length; x++)
                 {
@@ -402,8 +423,20 @@ namespace JinHyung.EditorTools
                     if (index < 0 || index >= colors.Length)
                         continue;
 
+                    Color color = colors[index];
+
+                    // ★★ 알파를 «규격대로» 칠한다 — 없으면 불투명이다.
+                    //   ⚠ 이걸 안 하면 원본의 부드러운 그림자가 «불투명 판»이 된다.
+                    if (aline != null && x < aline.Length && aline[x] != '.')
+                    {
+                        int a = IndexChars.IndexOf(aline[x]);
+
+                        if (a >= 0 && a < cut.AlphaPalette.Count)
+                            color.a = cut.AlphaPalette[a] / 255f;
+                    }
+
                     // 규격 줄 0 이 «위»이므로 텍스처 y 를 뒤집는다
-                    put(tex, ox + x, oy + (h - 1 - y), colors[index]);
+                    put(tex, ox + x, oy + (h - 1 - y), color);
                 }
             }
         }

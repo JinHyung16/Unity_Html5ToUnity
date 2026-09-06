@@ -61,8 +61,20 @@ namespace JinHyung.UndeadSlayer
             if (_gaugeText != null)
                 _gaugeText.text = $"{value}/{goal}";
 
-            if (_gaugeFill != null)
-                _gaugeFill.fillAmount = goal > 0 ? Mathf.Clamp01((float)value / goal) : 0f;
+            if (_gaugeFill == null)
+                return;
+
+            // ★★ 채움은 «폭이 자란다» [소스 — progressBarFill.width = 남은 폭 × 진행률].
+            //   ⚠ 그림을 «자르는» 방식(Filled)이 아니다 — 그러면 오른쪽 둥근 마감이 잘린다.
+            float ratio = goal > 0 ? Mathf.Clamp01((float)value / goal) : 0f;
+            RectTransform bar = _gaugeFill.rectTransform.parent as RectTransform;
+            float inner = bar != null ? Mathf.Max(0f, bar.rect.width - _gaugeFill.rectTransform.offsetMin.x * 2f) : 0f;
+            float width = inner * ratio;
+
+            _gaugeFill.rectTransform.sizeDelta = new Vector2(width, _gaugeFill.rectTransform.sizeDelta.y);
+
+            // 0 이면 아예 안 그린다 [소스 — width 가 0 이면 visible = false]
+            _gaugeFill.enabled = width > 0f;
         }
 
         /// <summary>타이머. 원본 표기는 <c>mm:ss</c> 다 [실측 — <c>00:02</c>].</summary>
@@ -91,10 +103,28 @@ namespace JinHyung.UndeadSlayer
             _bestTimeText.text = $"{timeLabel}: {total / 60:00}:{total % 60:00}";
         }
 
+        /// <summary>
+        /// 레벨 <b>두 자리부터 글자가 작아진다</b> [소스 — <c>fontSize = level &gt; 9 ? 14 : 18</c>].
+        /// <para>⚠ 안 줄이면 두 자리부터 숫자가 배지 밖으로 삐져나온다.</para>
+        /// <para>★ 배율은 프리팹이 든다 — <b>한 자리 크기를 기준으로 «비»만 곱한다</b>. 화면 환산을 창이 다시 계산하지 않는다.</para>
+        /// </summary>
+        private const float LevelFontTwoDigitRatio = 14f / 18f;
+
+        /// <summary>프리팹에 구워진 «한 자리» 글자 크기 — 처음 한 번 기억한다.</summary>
+        private float _levelFontOneDigit;
+
         public void SetLevel(int level)
         {
-            if (_levelText != null)
-                _levelText.text = level.ToString();
+            if (_levelText == null)
+                return;
+
+            if (_levelFontOneDigit <= 0f)
+                _levelFontOneDigit = _levelText.fontSize;
+
+            _levelText.text = level.ToString();
+            _levelText.fontSize = level > 9
+                ? _levelFontOneDigit * LevelFontTwoDigitRatio
+                : _levelFontOneDigit;
         }
 
         /// <summary>

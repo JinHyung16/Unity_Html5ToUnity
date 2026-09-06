@@ -118,7 +118,11 @@ namespace JinHyung.EditorTools
 
                         // ★ 나인슬라이스는 «테두리»가 있어야 늘어난다. 원본은 6×6·16×16 같은
                         //   작은 타일을 크게 늘려 쓴다 [실측] — 테두리 없이 두면 통째로 늘어난다.
-                        int border = a.NineSlice ? Mathf.Max(1, Mathf.Min(16, Mathf.Min(a.SheetWidth, a.SheetHeight) / 3)) : 0;
+                        // ★ 인셋은 «표»에서 온다 [소스 NineSlicePlane 의 leftWidth/…].
+                        //   ⚠ [사고] 예전에는 max(1, min(16, min(폭,높이)/3)) 으로 지어냈다.
+                        //     여섯 중 «셋이 우연히 맞아» 틀린 줄을 알 길이 없었다 —
+                        //     bar 4→5 · reward_button_bg 15/10→11 · lvl_bg 는 9슬라이스도 아닌데 5 였다.
+                        int border = a.NineSliceBorder;
 
                         TextureImporterSettings s = new TextureImporterSettings();
                         importer.ReadTextureSettings(s);

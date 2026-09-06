@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using JinHyung.Core;
 using TMPro;
@@ -18,9 +19,9 @@ namespace JinHyung.EditorTools
     /// </para>
     ///
     /// <para>
-    /// ★ 그래서 <b>Noto Sans KR</b>(SIL Open Font License · 재배포 가능)로 대체한다.
-    /// <b>이것은 픽셀 서체가 아니다</b> — 자형 파리티가 안 맞는다.
-    /// 한글 픽셀 서체(예: 갈무리 · 둥근모)를 받으면 <see cref="SourceTtfPath"/> 한 줄만 바꿔 다시 돌린다.
+    /// ★ 지금 쓰는 것은 <b>「온글잎 박다현체」</b> — <b>사람이 골라 넣은 것</b>이다.
+    /// <b>손글씨 서체라 원본의 «픽셀» 서체와는 결이 다르다</b> (알린 뒤 지시대로 넣었다).
+    /// 바꾸려면 <see cref="SourceTtfPath"/> <b>한 줄</b>이다.
     /// </para>
     ///
     /// <para>
@@ -30,8 +31,11 @@ namespace JinHyung.EditorTools
     /// </para>
     ///
     /// <para>
-    /// ⚠ 폰트 에셋을 <b><c>Resources</c> 에 둔다</b> — UI 프리팹이 Resources 라서다.
-    /// <c>Art/</c> 아래 <c>.asset</c> 은 어드레서블로 등록되므로 거기 두면 <b>빌드에 중복 편입</b>된다.
+    /// ⚠ <b>둘이 사는 곳이 다르다.</b>
+    /// <b>구운 폰트 에셋</b>은 <c>Resources/</c> 다 — UI 프리팹이 Resources 라서다
+    /// (<c>Art/</c> 아래 <c>.asset</c> 은 어드레서블로 등록돼 거기 두면 <b>빌드에 중복 편입</b>된다).
+    /// <b>원본 TTF</b> 는 <c>Editor/</c> 다 — 굽는 «입력»이라 빌드에 들어갈 이유가 없다
+    /// (<see cref="FontFolder"/>).
     /// </para>
     ///
     /// <para>
@@ -43,13 +47,59 @@ namespace JinHyung.EditorTools
     /// </summary>
     public static class UndeadFontSetup
     {
-        /// <summary>⚠ <b>임시 대체</b>. 한글 «픽셀» 서체가 들어오면 이 한 줄을 바꾼다.</summary>
-        public const string SourceTtfPath = "Assets/Undead-Slayer/Resources/Font/NotoSansKR-VF.ttf";
+        /// <summary>
+        /// ⚠⚠ <b>여기 한 줄이 서체의 전부다.</b> 한글 «픽셀» 서체를 <see cref="FontFolder"/> 에 두고
+        /// 이 경로만 바꾼 뒤 <c>Setup</c> 을 다시 돌리면 된다 — 다른 곳은 손댈 것이 없다.
+        ///
+        /// <para>
+        /// ★ 원본은 픽셀 서체라 <b>거의 고정폭</b>이다. 대체 서체가 <b>비례폭</b>이면
+        /// 폭을 맞추려고 <see cref="MakeMonospace"/> 가 자폭을 강제하고, 그 결과 <b>글자 사이가 벌어져 보인다</b>.
+        /// 한글 <b>픽셀</b> 서체가 들어오면 <b>그 강제가 필요 없어진다</b> — 자형과 자간이 같이 맞는다.
+        /// </para>
+        ///
+        /// <para>그럴 때 고를 만한 것 — <b>갈무리(Galmuri)</b> · <b>Neo둥근모</b> (둘 다 SIL Open Font License).
+        /// ⚠ 시스템 서체(굴림체·바탕체)는 <b>재배포가 안 된다</b> — 게임에 넣으면 라이선스 위반이다.</para>
+        /// </summary>
+        // 사람이 고른 서체 — 원본 파일 이름은 「온글잎 박다현체.ttf」다 (경로에 공백·한글이 있어 ASCII 로 옮겨 두었다).
+        // ⚠ 손글씨 서체라 원본의 «픽셀» 서체와는 결이 다르다 — 사람 판단으로 넣은 것이다.
+        public const string SourceTtfPath = "Assets/Undead-Slayer/Editor/Font/Onglyph-ParkDahyeon.ttf";
+
+        /// <summary>
+        /// 원본 TTF 가 사는 곳 — <b><c>Editor/</c> 다. <c>Resources/</c> 가 아니다.</b>
+        ///
+        /// <para>
+        /// ★ TTF 는 <b>굽는 «입력»</b>이지 게임이 읽는 것이 아니다 — 다 구운 폰트 에셋은
+        /// <c>atlasPopulationMode = Static</c> 이라 <b>소스 폰트를 런타임에 참조하지 않는다</b>
+        /// (에셋의 <c>m_SourceFontFile</c> 이 <c>fileID: 0</c> 이다 [실측]).
+        /// </para>
+        ///
+        /// <para>
+        /// ⚠ <b><c>Resources/</c> 에 두면 «쓰지 않아도» 빌드에 들어간다.</b>
+        /// 실측 사례로 안 쓰는 서체 하나가 <b>10.4 MB</b> 를 차지한 채 실려 있었다
+        /// (CLAUDE.md 폴더 규칙 — <c>Editor/</c> 는 「굽는 «입력» 데이터(빌드에 안 들어간다)」).
+        /// </para>
+        /// </summary>
+        public const string FontFolder = "Assets/Undead-Slayer/Editor/Font";
+
+        /// <summary>
+        /// 자폭을 <b>강제할까</b> — 원본이 «거의 고정폭» 픽셀 서체라서 넣었던 보정이다.
+        /// <para>⚠ 대체 서체가 원본과 비슷한 폭이면 <b>끄는 편이 낫다</b> — 강제하면 글자가 «칸에 갇혀» 자간이 벌어져 보인다.</para>
+        /// <para>★ 켤지 끌지는 <b>실측으로</b> 정한다 — 문구 폭이 원본 실측치와 ±10% 안이면 끈다 (재발방지 #157).</para>
+        ///
+        /// <para>
+        /// ⚠ <b>실측해 보고 «켠» 채로 둔다</b> [회차 20]. 끄고 재니 문구 폭이 <b>원본의 46~54%</b> 였다 —
+        /// <c>00:00</c> 75.0 → 34.7 · <c>레벨 업!</c> 114.2 → 62.1. 지금 서체도 원본보다 훨씬 좁다.
+        /// 끄면 자간은 자연스러워지지만 <b>문구가 자리에 비해 너무 작아진다</b>.
+        /// </para>
+        /// </summary>
+        private const bool ForceMonospaceAdvance = true;
 
         public const string FontAssetPath = "Assets/Undead-Slayer/Resources/Font/UndeadSlayer SDF.asset";
 
         public static void Setup()
         {
+            WarnUnusedFonts();
+
             var font = AssetDatabase.LoadAssetAtPath<Font>(SourceTtfPath);
 
             if (font == null)
@@ -114,7 +164,10 @@ namespace JinHyung.EditorTools
             //   그래서 「굽고 저장했는데 재생하면 두부」가 된다.
             //   [사고] 실제로 편집 모드에서는 184자가 다 구워졌는데 재생 검사는 51키가 빠졌다고 찍었다.
             //   ⇒ 쓰는 글자를 «미리» 구운 뒤 Static 으로 고정해 그 표를 에셋에 박는다.
-            MakeMonospace(fontAsset);
+            if (ForceMonospaceAdvance)
+                MakeMonospace(fontAsset);
+            else
+                Log.Success("자폭 강제를 «끄고» 굽는다 — 서체 본래 자간을 쓴다");
 
             fontAsset.atlasPopulationMode = AtlasPopulationMode.Static;
             EditorUtility.SetDirty(fontAsset);
@@ -122,7 +175,42 @@ namespace JinHyung.EditorTools
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            Log.Success($"폰트 에셋 생성 — {FontAssetPath} (⚠ 의도된 차이: 원본 픽셀 서체 확보 불가 → Noto Sans KR)");
+            Log.Success($"폰트 에셋 생성 — {FontAssetPath} · 서체 {Path.GetFileName(SourceTtfPath)}"
+                        + " (⚠ 의도된 차이 — 원본의 «픽셀» 서체는 상용이라 확보 불가다. 대체 서체는 자형이 다르다)");
+        }
+
+        /// <summary>
+        /// 폰트 폴더에 <b>쓰이지 않는 서체 파일</b>이 있으면 알린다.
+        ///
+        /// <para>
+        /// ⚠ 사람이 픽셀 서체를 넣어 두고 <see cref="SourceTtfPath"/> 를 안 바꾸면
+        /// <b>넣은 줄 알고 그대로 지나간다</b> — 「만든 것에는 «읽는 곳»이 있어야 한다」의 서체판이다.
+        /// </para>
+        /// </summary>
+        private static void WarnUnusedFonts()
+        {
+            if (Directory.Exists(FontFolder) == false)
+                return;
+
+            string used = Path.GetFileName(SourceTtfPath);
+
+            foreach (string file in Directory.GetFiles(FontFolder))
+            {
+                string name = Path.GetFileName(file);
+
+                if (name.EndsWith(".ttf", StringComparison.OrdinalIgnoreCase) == false
+                    && name.EndsWith(".otf", StringComparison.OrdinalIgnoreCase) == false)
+                {
+                    continue;
+                }
+
+                if (string.Equals(name, used, StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                Log.Warning($"쓰이지 않는 서체가 폰트 폴더에 있다: {name}"
+                            + $" → 쓰려면 {nameof(UndeadFontSetup)}.{nameof(SourceTtfPath)} 를 이 파일로 바꾸고 다시 돌린다."
+                            + " (안 쓸 것이면 지운다)");
+            }
         }
 
         /// <summary>

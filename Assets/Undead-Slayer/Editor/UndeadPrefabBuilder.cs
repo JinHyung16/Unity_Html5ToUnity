@@ -125,20 +125,32 @@ namespace JinHyung.EditorTools
             Stretch(fillRect);
 
             // ★ 채움은 바 «안쪽»이다 — 좌·상·하로 1px 들어간다 [소스 fill.x = barX+1 · y = barY+1 · height = barH−2]
+            //   ⚠ 폭은 «자란다» — 그래서 왼쪽 위/아래에만 붙이고 폭은 창이 매 프레임 준다.
+            fillRect.anchorMin = new Vector2(0f, 0f);
+            fillRect.anchorMax = new Vector2(0f, 1f);
+            fillRect.pivot = new Vector2(0f, 0.5f);
             fillRect.offsetMin = new Vector2(1f * Scale, 1f * Scale);
-            fillRect.offsetMax = new Vector2(0f, -1f * Scale);
+            fillRect.offsetMax = new Vector2(1f * Scale, -1f * Scale);
+            fillRect.sizeDelta = new Vector2(0f, fillRect.sizeDelta.y);
 
             var fillImage = fill.GetComponent<Image>();
-            fillImage.type = Image.Type.Filled;
-            fillImage.fillMethod = Image.FillMethod.Horizontal;
-            fillImage.fillAmount = 0f;
+
+            // ★★ <b>채움도 9슬라이스다</b> [소스 — 채움 판도 NineSlicePlane 이고 «폭»을 바꾼다].
+            //   ⚠ [사고] <c>Filled</c>(가로 채우기)로 두었었다 — 그건 그림을 «자른다».
+            //     원본은 폭이 줄어도 <b>양끝 둥근 마감이 남는데</b>, 자르면 오른쪽 끝이 «싹둑» 잘린다.
+            //     둘은 게이지가 가득 찼을 때만 같아 보이고, 차오르는 동안 계속 다르다.
+            fillImage.type = Image.Type.Sliced;
+            fillImage.pixelsPerUnitMultiplier = 1f / Scale;
 
             // ── 좌상단 보석 아이콘
             GameObject gem = SpriteImage(root.transform, "GemIcon", "gem_icon");
             Place(gem, GemIconX, GemIconY, GemIconSize, GemIconSize, anchorRight: false);
 
-            // ── 우상단 레벨 배경
-            GameObject levelBg = Sprite9(root.transform, "LevelBg", "lvl_bg");
+            // ── 우상단 레벨 배경.
+            // ⚠⚠ <b>9슬라이스가 아니다</b> [소스 — <c>new Se(K.from("lvl_bg")); scale.set(4.5)</c>].
+            //   16×16 그림을 «통째로» 4.5배 키운다 — 테두리도 4.5배 굵어진다.
+            //   [사고] 9슬라이스로 두었더니 테두리가 1px 그대로 남아 «실오라기»처럼 얇게 나왔다.
+            GameObject levelBg = SpriteImage(root.transform, "LevelBg", "lvl_bg");
             Place(levelBg, LevelBgRightMargin, LevelBgY, LevelBgSize, LevelBgSize, anchorRight: true);
 
             // ── 문구 셋. 게이지·타이머는 «화면 가운데»에 붙는다 [실측 — 487.5 와 475 가 중앙 근처다]
@@ -185,6 +197,10 @@ namespace JinHyung.EditorTools
             CornerAt(bestTime.rectTransform, left: false);
             Outline(bestTime, Color.white, BestStrokeWidth, BestFont);
 
+            // 최고 기록은 «폭만» 제한한다 [소스 Mh(bestScoreText, .4 × 화면폭, 자기 높이)]
+            Fit(bestLevel, 0.4f * 1031f, 0f);
+            Fit(bestTime, 0.4f * 1031f, 0f);
+
             SetRef(window, "_bestLevelText", bestLevel);
             SetRef(window, "_bestTimeText", bestTime);
 
@@ -206,6 +222,7 @@ namespace JinHyung.EditorTools
 
             // 「레벨 업!」 — 원본 실측 y 55~81 · 화면 가운데
             TMP_Text title = Text(root.transform, "Title", "레벨 업!", 24f, Color.white);   // [실측 덤프 — font 24 · 글리프 중심 68]
+            Fit(title, 999f, 32f);   // 레벨업 제목 — [소스 Mh(title, 화면폭 − 32, 32)]
             CenterAt(title.rectTransform, 68f, 24f);
 
             // ── 카드 3장. 원본 카드 폭은 x 307~727 (=420) · 높이 약 90 [실측 캡처]
@@ -222,7 +239,9 @@ namespace JinHyung.EditorTools
 
             for (int i = 0; i < 3; i++)
             {
-                GameObject card = Sprite9(root.transform, $"Card{i}", "reward_button_bg");
+                // ⚠ 카드는 인셋이 «10» 이다 — 액션 버튼(15)과 다르다 [소스 createButton / createActionButton].
+                //   그림은 같고 인셋만 달라서 «행»이 둘이다 (엔진의 인셋은 스프라이트 에셋에 붙는다).
+                GameObject card = Sprite9(root.transform, $"Card{i}", "reward_button_bg_card");
                 RectTransform rect = card.GetComponent<RectTransform>();
                 rect.anchorMin = new Vector2(0.5f, 1f);
                 rect.anchorMax = new Vector2(0.5f, 1f);
@@ -266,6 +285,7 @@ namespace JinHyung.EditorTools
             confirm.AddComponent<UiScalePulse>().Configure(EUiPulseKind.SineWobble, 0.025f, 0.008f);   // [소스 1 + .025·sin(.008t)]
 
             TMP_Text confirmText = Text(confirm.transform, "Label", "선택", 20f, Color.white);   // [실측 덤프 — font 20]
+            Fit(confirmText, 178f, 24f);   // 「선택」 — [소스 Mh(chooseButtonText, 버튼폭 − 32, 24)]
             Stretch(confirmText.rectTransform);
 
             SetRef(window, "_titleText", title);
@@ -291,8 +311,12 @@ namespace JinHyung.EditorTools
             Dimmer(root.transform, 0.5f);   // [소스 dimmer alpha .5]
 
             var window = root.AddComponent<UndeadReadyWindow>();
-            // ★ 원본 시작 화면은 HUD(게이지·타이머·레벨)가 디머 «위»에 보인다 [원본 캡처] — HUD 와 같은 대역에 두고 HUD 를 뒤에 연다
-            SetEnum(window, "_windowType", (int)EWindowType.Normal);
+
+            // ★★ 시작 화면의 디머는 <b>HUD 를 «덮는다»</b> — 다른 모달과 «같은 층»이다.
+            //   [덤프] 시작 화면 `jd` 의 부모는 모달 층 `Kd`(id 102) 이고, HUD `Qc`(id 61) 보다 «뒤에» 그려진다.
+            //   ⚠ [사고] 회차 19 까지 «Normal» 이었다 — 근거가 「원본 캡처」였고, 그림을 눈으로 읽어
+            //     「HUD 가 디머 위에 보인다」고 적어 두었다. 덤프의 «부모·순서»를 보면 반대다.
+            SetEnum(window, "_windowType", (int)EWindowType.Popup);
 
             // [소스] buttonWidth 260 · buttonHeight 104 · btn_shadowed 9슬라이스 16 · y = 화면 높이 × 0.75
             GameObject button = Sprite9(root.transform, "Start", "btn_shadowed");
@@ -314,6 +338,7 @@ namespace JinHyung.EditorTools
 
             // 글자 50 bold 를 높이 30 안에 맞춘다 [소스 Mh(…, 30)] — 실측 글자 높이 30 과 같다
             TMP_Text label = Text(button.transform, "Label", "시작", StartLabelFont, Color.white);
+            Fit(label, 186f, 30f);   // 시작 버튼 — [소스 Mh(buttonText, 260 − 2×32 − 10, 30)]
             label.fontStyle = FontStyles.Bold;
             Stretch(label.rectTransform);
             label.rectTransform.anchoredPosition = new Vector2(0f, -2f * Scale);
@@ -350,9 +375,11 @@ namespace JinHyung.EditorTools
             panelRect.anchoredPosition = new Vector2(0f, -140f * Scale);
 
             TMP_Text title = Text(root.transform, "Title", "과제 보상", 18f, new Color(0.62f, 0.84f, 0.78f));
+            Fit(title, 927.9f, 24f);   // 해금 제목 — [소스 Mh(title, .9 × 화면폭, 24)]
             CenterAt(title.rectTransform, 188f, 18f);
 
             TMP_Text subtitle = Text(root.transform, "Subtitle", "새 무기: 번개", 24f, Color.white);
+            Fit(subtitle, 927.9f, 38f);   // 해금 부제 — [소스 Mh(subtitle, .9 × 화면폭, 38)]
             CenterAt(subtitle.rectTransform, 222f, 24f);
 
             GameObject icon = SpriteImage(root.transform, "Icon", "icon_lightning");
@@ -369,6 +396,7 @@ namespace JinHyung.EditorTools
             ok.GetComponent<Image>().color = new Color32(0x2E, 0x7D, 0x32, 0xFF);   // [소스 drawButton(3046706, 10217378)]
             Button okButton = MakeButton(ok);
             TMP_Text okText = Text(ok.transform, "Label", "확인", 18f, Color.white);
+            Fit(okText, 198f, 24f);   // 액션 버튼 글자 — [소스 updateButtonText — Mh(text, 198, 24)]
             Stretch(okText.rectTransform);
 
             SetRef(window, "_titleText", title);
@@ -420,6 +448,7 @@ namespace JinHyung.EditorTools
             temple.GetComponent<Image>().color = new Color32(0x8A, 0x3F, 0x32, 0xFF);
             Button templeBtn = MakeButton(temple);
             TMP_Text templeLabel = Text(temple.transform, "Label", "로비로 돌아가기", 20f, Color.white);
+            Fit(templeLabel, 198f, 24f);   // 액션 버튼 글자 — [소스 Mh(text, 198, 24)]
             templeLabel.fontStyle = FontStyles.Bold;
             Stretch(templeLabel.rectTransform);
 
@@ -428,6 +457,7 @@ namespace JinHyung.EditorTools
             continueButton.GetComponent<Image>().color = new Color32(0x2E, 0x7D, 0x32, 0xFF);
             Button continueBtn = MakeButton(continueButton);
             TMP_Text continueLabel = Text(continueButton.transform, "Label", "계속", 20f, Color.white);
+            Fit(continueLabel, 198f, 24f);   // 액션 버튼 글자 — [소스 Mh(text, 198, 24)]
             continueLabel.fontStyle = FontStyles.Bold;
             Stretch(continueLabel.rectTransform);
 
@@ -466,10 +496,12 @@ namespace JinHyung.EditorTools
             panelRect.anchoredPosition = new Vector2(0f, -panelTop * Scale);
 
             TMP_Text title = Text(root.transform, "Title", "부활?", 28f, Color.white);
+            Fit(title, 886.66f, 34f);   // 부활 제목 — [소스 Mh(title, .86 × 화면폭, 34)]
             title.fontStyle = FontStyles.Bold;
             CenterAt(title.rectTransform, 182f, 28f);
 
             TMP_Text countdown = Text(root.transform, "Countdown", "8", 65f, new Color32(0xFF, 0xD3, 0x6A, 0xFF));   // [소스 fill 16765802 · 65 bold]
+            Fit(countdown, 160f, 102f);   // 남은 시간 — [소스 Mh(countdown, 160, 102)]
             countdown.fontStyle = FontStyles.Bold;
             CenterAt(countdown.rectTransform, 256f, 65f);
 
@@ -485,6 +517,7 @@ namespace JinHyung.EditorTools
             Button reviveButton = MakeButton(revive);
             revive.AddComponent<UiHoverScale>().Configure(1.02f);   // [소스 onButtonEnter 1.02]
             TMP_Text reviveText = Text(revive.transform, "Label", "부활", 20f, Color.white);   // [덤프 — font 20]
+            Fit(reviveText, 156f, 24f);   // 아이콘 있는 액션 버튼 — [소스 Mh(text, 156, 24)]
             Stretch(reviveText.rectTransform);
 
             GameObject decline = Sprite9(root.transform, "Decline", "reward_button_bg");   // [덤프 — 원본도 같은 판이고 틴트만 다르다]
@@ -499,6 +532,7 @@ namespace JinHyung.EditorTools
             Button declineButton = MakeButton(decline);
             decline.AddComponent<UiHoverScale>().Configure(1.02f);
             TMP_Text declineText = Text(decline.transform, "Label", "아니요", 20f, Color.white);   // [덤프 — font 20]
+            Fit(declineText, 198f, 24f);   // 액션 버튼 글자 — [소스 Mh(text, 198, 24)]
             Stretch(declineText.rectTransform);
 
             SetRef(window, "_titleText", title);
@@ -541,6 +575,21 @@ namespace JinHyung.EditorTools
         ///
         /// <para>전환(Transition)은 끈다 — 배율·틴트는 <c>UiStateScale</c>·<c>UiHoverScale</c> 이 [소스] 값으로 든다.</para>
         /// </summary>
+        /// <summary>
+        /// 글자를 <b>상자 안에 줄여 넣는다</b> [소스 <c>Mh(글자, 폭, 높이)</c> — <c>min(w/폭, h/높이, 1)</c>].
+        ///
+        /// <para>
+        /// ⚠ 원본은 «거의 모든» 문구를 이렇게 넣는다. 우리는 크기만 고정으로 넣어서
+        /// <b>서체를 갈면 문구가 상자를 넘친다</b> — 「지금 서체로는 마침 맞는다」는 이관이 아니다.
+        /// </para>
+        ///
+        /// <para>상자는 <b>원본 px</b> 로 준다 — 여기서 환산한다. 0 이면 그 축은 안 본다.</para>
+        /// </summary>
+        private static void Fit(TMP_Text text, float originBoxW, float originBoxH)
+        {
+            text.gameObject.AddComponent<UiTextFit>().Configure(originBoxW * Scale, originBoxH * Scale);
+        }
+
         private static Button MakeButton(GameObject go)
         {
             var image = go.GetComponent<Image>();
@@ -612,8 +661,22 @@ namespace JinHyung.EditorTools
             GameObject go = SpriteImage(parent, name, art);
             var image = go.GetComponent<Image>();
 
-            // ★ 원본이 6×6 · 16×16 짜리 작은 타일을 크게 늘려 쓴다 [실측] — 9-slice 다.
+            // ★ 원본이 작은 타일을 크게 늘려 쓴다 [실측] — 9-slice 다.
             image.type = Image.Type.Sliced;
+
+            // ★★★ <b>테두리도 화면 배율을 타야 한다.</b>
+            //   엔진은 9슬라이스 «모서리»를 «스프라이트 px» 그대로 그린다 —
+            //   캔버스 referencePixelsPerUnit(100) 과 스프라이트 PPU(100) 가 같으면 <b>1 px = 1 캔버스 px</b> 다.
+            //   그런데 우리 캔버스는 원본 세로 580 을 1080 으로 «키운다»(배율 Scale).
+            //   ⇒ 가운데는 배율만큼 늘어나는데 <b>모서리만 원래 크기로 남아</b>
+            //     테두리가 원본의 1/Scale 두께가 되고 모서리 곡률이 조여 보인다.
+            //
+            //   ⚠ [사고] 「인셋 값이 소스와 같다」까지만 보고 통과시켰다 —
+            //     인셋은 «스프라이트 px» 단위라 값이 맞아도 <b>그려지는 두께는 틀릴 수 있다</b>.
+            //     사람이 화면을 보고 「테두리 띠가 왜 이러냐」고 알려 줬다.
+            //
+            //   배수는 «나누는 값»이다 — 그려지는 두께 = 인셋 ÷ 배수. 그래서 1/Scale 을 넣는다.
+            image.pixelsPerUnitMultiplier = 1f / Scale;
             return go;
         }
 

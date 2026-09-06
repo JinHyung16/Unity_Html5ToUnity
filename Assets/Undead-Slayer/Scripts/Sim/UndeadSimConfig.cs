@@ -111,6 +111,25 @@ namespace JinHyung.UndeadSlayer
         public double QuestRescueSeconds;
         public UndeadVec2 WarriorOffset;
         public double WarriorFollowOffsetX;
+        public double WarriorFollowSpeedMultiplier;
+        public double WarriorFollowStopDistance;
+        public double WarriorAttackIntervalSeconds;
+
+        // ── 전사의 쿠나이 [소스 class Pd] — 동료가 «스스로» 싸운다
+        public double KunaiSpawnOffsetY;
+        public double KunaiSpeedWorld;
+        public double KunaiRadius;
+        public double KunaiKnockback;
+
+        // ── 전사가 다음 과제를 «예고»한다 [소스 el.introduction — type "warrior"]
+        public double WarriorThanksBubbleSeconds;
+        public double QuestIntroMageDelaySeconds;
+        public double QuestIntroMageBubbleSeconds;
+        public double QuestIntroFirstBossDelaySeconds;
+        public double QuestIntroFirstBossBubbleSeconds;
+        public double QuestIntroFarmerDelaySeconds;
+        public double QuestIntroFarmerBubbleSeconds;
+
         public UndeadVec2 MageOffset;
         public double MageMeetRadius;
         public UndeadVec2 Fragment1Offset;

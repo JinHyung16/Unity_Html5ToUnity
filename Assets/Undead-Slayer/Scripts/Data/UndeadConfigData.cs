@@ -209,6 +209,62 @@ namespace JinHyung.Data
         /// <summary>구조된 뒤 전사가 따라오는 자리 [소스 — <c>hero.x − 110</c>].</summary>
         public double WarriorFollowOffsetX { get; set; }
 
+        /// <summary>
+        /// 전사의 추종 «속도» — <b>히어로 이동 속도 스탯에 곱한다</b> [소스 — <c>followSpeedMultiplier .95</c>].
+        /// <para>⚠ 원본은 순간이동이 아니다. 0.95 배라 <b>히어로가 달리면 조금씩 벌어지고</b>, 멈추면 따라붙는다.</para>
+        /// <para>⚠ 히어로가 이동 속도를 강화하면 <b>전사도 같이 빨라진다</b> [소스 — 스탯을 읽는다].</para>
+        /// </summary>
+        public double WarriorFollowSpeedMultiplier { get; set; }
+
+        /// <summary>따라오는 자리에 이만큼 가까우면 멈춘다 [소스 — <c>followStopDistance 12</c>].</summary>
+        public double WarriorFollowStopDistance { get; set; }
+
+        /// <summary>
+        /// 구조된 전사가 <b>쿠나이를 던지는 간격</b> (초) [소스 — <c>attackIntervalMs 1e3</c>].
+        /// <para>★ 구조되는 «그 순간» 쿨다운이 이 값으로 채워진다 — 첫 발은 구조 1초 뒤다 [소스].</para>
+        /// </summary>
+        public double WarriorAttackIntervalSeconds { get; set; }
+
+        /// <summary>쿠나이가 나가는 높이 — 전사 «발» 기준 [소스 — <c>new Pd(this.x, this.y − 28, dir)</c>].</summary>
+        public double KunaiSpawnOffsetY { get; set; }
+
+        /// <summary>쿠나이 속도 (월드 px/s) [소스 — <c>moveSpeed .5</c> px/ms].</summary>
+        public double KunaiSpeedWorld { get; set; }
+
+        /// <summary>쿠나이 충돌 반경 [소스 — <c>collider = new pn(0,0,9)</c>].</summary>
+        public double KunaiRadius { get; set; }
+
+        /// <summary>쿠나이 넉백 세기 [소스 — <c>d.hit(damage, 2, 0xD7D7EA)</c>].</summary>
+        public double KunaiKnockback { get; set; }
+
+        // ══════════════════════════════ 전사가 «말한다» [소스 updateThanksBubble · updateQuestIntro]
+        //
+        // ★★ 원본에서 <b>다음 과제를 여는 것은 전사</b>다 — 앞 과제가 끝나면 곧장 다음이 켜지는 것이 아니라,
+        //   전사가 «delay» 만큼 기다렸다가 말풍선을 «bubbleDuration» 동안 띄우고 «그 뒤에» 과제가 시작된다
+        //   [소스 el — quest_mage/firstBoss/farmerSheep 의 introduction.type 이 "warrior"].
+        //   ⚠ 그동안 currentQuest 는 «비어» 있어 HUD 포인터도 숨는다.
+
+        /// <summary>구조 직후 「고마워, 친구!」 말풍선이 떠 있는 시간 (초) [소스 — <c>thanksBubbleDurationMs 2e3</c>].</summary>
+        public double WarriorThanksBubbleSeconds { get; set; }
+
+        /// <summary>마법사 과제 예고 — 기다림 (초) [소스 — <c>delayMs 5e3</c>].</summary>
+        public double QuestIntroMageDelaySeconds { get; set; }
+
+        /// <summary>마법사 과제 예고 — 말풍선 (초) [소스 — <c>bubbleDurationMs 4e3</c> · <c>iHearSomebodyScreaming</c>].</summary>
+        public double QuestIntroMageBubbleSeconds { get; set; }
+
+        /// <summary>첫 보스 과제 예고 — 기다림 (초) [소스 — <c>delayMs 1e4</c>].</summary>
+        public double QuestIntroFirstBossDelaySeconds { get; set; }
+
+        /// <summary>첫 보스 과제 예고 — 말풍선 (초) [소스 — <c>3e3</c> · <c>iFeelSomeDarkEnergy</c>].</summary>
+        public double QuestIntroFirstBossBubbleSeconds { get; set; }
+
+        /// <summary>농부/양 과제 예고 — 기다림 (초) [소스 — <c>delayMs 1e4</c>].</summary>
+        public double QuestIntroFarmerDelaySeconds { get; set; }
+
+        /// <summary>농부/양 과제 예고 — 말풍선 (초) [소스 — <c>3e3</c> · <c>whatTheAnimals</c>].</summary>
+        public double QuestIntroFarmerBubbleSeconds { get; set; }
+
         public double MageOffsetX { get; set; }
 
         public double MageOffsetY { get; set; }

@@ -92,6 +92,44 @@ namespace JinHyung.UndeadSlayer
         private TileBase[] _tiles;
         private Vector3Int _lastCenter = new Vector3Int(int.MinValue, int.MinValue, 0);
 
+        /// <summary>
+        /// 창 하나치 <b>타일 캐시</b> [소스 <c>caches.tileId</c> · <c>caches.tileType</c>].
+        ///
+        /// <para>
+        /// ★★ <b>캐시가 있어야 원본과 같아진다.</b> 원본 2패스(<c>ou</c>)는 이 배열을 <b>제자리에서 고치며</b>
+        /// 행 우선으로 훑는다 — 그래서 <b>왼쪽·위 이웃은 «이미 고쳐진» 값</b>이고, 얇은 풀 목을 지우는 판정이
+        /// <b>오른쪽·아래로 전파</b>된다.
+        /// </para>
+        ///
+        /// <para>
+        /// ⚠ [사고] 예전에는 이웃을 <b>순수 함수로 다시 계산</b>했다 — 전파가 없어 <b>얇은 풀 조각이 그대로 남았고</b>,
+        /// 원본의 «큰 덩어리»와 달리 화면이 잘게 조각나 보였다. 값은 전부 맞는데 그림이 달랐다.
+        /// </para>
+        /// </summary>
+        private ETile[] _cacheTile;
+
+        private ETileKind[] _cacheKind;
+
+        /// <summary>창의 왼쪽 끝 칸 — <b>원본 타일 좌표</b> [소스 <c>lastCameraTileX</c>].</summary>
+        private int _originTileX;
+
+        /// <summary>
+        /// 창의 <b>위</b> 끝 칸 — <b>원본 타일 좌표</b> [소스 <c>lastCameraTileY</c>].
+        ///
+        /// <para>
+        /// ⚠⚠ <b>원본 타일 y 는 «아래»로 증가한다</b>. 유니티 칸 y 는 «위»로 증가한다 —
+        /// <c>UndeadUnits.ToPosition</c> 이 y 를 뒤집기 때문이다.
+        /// </para>
+        ///
+        /// <para>
+        /// ⚠ [사고] 예전에는 <b>유니티 칸 좌표를 그대로 노이즈에 넣었다</b>. 심플렉스 노이즈는
+        /// <c>f(x, −y) ≠ f(x, y)</c> 라 <b>지형 무늬가 통째로 «상하 뒤집힌» 다른 무늬</b>가 나왔다.
+        /// 나무·모닥불은 시뮬(원본 좌표)이 놓으므로 <b>지형만 어긋나</b> 「무늬가 다르다」로 보인다.
+        /// 노이즈 표본 골든은 <b>순수 함수</b>만 재서 이 어긋남을 못 잡았다.
+        /// </para>
+        /// </summary>
+        private int _originTileY;
+
         /// <summary>지금 칠해져 있는 칸 수 — <b>검사가 이 값을 센다</b>.</summary>
         public int PaintedCellCount { get; private set; }
 
@@ -120,27 +158,118 @@ namespace JinHyung.UndeadSlayer
             Paint(center);
         }
 
+        /// <summary>
+        /// 창 하나를 <b>원본과 «같은 세 패스»로</b> 칠한다 [소스 <c>updateTileCache</c>].
+        ///
+        /// <para>
+        /// ① <c>updateOwnTileId</c> — 이웃을 안 보고 자기 타일·갈래를 캐시에 넣는다<br/>
+        /// ② <c>ou</c> — <b>캐시를 제자리에서 고친다</b> (얇은 풀 목 → 바닥). 행 우선이라 <b>전파된다</b><br/>
+        /// ③ <c>hu</c> — ②의 결과를 읽어 가장자리 타일을 고른다
+        /// </para>
+        ///
+        /// <para>⚠ <b>세 패스를 한 패스로 합치면 안 된다</b> — ②의 전파가 사라져 그림이 달라진다.</para>
+        /// </summary>
         private void Paint(Vector3Int center)
         {
             int halfCols = WindowCols / 2;
             int halfRows = WindowRows / 2;
 
-            var positions = new List<Vector3Int>(WindowCols * WindowRows);
-            var tiles = new List<TileBase>(WindowCols * WindowRows);
+            // ★ 창 안에서는 «원본 타일 좌표»로만 센다 — 노이즈도 이웃도 전부 원본 기준이다.
+            //   유니티 칸으로는 «그릴 때 한 번»만 바꾼다 (tileY = −unityY).
+            _originTileX = center.x - halfCols;
+            _originTileY = -(center.y + halfRows);
 
-            for (int y = -halfRows; y <= halfRows; y++)
+            int count = WindowCols * WindowRows;
+
+            if (_cacheTile == null || _cacheTile.Length != count)
             {
-                for (int x = -halfCols; x <= halfCols; x++)
+                _cacheTile = new ETile[count];
+                _cacheKind = new ETileKind[count];
+            }
+
+            // ① 자기 타일 — 이웃을 안 본다
+            for (int row = 0; row < WindowRows; row++)
+            {
+                for (int col = 0; col < WindowCols; col++)
                 {
-                    var cell = new Vector3Int(center.x + x, center.y + y, 0);
-                    positions.Add(cell);
-                    tiles.Add(_tiles[TileIndex(cell)]);
+                    int tx = _originTileX + col;
+                    int ty = _originTileY + row;
+                    int i = row * WindowCols + col;
+
+                    _cacheTile[i] = BaseTile(tx, ty);
+                    _cacheKind[i] = BaseKind(tx, ty);
+                }
+            }
+
+            // ② ou — 제자리에서 고친다. ⚠ 순서가 곧 규칙이다 (위 → 아래 · 왼 → 오른)
+            for (int row = 0; row < WindowRows; row++)
+            {
+                for (int col = 0; col < WindowCols; col++)
+                    RemoveThinNeck(_originTileX + col, _originTileY + row);
+            }
+
+            // ③ hu — 가장자리
+            var positions = new List<Vector3Int>(count);
+            var tiles = new List<TileBase>(count);
+
+            for (int row = 0; row < WindowRows; row++)
+            {
+                for (int col = 0; col < WindowCols; col++)
+                {
+                    int tx = _originTileX + col;
+                    int ty = _originTileY + row;
+
+                    // 그릴 때만 유니티 칸으로 — y 뒤집기는 «여기 한 곳»뿐이다
+                    positions.Add(new Vector3Int(tx, -ty, 0));
+                    tiles.Add(_tiles[(int)Autotile(tx, ty)]);
                 }
             }
 
             _tilemap.ClearAllTiles();
             _tilemap.SetTiles(positions.ToArray(), tiles.ToArray());
             PaintedCellCount = positions.Count;
+        }
+
+        /// <summary>
+        /// 캐시 자리 [소스 <c>getTileIndex</c> — <c>(y − 위끝) × 열수 + (x − 왼끝)</c>].
+        /// <para>⚠ <b>원본은 범위를 «자르지 않는다»</b> — 창 왼쪽 밖을 물으면 «윗줄 오른쪽 끝»이 나온다.
+        /// 그 버릇까지 원본 그림의 일부라 여기서도 자르지 않는다.</para>
+        /// </summary>
+        private int CacheIndex(int tileX, int tileY)
+        {
+            return (tileY - _originTileY) * WindowCols + (tileX - _originTileX);
+        }
+
+        /// <summary>캐시가 든 갈래 — <b>창 밖은 «바닥»</b>으로 본다 (원본에서는 <c>undefined</c> 라 어느 갈래와도 다르다).</summary>
+        private ETileKind KindAt(int x, int y)
+        {
+            int i = CacheIndex(x, y);
+            return (uint)i < (uint)_cacheKind.Length ? _cacheKind[i] : ETileKind.Ground;
+        }
+
+        /// <summary>
+        /// ② <c>ou</c> — <b>얇은 목</b>인 풀밭 칸을 바닥으로 되돌린다.
+        /// <para>[소스] 좌우 둘 다 풀이 아니거나, 상하 둘 다 풀이 아니면 바닥이다.</para>
+        /// <para>⚠ 캐시를 <b>제자리에서</b> 고친다 — 그래야 다음 칸이 «고쳐진» 이웃을 본다.</para>
+        /// </summary>
+        private void RemoveThinNeck(int x, int y)
+        {
+            int i = CacheIndex(x, y);
+
+            if ((uint)i >= (uint)_cacheKind.Length || _cacheKind[i] != ETileKind.Grass)
+                return;
+
+            // ⚠ 원본 y 는 «아래»로 증가한다 — 위가 −1 이다
+            bool up = KindAt(x, y - 1) == ETileKind.Grass;
+            bool down = KindAt(x, y + 1) == ETileKind.Grass;
+            bool left = KindAt(x - 1, y) == ETileKind.Grass;
+            bool right = KindAt(x + 1, y) == ETileKind.Grass;
+
+            if ((left == false && right == false) || (up == false && down == false))
+            {
+                _cacheTile[i] = ETile.Ground;
+                _cacheKind[i] = ETileKind.Ground;
+            }
         }
 
         /// <summary>
@@ -161,61 +290,62 @@ namespace JinHyung.UndeadSlayer
         /// ⚠ <b>②가 ③이 보는 갈래를 바꾼다</b> — 그래서 갈래를 두 단계(<see cref="BaseKind"/> → <see cref="Kind"/>)로 나눠 둔다.
         /// </para>
         ///
-        /// <para>⚠ 원본 y 는 «아래»로 증가한다. 여기 <c>cell.y + 1</c> 이 원본의 <c>i − 1</c>(위)이다.</para>
+        /// <para>⚠ 여기 <c>x</c>·<c>y</c> 는 <b>원본 타일 좌표</b>다 — y 는 «아래»로 증가한다.
+        /// 유니티 칸으로 바꾸는 곳은 <see cref="Paint"/> 의 마지막 한 줄뿐이다.</para>
         /// </summary>
-        private int TileIndex(Vector3Int cell)
+        private ETile Autotile(int x, int y)
         {
-            if (_tiles.Length < TilesetColumns)
-                return 0;
+            int self = CacheIndex(x, y);
 
-            int x = cell.x;
-            int y = cell.y;
+            if (_tiles.Length < TilesetColumns || (uint)self >= (uint)_cacheKind.Length)
+                return ETile.Ground;
 
-            ETileKind kind = Kind(x, y);
+            ETileKind kind = _cacheKind[self];
 
             // ③ hu — 가장자리
             if (kind == ETileKind.Road)
             {
-                bool up = Kind(x, y + 1) == ETileKind.Road;
-                bool down = Kind(x, y - 1) == ETileKind.Road;
-                bool left = Kind(x - 1, y) == ETileKind.Road;
-                bool right = Kind(x + 1, y) == ETileKind.Road;
+                bool up = KindAt(x, y - 1) == ETileKind.Road;
+                bool down = KindAt(x, y + 1) == ETileKind.Road;
+                bool left = KindAt(x - 1, y) == ETileKind.Road;
+                bool right = KindAt(x + 1, y) == ETileKind.Road;
 
-                if (up == false && left == false) return (int)ETile.RoadNW;      // 82
-                if (up == false && right == false) return (int)ETile.RoadNE;     // 84
-                if (down == false && left == false) return (int)ETile.RoadSW;    // 120
-                if (down == false && right == false) return (int)ETile.RoadSE;   // 122
-                if (up == false) return (int)ETile.RoadN;                        // 83
-                if (down == false) return (int)ETile.RoadS;                      // 121
-                if (left == false) return (int)ETile.RoadW;                      // 101
-                if (right == false) return (int)ETile.RoadE;                     // 103
+                if (up == false && left == false) return ETile.RoadNW;      // 82
+                if (up == false && right == false) return ETile.RoadNE;     // 84
+                if (down == false && left == false) return ETile.RoadSW;    // 120
+                if (down == false && right == false) return ETile.RoadSE;   // 122
+                if (up == false) return ETile.RoadN;                        // 83
+                if (down == false) return ETile.RoadS;                      // 121
+                if (left == false) return ETile.RoadW;                      // 101
+                if (right == false) return ETile.RoadE;                     // 103
             }
             else if (kind == ETileKind.Grass)
             {
-                bool up = Kind(x, y + 1) == ETileKind.Grass;
-                bool down = Kind(x, y - 1) == ETileKind.Grass;
-                bool left = Kind(x - 1, y) == ETileKind.Grass;
-                bool right = Kind(x + 1, y) == ETileKind.Grass;
-                bool upLeft = Kind(x - 1, y + 1) == ETileKind.Grass;
-                bool upRight = Kind(x + 1, y + 1) == ETileKind.Grass;
-                bool downLeft = Kind(x - 1, y - 1) == ETileKind.Grass;
-                bool downRight = Kind(x + 1, y - 1) == ETileKind.Grass;
+                bool up = KindAt(x, y - 1) == ETileKind.Grass;
+                bool down = KindAt(x, y + 1) == ETileKind.Grass;
+                bool left = KindAt(x - 1, y) == ETileKind.Grass;
+                bool right = KindAt(x + 1, y) == ETileKind.Grass;
+                bool upLeft = KindAt(x - 1, y - 1) == ETileKind.Grass;
+                bool upRight = KindAt(x + 1, y - 1) == ETileKind.Grass;
+                bool downLeft = KindAt(x - 1, y + 1) == ETileKind.Grass;
+                bool downRight = KindAt(x + 1, y + 1) == ETileKind.Grass;
 
-                if (left == false && up == false && right && down) return (int)ETile.GrassNW;   // 79
-                if (left && up == false && right == false) return (int)ETile.GrassNE;           // 81
-                if (left == false && up && right && down == false) return (int)ETile.GrassSW;   // 117
-                if (left && up && right == false && down == false) return (int)ETile.GrassSE;   // 119
-                if (left && up && upLeft == false) return (int)ETile.GrassInNW;                 // 6
-                if (right && up && upRight == false) return (int)ETile.GrassInNE;               // 7
-                if (left && down && downLeft == false) return (int)ETile.GrassInSW;             // 25
-                if (right && down && downRight == false) return (int)ETile.GrassInSE;           // 26
-                if (left && up == false && right) return (int)ETile.GrassN;                     // 80
-                if (up && left == false && down) return (int)ETile.GrassW;                      // 98
-                if (up && right == false && down) return (int)ETile.GrassE;                     // 100
-                if (left && down == false && right) return (int)ETile.GrassS;                   // 118
+                if (left == false && up == false && right && down) return ETile.GrassNW;   // 79
+                if (left && up == false && right == false) return ETile.GrassNE;           // 81
+                if (left == false && up && right && down == false) return ETile.GrassSW;   // 117
+                if (left && up && right == false && down == false) return ETile.GrassSE;   // 119
+                if (left && up && upLeft == false) return ETile.GrassInNW;                 // 6
+                if (right && up && upRight == false) return ETile.GrassInNE;               // 7
+                if (left && down && downLeft == false) return ETile.GrassInSW;             // 25
+                if (right && down && downRight == false) return ETile.GrassInSE;           // 26
+                if (left && up == false && right) return ETile.GrassN;                     // 80
+                if (up && left == false && down) return ETile.GrassW;                      // 98
+                if (up && right == false && down) return ETile.GrassE;                     // 100
+                if (left && down == false && right) return ETile.GrassS;                   // 118
             }
 
-            return (int)BaseTile(x, y);
+            // ②가 고친 «캐시의» 타일이다 — 여기서 다시 계산하면 ②의 전파가 사라진다
+            return _cacheTile[self];
         }
 
         /// <summary>① <c>au</c> — 이웃을 보지 않는 «자기 타일».</summary>
@@ -276,28 +406,6 @@ namespace JinHyung.UndeadSlayer
                 return ETileKind.Road;
 
             return IsGrassRaw(x, y) ? ETileKind.Grass : ETileKind.Ground;
-        }
-
-        /// <summary>
-        /// ② <c>ou</c> 를 거친 갈래 — <b>얇은 목</b>인 풀밭은 바닥이 된다.
-        /// <para>[소스] 좌우 둘 다 풀이 아니거나, 상하 둘 다 풀이 아니면 바닥으로 되돌린다.</para>
-        /// </summary>
-        private ETileKind Kind(int x, int y)
-        {
-            ETileKind self = BaseKind(x, y);
-
-            if (self != ETileKind.Grass)
-                return self;
-
-            bool up = BaseKind(x, y + 1) == ETileKind.Grass;
-            bool down = BaseKind(x, y - 1) == ETileKind.Grass;
-            bool left = BaseKind(x - 1, y) == ETileKind.Grass;
-            bool right = BaseKind(x + 1, y) == ETileKind.Grass;
-
-            if ((left == false && right == false) || (up == false && down == false))
-                return ETileKind.Ground;
-
-            return ETileKind.Grass;
         }
 
         private bool IsRoad(int x, int y)

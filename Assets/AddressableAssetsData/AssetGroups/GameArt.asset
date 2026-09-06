@@ -141,12 +141,6 @@ MonoBehaviour:
     m_SerializedLabels:
     - game_art
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 1cf2bf6922552d74390793d720779b28
-    m_Address: hp_segment
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - game_art
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1e432fdc2fea2ac4897a164fc8e9ed21
     m_Address: ui_round_16
     m_ReadOnly: 0
@@ -321,6 +315,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - game_art
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 52ad3a50d6912a749b9281cb59e94846
+    m_Address: hp_segment_bg
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 52d43b02ea765cc4f9ec6affa48d3738
     m_Address: enemy1
     m_ReadOnly: 0
@@ -417,6 +417,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - game_art
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 73de354d8863ad941a1a3c8500da6028
+    m_Address: reward_button_bg_card
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 7b931d0ae5622bd4698ac781c27b4222
     m_Address: darksoul
     m_ReadOnly: 0
@@ -501,6 +507,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - game_art
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8e6c2fa0bb7d6194184f67cd4a3f20f6
+    m_Address: hp_segment_fill
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 935434171dd70054a9e52d083db47fe6
     m_Address: enemy2
     m_ReadOnly: 0
@@ -515,6 +527,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 9a1f35c4f51a5584a93ddfb8299e84eb
     m_Address: enemy_eye
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9d4f364b031bbfc41b0fb74359d7fd1d
+    m_Address: bubble_medium
     m_ReadOnly: 0
     m_SerializedLabels:
     - game_art
@@ -539,6 +557,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: aba9d56164c2a224fa0c3e928151af90
     m_Address: ui_panel_9p
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ad35ae2d335ede144bca9986022cacfa
+    m_Address: quest_progress
     m_ReadOnly: 0
     m_SerializedLabels:
     - game_art
@@ -581,6 +605,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c269de7bc9f35764cba7d557ba1f1e91
     m_Address: block_skin_2
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c5299ec9801bdaa49b90a465506385d6
+    m_Address: kunai
     m_ReadOnly: 0
     m_SerializedLabels:
     - game_art

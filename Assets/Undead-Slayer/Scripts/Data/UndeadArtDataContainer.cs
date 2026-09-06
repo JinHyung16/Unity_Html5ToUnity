@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text;
 using JinHyung.Core;
@@ -31,8 +32,39 @@ namespace JinHyung.Data
         /// 45 → <b>47</b> — 가족은 원본이 <b>«세 명»</b>이고 <b>각기 다른 시트</b>다
         /// [소스 <c>createMembers</c> — <c>family_npc_1/2/3</c>]. 한 장으로 두면 세 명이 똑같이 보인다.
         /// </para>
+        ///
+        /// <para>
+        /// 47 → <b>48</b> — <b><c>kunai</c></b> 를 더했다. <b>구조된 전사가 던지는 무기</b>인데
+        /// 그림도 규칙도 통째로 없었다 [소스 <c>class Pd</c> · <c>throwKunais</c> — 1초마다 대각 4방].
+        /// 「동료가 공격을 못 한다」로 <b>사람이 화면을 보고</b> 잡아낸 결함이다.
+        /// </para>
+        ///
+        /// <para>
+        /// 48 → <b>49</b> — <b><c>bubble_medium</c></b> (140×102) 을 더했다. 전사가 <b>다음 과제를 예고</b>할 때
+        /// 쓰는 «큰» 말풍선이다 [소스 <c>getTextureAlias</c> — <c>variant "medium"</c>].
+        /// ⚠ 굽는 코드에는 <c>bubble_medium</c> 갈래가 «있었는데» 표에 행이 없어 <b>한 번도 안 불렸다</b>.
+        /// </para>
+        ///
+        /// <para>
+        /// 49 → <b>50</b> — <b><c>quest_progress</c></b> (36×36 · 9컷) 을 더했다. 쓰러진 전사 곁에 서 있는 동안
+        /// 차오르는 <b>구조 진행 링</b>이다 [소스 <c>class Ad</c> · <c>Cd</c> 9프레임].
+        /// ⚠ 시뮬은 <c>RescueSeconds</c> 를 <b>이미 세고 있었는데 아무도 읽지 않았다</b> — 4초를 눈금 없이 기다렸다.
+        /// </para>
+        ///
+        /// <para>
+        /// 50 → <b>51</b> — <b><c>reward_button_bg_card</c></b> 를 더했다. 그림은 <c>reward_button_bg</c> 와 <b>같은데</b>
+        /// 원본이 <b>인셋을 자리마다 다르게</b> 쓴다 [소스 — 카드 10 · 액션 버튼 15].
+        /// 엔진의 9슬라이스 인셋은 스프라이트 에셋에 붙어서 <b>자리마다 다르게 하려면 행이 둘</b>이어야 한다.
+        /// </para>
+        ///
+        /// <para>
+        /// 51 → <b>52</b> — <c>hp_segment</c> 를 <b><c>hp_segment_bg</c> + <c>hp_segment_fill</c> 두 겹</b>으로 갈랐다.
+        /// 원본 체력바는 «어두운 바탕(항상)» 위에 «빨간 채움(줄었다 늘었다)» 을 얹는다 [소스 <c>rebuildSegments</c>] —
+        /// 한 장으로 두면 <b>목숨이 줄 때 칸 자체가 사라진다</b>.
+        /// ⚠ 둘 다 <see cref="UndeadArtData.DrawnByCode"/> 다 — 원본이 아틀라스가 아니라 <c>Graphics</c> 로 그린다.
+        /// </para>
         /// </summary>
-        public const int MeasuredRowCount = 47;
+        public const int MeasuredRowCount = 52;
 
         /// <summary>월드 아트 = <c>Game</c> · UI 아트 = <c>Ui</c>. 다른 값이 들어오면 오류다.</summary>
         public const string CategoryGame = "Game";
@@ -107,12 +139,39 @@ namespace JinHyung.Data
                 if (v.FpsMeasured == false && v.Fps != 0.0)
                     sb.AppendLine($"{v.Code}: fps 를 안 쟀는데 {v.Fps} 가 적혀 있다");
 
-                if (v.FpsMeasured && v.Fps <= 0.0)
+                // ★★ 「쟀는데 0」은 <b>«시간으로 안 도는» 시트</b>라는 뜻이다 — 오류가 아니다.
+                //   컷을 «상태»가 고르는 것이 있다 (구조 진행 링은 진행률이 컷을 고른다 · 소스 setProgress).
+                //   ⚠ 이걸 오류로 두면 그런 시트를 표에 못 올려 «화면에서 통째로 빠진다».
+                if (v.FpsMeasured && v.Fps < 0.0)
                     sb.AppendLine($"{v.Code}: fps 를 쟀다면서 {v.Fps} 다");
 
                 // ★ 컷이 여럿인데 fps 가 없으면 «움직일 수 없다» — 그리기 전에 재야 한다.
                 if (v.UsedCols <= 0 || v.UsedCols > v.Cols)
                     sb.AppendLine($"{v.Code}: UsedCols {v.UsedCols} 가 1~{v.Cols} 밖이다");
+
+                // 시작 컷 + 쓰는 컷이 시트를 넘으면 «빈 칸»이 구워진다
+                if (v.CutOffset < 0 || v.CutOffset + v.UsedCols > v.Cols)
+                    sb.AppendLine($"{v.Code}: CutOffset {v.CutOffset} + UsedCols {v.UsedCols} 가 Cols {v.Cols} 를 넘는다");
+
+                // ★★ 「9슬라이스로 늘린다」와 「정수배로 확대한다」는 <b>배타</b>다 [소스].
+                //   ⚠ [사고] lvl_bg 가 «둘 다» 켜져 있었다 — 표만 보면 모순인데 아무도 안 봤고,
+                //     화면에서는 16×16 그림이 9슬라이스로 늘어나 <b>테두리가 실오라기처럼 얇아졌다</b>.
+                //     원본은 같은 그림을 4.5배로 «통째로» 키운다(테두리도 4.5배 굵어진다).
+                if (v.NineSlice != (v.NineSliceBorder > 0))
+                    sb.AppendLine($"{v.Code}: NineSlice {v.NineSlice} 와 인셋 {v.NineSliceBorder} 가 어긋난다 — 인셋 0 이면 9슬라이스가 아니다");
+
+                if (v.NineSlice && (v.DisplayScaleX != 1.0 || v.DisplayScaleY != 1.0))
+                {
+                    sb.AppendLine($"{v.Code}: 9슬라이스인데 표시 배율이 {v.DisplayScaleX}x{v.DisplayScaleY} 다 " +
+                                  "— 늘리는 것과 확대하는 것은 «둘 중 하나»다");
+                }
+
+                // 인셋 둘이 컷을 덮으면 «늘어날 가운데»가 없어 모서리가 뭉개진다
+                if (v.NineSliceBorder * 2 > Math.Min(v.FrameWidth, v.FrameHeight))
+                {
+                    sb.AppendLine($"{v.Code}: 인셋 {v.NineSliceBorder} × 2 가 컷 " +
+                                  $"{v.FrameWidth}x{v.FrameHeight} 를 덮는다 — 늘어날 가운데가 없다");
+                }
 
                 // ★ fps 의 «뿌리»는 원본의 재생 속도(틱당 진행 컷 수)다 — <c>fps = 속도 × 60</c>.
                 //   대개 정수 분주가 되지만(0.2 → 12fps = 5틱) <b>항상 그런 것은 아니다</b> —

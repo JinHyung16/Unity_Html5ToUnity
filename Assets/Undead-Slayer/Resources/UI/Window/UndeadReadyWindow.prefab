@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7832518549718518112}
   - component: {fileID: 4452974584599377198}
   - component: {fileID: 5564210426843275625}
+  - component: {fileID: 9112193240813934405}
   m_Layer: 0
   m_Name: Label
   m_TagString: Untagged
@@ -68,7 +69,7 @@ MonoBehaviour:
   m_text: "\uC2DC\uC791"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ce5ec5f8034f0c847bf039029c716c73, type: 2}
-  m_sharedMaterial: {fileID: -3378076885598456707, guid: ce5ec5f8034f0c847bf039029c716c73, type: 2}
+  m_sharedMaterial: {fileID: -7889550937217886405, guid: ce5ec5f8034f0c847bf039029c716c73, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -137,6 +138,20 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &9112193240813934405
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3736381116146747453}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b859c94afd2e804bb85b7b02e719feb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::JinHyung.UI.Fx.UiTextFit
+  _boxWidth: 346.34485
+  _boxHeight: 55.862072
 --- !u!1 &4096458259728262999
 GameObject:
   m_ObjectHideFlags: 0
@@ -291,7 +306,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
+  m_PixelsPerUnitMultiplier: 0.537037
 --- !u!114 &3714695904319124796
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -469,7 +484,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7785d4a39579f0c4db23781b1a0f7909, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::JinHyung.UndeadSlayer.UndeadReadyWindow
-  _windowType: 0
+  _windowType: 1
   _startButton: {fileID: 3714695904319124796}
   _startText: {fileID: 5564210426843275625}
   _pulse: {fileID: 5306352690742913003}

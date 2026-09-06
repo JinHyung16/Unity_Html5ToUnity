@@ -48,6 +48,64 @@ namespace JinHyung.Data
         /// </summary>
         public int UsedCols { get; set; }
 
+        /// <summary>
+        /// 원본 시트에서 <b>몇 번째 컷부터</b> 쓰나 [기본 0].
+        ///
+        /// <para>
+        /// ★ <c>warrior_lay</c> 가 <b>2</b> 다 — 원본은 4컷 시트의 <b>«2~3번»만</b> 쓴다
+        /// [소스 <c>for(s=2; s&lt;4; s++) layFrames.push(...)</c>].
+        /// </para>
+        ///
+        /// <para>
+        /// ⚠ [사고] 손으로 찍던 시절에는 굽는 코드가 이 사실을 «알고» 있었는데,
+        /// <b>실측 규격 굽기로 갈아타면서 규격이 앞에서부터 잘려</b> 다른 자세가 구워졌다.
+        /// 「굽는 방법을 바꿀 때 «코드에만» 있던 사실이 사라진다」 — 그래서 <b>표로 올렸다</b>.
+        /// </para>
+        /// </summary>
+        public int CutOffset { get; set; }
+
+        /// <summary>
+        /// 9슬라이스 <b>테두리 인셋</b> (원본 px) [소스 — <c>NineSlicePlane</c> 의 <c>leftWidth/topHeight/…</c>].
+        /// <b>0 이면 9슬라이스가 아니다.</b>
+        ///
+        /// <para>
+        /// ⚠ [사고] 예전에는 임포터가 <c>max(1, min(16, min(폭,높이)/3))</c> 으로 <b>지어냈다</b>.
+        /// 여섯 중 셋이 <b>우연히 맞았다</b> — <c>skill_bg</c>·<c>task_bg</c>(6÷3=2)는 나눗셈이,
+        /// <c>btn_shadowed</c>(105÷3=35 인데 상한에 잘려 16)는 <b>잘림이</b> 맞췄다.
+        /// 틀린 것은 <c>bar</c>(4→5) · <c>reward_button_bg</c>(15/10→11) · <c>lvl_bg</c>(9슬라이스가 아닌데 5) 다.
+        /// 테두리가 굵어지면 <b>늘어나는 가운데가 좁아져</b> 모서리가 뭉개진다.
+        /// 소스 값은 빌더 «주석»에 적혀 있었는데 <b>데이터가 아니라 글이라서</b> 아무것도 읽지 않았다.
+        /// </para>
+        /// </summary>
+        public int NineSliceBorder { get; set; }
+
+        /// <summary>
+        /// 이 행이 <b>어느 실측 규격으로</b> 구워지나 — 비면 <see cref="Code"/> 와 같다.
+        ///
+        /// <para>
+        /// ★ 원본이 <b>같은 그림을 «다른 인셋»으로</b> 쓸 때 필요하다 —
+        /// <c>reward_button_bg</c> 는 카드에서 10, 액션 버튼에서 15 다 [소스].
+        /// 엔진의 9슬라이스 인셋은 <b>스프라이트 에셋에 붙으므로</b> 자리마다 다르게 하려면 행이 둘이어야 한다.
+        /// </para>
+        /// </summary>
+        public string SpecCode { get; set; }
+
+        /// <summary>
+        /// 원본이 이 그림을 <b>아틀라스가 아니라 «코드»로 그린다</b> [소스 <c>Graphics.rect().fill().stroke()</c>].
+        ///
+        /// <para>
+        /// ★ 그래서 <b>실측 규격이 원리적으로 없다</b> — 아틀라스에 프레임 자체가 없기 때문이다.
+        /// 대신 <b>소스의 사각형·색·선폭을 그대로</b> 옮긴다. 아트 채점의 분모에서 빠지는 것이 «정상»이다.
+        /// </para>
+        ///
+        /// <para>
+        /// ⚠ 이 표시가 없으면 「규격이 없는 행」이 <b>못 잰 것인지 잴 게 없는 것인지</b> 구별되지 않는다 —
+        /// 실측 사례로 <c>hp_segment</c> 가 여러 회차 동안 «미실측»으로 보였는데,
+        /// 사실은 <b>원본에 프레임이 없고 우리 색이 지어낸 값</b>이었다.
+        /// </para>
+        /// </summary>
+        public bool DrawnByCode { get; set; }
+
         /// <summary>초당 프레임. <see cref="FpsMeasured"/> 가 <c>false</c> 면 0 이다 — 추정치를 넣지 않는다.</summary>
         public double Fps { get; set; }
 

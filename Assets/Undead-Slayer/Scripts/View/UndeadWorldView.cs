@@ -36,32 +36,86 @@ namespace JinHyung.UndeadSlayer
 
         private readonly List<SpriteRenderer> _enemyPool = new List<SpriteRenderer>(512);
         private readonly List<SpriteRenderer> _projectilePool = new List<SpriteRenderer>(64);
+        private readonly List<SpriteRenderer> _kunaiPool = new List<SpriteRenderer>(32);
         private readonly List<SpriteRenderer> _gemPool = new List<SpriteRenderer>(256);
         private readonly List<SpriteRenderer> _orbPool = new List<SpriteRenderer>(16);
         private readonly List<SpriteRenderer> _fireballPool = new List<SpriteRenderer>(64);
 
-        /// <summary>말풍선이 목표 «위»로 뜨는 높이 (원본 px). ⚠ 원본 값은 <b>미측정</b>이라 눈으로 맞춘 값이다.</summary>
-        private const double BubbleOffsetY = 48.0;
+        /// <summary>
+        /// 말풍선 <b>바닥</b>이 목표 위로 뜨는 높이 [소스 — <c>helpBubbleY = −78</c>].
+        /// <para>⚠ 회차 16 까지 <b>48 (미측정 · 눈으로 맞춘 값)</b> 이었다 — 소스를 읽어 바꿨다.</para>
+        /// <para>⚠ 원본 말풍선 앵커는 <c>(0.5, 1)</c> 이고 우리 표의 피벗은 <c>(0.5, 0)</c> 다 — <b>둘 다 «바닥 기준»</b>이라 값이 그대로 온다.</para>
+        /// </summary>
+        private const double BubbleOffsetY = 78.0;
 
-        private const double BubbleTextOffsetY = 10.0;
+        /// <summary>말풍선 «안»에서 글자가 놓이는 자리 — <b>풍선 높이의 절반</b> [소스 — <c>text.y = −0.5 × sprite.height</c>].</summary>
+        private const double BubbleTextCenterRatio = 0.5;
+
+        /// <summary>말풍선이 <b>떠 있는 폭</b> [소스 <c>dc.update</c> — <c>visual.y = 5 × sin(0.004 × 경과ms)</c>].</summary>
+        private const double BubbleBobAmplitude = 5.0;
+
+        /// <summary>말풍선이 뜨는 «빠르기» (rad/초) [소스 — ms 기준 0.004 → 초 기준 4].</summary>
+        private const double BubbleBobSpeed = 4.0;
+
+        /// <summary>「고마워, 친구!」 말풍선은 «조금 더 위»다 [소스 — <c>thanksBubbleY = helpBubbleY − 20</c>].</summary>
+        private const double ThanksBubbleExtraY = 20.0;
+
+        /// <summary>구조 진행 링의 높이 — 전사 «발» 기준 [소스 — <c>actionProgress.y = −96</c>].</summary>
+        private const double ActionProgressY = 96.0;
         private const float HelpTextSize = 3.5f;
         private const float HelpTextWidth = 6f;
         private const float HelpTextHeight = 1.6f;
 
+        /// <summary>글자가 쓰는 폭·높이 — 풍선 대비 [소스 <c>applyTextValue</c> — 기본 .78/.75 · 큰 것 .72/.62].</summary>
+        private const float TextWidthRatio = 0.78f;
+
+        private const float TextHeightRatio = 0.75f;
+
+        private const float MediumTextWidthRatio = 0.72f;
+
+        private const float MediumTextHeightRatio = 0.62f;
+
+        /// <summary>글자 색 [소스 — <c>fill: 2824720</c> = <c>#2B1A10</c>]. ⚠ 검정이 아니다.</summary>
+        private static readonly Color BubbleTextColor = new Color(0x2B / 255f, 0x1A / 255f, 0x10 / 255f, 1f);
+
         // ── 체력바 [소스 — heroLivesBar]
         private const double LifeBarY = -60.0;
         private const double LifeSegmentWidth = 12.0;
-        private const double LifeSegmentGap = 1.0;
+        private const double LifeSegmentHeight = 6.0;
+
+        /// <summary>칸 사이 간격 [소스 — <c>segmentSpacing = 0</c>]. ⚠ 회차 18 까지 1 이었다(지어낸 값).</summary>
+        private const double LifeSegmentGap = 0.0;
+
+        /// <summary>바 전체가 «왼쪽으로 3» 밀린다 [소스 — <c>pivot.set(0.5×width − 3, 0.5×height)</c>].</summary>
+        private const double LifeBarPivotShiftX = 3.0;
+
         private const double LifeFadeIn = 0.15;
         private const double LifeFadeOut = 0.4;
         private const double LifeFadeOutDelay = 1.2;
 
+        /// <summary>칸이 <b>사라지는</b> 시간 (초) [소스 — <c>300ms</c>].</summary>
+        private const double LifeSegmentVanish = 0.3;
+
+        /// <summary>칸이 <b>돋아나는</b> 시간 (초) [소스 — <c>200ms</c>].</summary>
+        private const double LifeSegmentAppear = 0.2;
+
         private Transform _enemyRoot;
         private Transform _projectileRoot;
+        private Transform _kunaiRoot;
         private Transform _gemRoot;
         private SpriteRenderer _hero;
         /// <summary>체력바 — 히어로 «위»에 붙는 칸들 [소스 — y −60 · 12×6 · 여백 1].</summary>
+        /// <summary>어두운 <b>바탕</b> — 목숨이 줄어도 남는다 [소스 — 칸마다 배경 + 채움 두 겹].</summary>
         private SpriteRenderer[] _lifeSegments;
+
+        /// <summary>빨간 <b>채움</b> — 목숨 수만큼만 보이고, 줄 때 «떨어지며» 사라진다.</summary>
+        private SpriteRenderer[] _lifeFills;
+
+        /// <summary>칸마다의 연출 진행 (초). 양수면 돋아나는 중 · 음수면 사라지는 중 · 0 이면 정지.</summary>
+        private double[] _lifeFillPhase;
+
+        /// <summary>지난 프레임의 목숨 수 — 늘고 줆을 «전이»로 잡는다.</summary>
+        private int _lifeLastHp = -1;
 
         private Transform _lifeRoot;
         private double _lifeFadeSeconds;
@@ -88,6 +142,17 @@ namespace JinHyung.UndeadSlayer
         /// </summary>
         private IReadOnlyList<UndeadSpriteSet> _enemySets;
         private UndeadSpriteSet _projectileSet;
+        private UndeadSpriteSet _kunaiSet;
+        private UndeadSpriteSet _bubbleSet;
+        private UndeadSpriteSet _bubbleMediumSet;
+        private UndeadSpriteSet _questProgressSet;
+        private SpriteRenderer _questProgress;
+
+        /// <summary>
+        /// 전사가 하는 말 — 순서는 <b>도와줘 · 고마워 · 마법사 예고 · 첫 보스 예고 · 농부 예고</b>다.
+        /// <para>⚠ 한국어를 뷰에 박지 않는다 — <b>문구 표</b>에서 온다 (<c>UndeadGameInitialize</c>).</para>
+        /// </summary>
+        private string[] _warriorSpeechTexts;
         private UndeadSpriteSet _gemSet;
         private UndeadSpriteSet _orbSet;
         private Transform _orbRoot;
@@ -168,7 +233,7 @@ namespace JinHyung.UndeadSlayer
         /// <summary>풀이 만든 렌더러 총수. <b>개체 수에 비례해 «컴포넌트»가 늘지 않는지</b>를 보는 값이다.</summary>
         public int PooledRendererCount
         {
-            get { return _enemyPool.Count + _projectilePool.Count + _gemPool.Count + (_hero != null ? 1 : 0); }
+            get { return _enemyPool.Count + _projectilePool.Count + _kunaiPool.Count + _gemPool.Count + (_hero != null ? 1 : 0); }
         }
 
         public void Bind(UndeadSimulation sim,
@@ -280,19 +345,36 @@ namespace JinHyung.UndeadSlayer
         /// (회차 6 에 「체력 UI 가 없다」로 적었던 것이 이것이다 — 없는 게 아니라 «꺼져» 있었다).
         /// </para>
         /// </summary>
-        public void BindLifeBar(UndeadSpriteSet segment, int maxHp)
+        /// <summary>
+        /// 체력바 — <b>칸마다 «두 겹»</b>이다 [소스 <c>rebuildSegments</c>].
+        /// <para>어두운 바탕은 «늘 있고», 빨간 채움만 목숨 수를 따라 돋아나고 사라진다.</para>
+        /// <para>⚠ [사고] 한 장으로 두고 «색만 갈아» 칠했더니, 목숨이 줄면 칸의 테두리까지 같이 어두워졌다.</para>
+        /// </summary>
+        public void BindLifeBar(UndeadSpriteSet background, UndeadSpriteSet fill, int maxHp)
         {
-            if (segment == null || maxHp <= 0)
+            if (background == null || maxHp <= 0)
                 return;
+
+            if (fill == null)
+                Log.Error("체력 칸 «채움»(hp_segment_fill) 세트가 없다 — 남은 목숨이 화면에 안 보인다");
 
             _lifeRoot = NewRoot("LifeBar");
             _lifeSegments = new SpriteRenderer[maxHp];
+            _lifeFills = new SpriteRenderer[maxHp];
+            _lifeFillPhase = new double[maxHp];
 
             for (int i = 0; i < maxHp; i++)
             {
-                _lifeSegments[i] = NewRenderer(_lifeRoot, segment);
+                _lifeSegments[i] = NewRenderer(_lifeRoot, background);
                 _lifeSegments[i].gameObject.SetActive(true);
                 _lifeSegments[i].sortingOrder = SortingBase * 2;
+
+                if (fill == null)
+                    continue;
+
+                _lifeFills[i] = NewRenderer(_lifeRoot, fill);
+                _lifeFills[i].gameObject.SetActive(true);
+                _lifeFills[i].sortingOrder = SortingBase * 2 + 1;
             }
         }
 
@@ -307,7 +389,9 @@ namespace JinHyung.UndeadSlayer
         public void BindQuestTarget(UndeadSpriteSet warriorLay, UndeadSpriteSet warriorIdle,
                                     UndeadSpriteSet warriorRun, UndeadSpriteSet bubble,
                                     UndeadSpriteSet mage, UndeadSpriteSet fragment,
-                                    string helpText, TMP_FontAsset font)
+                                    UndeadSpriteSet kunai, UndeadSpriteSet bubbleMedium,
+                                    UndeadSpriteSet questProgress,
+                                    string[] speechTexts, TMP_FontAsset font)
         {
             if (_sim == null)
                 return;
@@ -318,12 +402,38 @@ namespace JinHyung.UndeadSlayer
             _warriorIdleSet = warriorIdle;
             _warriorRunSet = warriorRun;
 
+            // ★ 쿠나이는 «구조된 전사»가 던진다 [소스 throwKunais] — 풀이라 루트만 만들어 둔다.
+            //   ⚠ 세트가 없으면 시뮬은 날리는데 화면에는 아무것도 안 나온다 — 시끄럽게 알린다.
+            _kunaiSet = kunai;
+            _kunaiRoot = NewRoot("Kunais");
+
+            if (kunai == null)
+                Log.Error("쿠나이 스프라이트 세트가 없다 — 전사가 던지는 것이 화면에 안 나온다");
+
             // ⚠ 모드마다 시트를 갈아끼우므로 «시간으로 도는 목록»에 넣지 않는다 — 아래에서 직접 진행시킨다
             if (warriorLay != null)
                 _questWarrior = NewRenderer(_questRoot, warriorLay, timed: false);
 
+            // ★ 말풍선은 «갈래마다 그림이 다르다» [소스 getTextureAlias] — 예고는 큰 것(bubble_medium)이다.
+            //   ⚠ 개체는 «하나»다. 갈래마다 렌더러를 두면 둘이 겹쳐 뜬다.
+            _bubbleSet = bubble;
+            _bubbleMediumSet = bubbleMedium;
+            _warriorSpeechTexts = speechTexts;
+
+            if (bubbleMedium == null)
+                Log.Error("큰 말풍선(bubble_medium) 세트가 없다 — 전사의 과제 예고가 작은 풍선으로 뜬다");
+
+            // ★ 구조 진행 링 — «시간»이 아니라 «진행률»이 컷을 고른다 [소스 getTextureNameForProgress]
+            _questProgressSet = questProgress;
+
+            if (questProgress != null)
+                _questProgress = NewRenderer(_questRoot, questProgress, timed: false);
+            else
+                Log.Error("구조 진행 링(quest_progress) 세트가 없다 — 4초를 눈금 없이 기다리게 된다");
+
+            // 갈래마다 시트를 갈아끼우므로 «시간으로 도는 목록»에 넣지 않는다 — RenderWarriorSpeech 가 직접 준다
             if (bubble != null)
-                _questBubble = NewRenderer(_questRoot, bubble);
+                _questBubble = NewRenderer(_questRoot, bubble, timed: false);
 
             if (mage != null)
                 _questMage = NewRenderer(_questRoot, mage);
@@ -335,8 +445,11 @@ namespace JinHyung.UndeadSlayer
                 _questFragments[1] = NewRenderer(_questRoot, fragment);
             }
 
-            if (string.IsNullOrEmpty(helpText))
+            if (speechTexts == null || speechTexts.Length == 0)
+            {
+                Log.Error("전사의 말 문구가 없다 — 말풍선이 빈 채로 뜬다");
                 return;
+            }
 
             var textObject = new GameObject("HelpText");
             textObject.transform.SetParent(_questRoot, false);
@@ -346,9 +459,10 @@ namespace JinHyung.UndeadSlayer
             if (font != null)
                 _questHelpText.font = font;
 
-            _questHelpText.text = helpText;
+            _questHelpText.text = speechTexts[0];
             _questHelpText.fontSize = HelpTextSize;
-            _questHelpText.color = Color.black;
+            _questHelpText.color = BubbleTextColor;
+            _questHelpText.enableWordWrapping = true;
             _questHelpText.alignment = TextAlignmentOptions.Center;
             _questHelpText.rectTransform.sizeDelta = new Vector2(HelpTextWidth, HelpTextHeight);
         }
@@ -364,42 +478,30 @@ namespace JinHyung.UndeadSlayer
             {
                 Place(_questWarrior.transform, _sim.WarriorPosition, _questWarrior);
                 _questWarrior.sortingOrder = SortOrder(_sim.WarriorPosition.Y);
-                _questWarrior.enabled = _sim.QuestActive;   // 전사는 퀘스트가 «켜질 때» 놓인다 [소스 spawnWarrior]
+                // ⚠ <b>QuestActive 로 가르지 않는다</b> — 과제와 과제 «사이»(예고 대기)에는
+                //   CurrentQuest 가 비어 그때 전사가 통째로 사라진다. 놓였으면 계속 보인다 [소스 spawnWarrior].
+                _questWarrior.enabled = _sim.WarriorSpawned;
 
                 // ★ 모드마다 «다른 시트»다 [소스 setMode] — 예전에는 누운 그림 하나로 따라다녔다
                 if (_questWarrior.enabled)
+                {
                     ApplySet(_questWarrior, WarriorSet());
-            }
 
-            bool showHelp = _sim.QuestActive && _sim.QuestRescued == false;
-
-            if (_questBubble != null)
-            {
-                _questBubble.enabled = showHelp;
-
-                if (showHelp)
-                {
-                    var at = new UndeadVec2(_sim.WarriorPosition.X, _sim.WarriorPosition.Y - BubbleOffsetY);
-                    Place(_questBubble.transform, at, _questBubble);
-                    _questBubble.sortingOrder = SortOrder(_sim.WarriorPosition.Y) + 1;
+                    // ★ 가는 쪽을 본다 [소스 updateFollow — scale.x 부호를 뒤집는다]
+                    Vector3 scale = _questWarrior.transform.localScale;
+                    scale.x = Mathf.Abs(scale.x) * (_sim.WarriorFacingLeft ? -1f : 1f);
+                    _questWarrior.transform.localScale = scale;
                 }
             }
 
-            if (_questHelpText != null)
-            {
-                _questHelpText.enabled = showHelp;
-
-                if (showHelp)
-                {
-                    _questHelpText.transform.position = UndeadUnits.ToPosition(
-                        _sim.WarriorPosition.X, _sim.WarriorPosition.Y - BubbleOffsetY - BubbleTextOffsetY);
-                }
-            }
+            RenderWarriorSpeech();
+            RenderRescueRing();
 
             // ── 마법사. 전사를 구한 «뒤»에 나타난다 [소스 — 퀘스트가 순차다]
             if (_questMage != null)
             {
-                _questMage.enabled = _sim.QuestRescued;
+                // ⚠ 구조 «직후»가 아니다 — 전사가 5초 뒤 예고를 마쳐야 마법사 과제가 시작된다 [소스].
+                _questMage.enabled = _sim.MageQuestStarted;
 
                 if (_questMage.enabled)
                 {
@@ -415,6 +517,149 @@ namespace JinHyung.UndeadSlayer
             bool showFragments = _sim.MageMet;
             SetFragment(_questFragments[0], showFragments, _sim.Fragment0Position);
             SetFragment(_questFragments[1], showFragments, _sim.Fragment1Position);
+        }
+
+        /// <summary>
+        /// 전사의 말풍선 — <b>갈래마다 그림·자리·문구가 갈린다</b> [소스 <c>dc.setText</c> · <c>getTextureAlias</c>].
+        ///
+        /// <para>
+        /// | 갈래 | 그림 | 자리 | 언제 |<br/>
+        /// | 도와줘 | <c>bubble</c> | <c>helpBubbleY</c> | 구조 «전» |<br/>
+        /// | 고마워 | <c>bubble</c> | <c>helpBubbleY − 20</c> | 구조 직후 2초 |<br/>
+        /// | 과제 예고 | <b><c>bubble_medium</c></b> | <c>helpBubbleY</c> | 다음 과제가 열리기 «전» |
+        /// </para>
+        /// </summary>
+        private void RenderWarriorSpeech()
+        {
+            EUndeadWarriorSpeech speech = _sim.WarriorSpawned
+                ? _sim.WarriorSpeech
+                : EUndeadWarriorSpeech.None;
+
+            bool show = speech != EUndeadWarriorSpeech.None;
+            double offsetY = BubbleOffsetY
+                             + (speech == EUndeadWarriorSpeech.Thanks ? ThanksBubbleExtraY : 0.0);
+
+            // ★ 말풍선은 «위아래로 뜬다» [소스 dc.update]. 풍선과 글자가 «같이» 움직인다 — 한 컨테이너다.
+            //   ⚠ 시계는 «시뮬»에서 받는다 — 뷰가 자기 시계로 흔들면 «정지 중에도» 흔들린다.
+            if (speech == _lastSpeech)
+                _bubbleElapsed = _sim.ElapsedSeconds - _bubbleStartedAt;
+            else
+            {
+                _lastSpeech = speech;
+                _bubbleStartedAt = _sim.ElapsedSeconds;
+                _bubbleElapsed = 0.0;
+            }
+
+            offsetY -= BubbleBobAmplitude * Math.Sin(BubbleBobSpeed * _bubbleElapsed);
+
+            bool medium = speech == EUndeadWarriorSpeech.QuestIntro && _bubbleMediumSet != null;
+            UndeadSpriteSet set = medium ? _bubbleMediumSet : _bubbleSet;
+
+            if (_questBubble != null)
+            {
+                _questBubble.enabled = show;
+
+                if (show)
+                {
+                    ApplySet(_questBubble, set);
+
+                    var at = new UndeadVec2(_sim.WarriorPosition.X, _sim.WarriorPosition.Y - offsetY);
+                    Place(_questBubble.transform, at, _questBubble);
+                    _questBubble.sortingOrder = SortOrder(_sim.WarriorPosition.Y) + 1;
+                }
+            }
+
+            if (_questHelpText == null)
+                return;
+
+            _questHelpText.enabled = show;
+
+            if (show == false)
+                return;
+
+            _questHelpText.text = SpeechTextOf(speech);
+
+            // ★ 글자는 풍선 «가운데»다 — 풍선이 커지면 글자도 같이 올라간다 [소스 applyTextValue].
+            //   ⚠ 고정 오프셋으로 두면 큰 풍선에서 글자가 바닥에 붙는다.
+            double width = set != null ? set.Data.FrameWidth * set.Data.DisplayScaleX : 0.0;
+            double height = set != null ? set.Data.FrameHeight * set.Data.DisplayScaleY : 0.0;
+
+            _questHelpText.rectTransform.sizeDelta = new Vector2(
+                UndeadUnits.ToUnits(width * (medium ? MediumTextWidthRatio : TextWidthRatio)),
+                UndeadUnits.ToUnits(height * (medium ? MediumTextHeightRatio : TextHeightRatio)));
+
+            _questHelpText.transform.position = UndeadUnits.ToPosition(
+                _sim.WarriorPosition.X, _sim.WarriorPosition.Y - offsetY - height * BubbleTextCenterRatio);
+        }
+
+        /// <summary>
+        /// 구조 진행 링 [소스 <c>class Ad</c>] — 쓰러진 전사 곁에 서 있는 <b>4초 동안</b> 차오른다.
+        ///
+        /// <para>
+        /// ★ 컷은 <b>진행률</b>이 고른다 — <c>0</c> 이면 첫 컷, 그 밖에는 <c>ceil(t × 8)</c> 이다
+        /// [소스 <c>getTextureNameForProgress</c>]. <b>시간으로 도는 애니메이션이 아니다.</b>
+        /// </para>
+        ///
+        /// <para>⚠ 링이 뜨는 동안 말풍선은 숨는다 — 그건 시뮬이 <see cref="EUndeadWarriorSpeech"/> 로 정한다.</para>
+        /// </summary>
+        private void RenderRescueRing()
+        {
+            if (_questProgress == null)
+                return;
+
+            bool show = _sim.WarriorSpawned && _sim.QuestRescued == false && _sim.RescueSeconds > 0.0;
+            _questProgress.enabled = show;
+
+            if (show == false)
+                return;
+
+            int last = Mathf.Max(0, _questProgressSet.Data.Cols - 1);
+            double progress = _sim.RescueProgress;
+            int cut = progress <= 0.0
+                ? 0
+                : Mathf.Min(last, Mathf.CeilToInt((float)progress * last));
+
+            // ⚠ Get 은 (행, 컷)이다 — 링은 «한 줄에 9컷»이라 행이 0 이다
+            _questProgress.sprite = _questProgressSet.Get(0, cut);
+
+            var at = new UndeadVec2(_sim.WarriorPosition.X, _sim.WarriorPosition.Y - ActionProgressY);
+            Place(_questProgress.transform, at, _questProgress);
+            _questProgress.sortingOrder = SortOrder(_sim.WarriorPosition.Y) + 2;
+        }
+
+        private EUndeadWarriorSpeech _lastSpeech = EUndeadWarriorSpeech.None;
+        private double _bubbleStartedAt;
+        private double _bubbleElapsed;
+
+        /// <summary>지금 할 말 — <b>예고</b>는 «어느 과제를 예고 중인지»가 문구를 정한다 [소스 <c>bubbleTextKey</c>].</summary>
+        private string SpeechTextOf(EUndeadWarriorSpeech speech)
+        {
+            if (_warriorSpeechTexts == null)
+                return string.Empty;
+
+            int index;
+
+            switch (speech)
+            {
+                case EUndeadWarriorSpeech.Help:
+                    index = 0;
+                    break;
+
+                case EUndeadWarriorSpeech.Thanks:
+                    index = 1;
+                    break;
+
+                case EUndeadWarriorSpeech.QuestIntro:
+                    index = _sim.PendingQuest == EUndeadQuest.Mage ? 2
+                          : _sim.PendingQuest == EUndeadQuest.FirstBoss ? 3
+                          : 4;
+                    break;
+
+                default:
+                    return string.Empty;
+            }
+
+            return index < _warriorSpeechTexts.Length ? _warriorSpeechTexts[index] : string.Empty;
         }
 
         private void SetFragment(SpriteRenderer renderer, bool show, UndeadVec2 at)
@@ -469,6 +714,7 @@ namespace JinHyung.UndeadSlayer
                            EnemyCount(), (i, r) => WriteEnemy(i, r));
             active += Sync(_projectilePool, _projectileRoot, _projectileSet, ProjectileCount(), (i, r) => WriteProjectile(i, r));
             active += Sync(_gemPool, _gemRoot, _gemSet, GemCount(), (i, r) => WriteGem(i, r));
+            active += Sync(_kunaiPool, _kunaiRoot, _kunaiSet, KunaiCount(), (i, r) => WriteKunai(i, r));
 
             active += Sync(_orbPool, _orbRoot, _orbSet, OrbCount(), (i, r) => WriteOrb(i, r));
 
@@ -499,7 +745,12 @@ namespace JinHyung.UndeadSlayer
             if (_sim.HeroDead)
             {
                 for (int i = 0; i < _lifeSegments.Length; i++)
+                {
                     _lifeSegments[i].enabled = false;
+
+                    if (_lifeFills != null && _lifeFills[i] != null)
+                        _lifeFills[i].enabled = false;
+                }
 
                 return;
             }
@@ -513,19 +764,115 @@ namespace JinHyung.UndeadSlayer
             _lifeFadeSeconds = Mathf.MoveTowards((float)_lifeFadeSeconds, (float)target,
                                                  (float)(speed * Time.deltaTime));
 
+            StepLifeSegments(hp);
+
             float width = (float)(LifeSegmentWidth + LifeSegmentGap);
             float totalWidth = width * _lifeSegments.Length;
 
+            // ★ 바가 «왼쪽으로 3» 밀린다 [소스 pivot.set(0.5×width − 3, …)]
+            double left = _sim.HeroPosition.X - totalWidth * 0.5 - LifeBarPivotShiftX;
+            double y = _sim.HeroPosition.Y + LifeBarY;
+
             for (int i = 0; i < _lifeSegments.Length; i++)
             {
-                double x = _sim.HeroPosition.X - totalWidth * 0.5 + width * i + width * 0.5;
-                _lifeSegments[i].transform.position = UndeadUnits.ToPosition(x, _sim.HeroPosition.Y + LifeBarY);
+                double cx = left + width * i + LifeSegmentWidth * 0.5;
 
-                Color color = _lifeSegments[i].color;
-                color = i < hp ? new Color(0.85f, 0.26f, 0.24f) : new Color(0.15f, 0.13f, 0.19f);
-                color.a = (float)_lifeFadeSeconds;
-                _lifeSegments[i].color = color;
+                _lifeSegments[i].transform.position = UndeadUnits.ToPosition(cx, y);
+                _lifeSegments[i].color = new Color(1f, 1f, 1f, (float)_lifeFadeSeconds);
+
+                if (_lifeFills == null || _lifeFills[i] == null)
+                    continue;
+
+                WriteLifeFill(i, cx, y);
             }
+        }
+
+        /// <summary>
+        /// 목숨 수가 바뀐 «그 프레임»에 칸마다 연출을 건다 [소스 <c>setLives</c>].
+        /// <para>돋아남 +시간 · 사라짐 −시간 으로 한 배열에 담는다.</para>
+        /// </summary>
+        private void StepLifeSegments(int hp)
+        {
+            if (_lifeFillPhase == null)
+                return;
+
+            if (_lifeLastHp != hp)
+            {
+                for (int i = 0; i < _lifeFillPhase.Length; i++)
+                {
+                    bool want = i < hp;
+                    bool had = i < _lifeLastHp;
+
+                    if (_lifeLastHp < 0)
+                        _lifeFillPhase[i] = want ? 0.0 : double.NegativeInfinity;
+                    else if (want && had == false)
+                        _lifeFillPhase[i] = double.Epsilon;          // 돋아난다
+                    else if (want == false && had)
+                        _lifeFillPhase[i] = -double.Epsilon;         // 사라진다
+                }
+
+                _lifeLastHp = hp;
+            }
+
+            for (int i = 0; i < _lifeFillPhase.Length; i++)
+            {
+                if (double.IsInfinity(_lifeFillPhase[i]) || _lifeFillPhase[i] == 0.0)
+                    continue;
+
+                double moved = _lifeFillPhase[i] > 0.0
+                    ? _lifeFillPhase[i] + Time.deltaTime
+                    : _lifeFillPhase[i] - Time.deltaTime;
+
+                if (moved >= LifeSegmentAppear)
+                    moved = 0.0;                                     // 다 돋았다 — 그대로 보인다
+                else if (moved <= -LifeSegmentVanish)
+                    moved = double.NegativeInfinity;                 // 다 사라졌다
+
+                _lifeFillPhase[i] = moved;
+            }
+        }
+
+        /// <summary>
+        /// 빨간 채움 한 칸 [소스 <c>update</c>] —
+        /// 사라질 때는 <c>alpha 1−s</c> · <c>scale 1−0.8n</c> · <c>y +2n</c> (<c>n = 1−(1−s)²</c> · 300ms),
+        /// 돋아날 때는 <c>alpha s</c> · <c>scale 0.2+0.8n</c> (<c>n = 1−(1−s)³</c> · 200ms).
+        /// </summary>
+        private void WriteLifeFill(int index, double cx, double y)
+        {
+            SpriteRenderer fill = _lifeFills[index];
+            double phase = _lifeFillPhase[index];
+
+            if (double.IsNegativeInfinity(phase))
+            {
+                fill.enabled = false;
+                return;
+            }
+
+            fill.enabled = true;
+
+            float alpha = 1f;
+            float scale = 1f;
+            double dropY = 0.0;
+
+            if (phase < 0.0)
+            {
+                double s = Math.Min(-phase / LifeSegmentVanish, 1.0);
+                double n = 1.0 - (1.0 - s) * (1.0 - s);
+                alpha = (float)(1.0 - s);
+                scale = (float)(1.0 - 0.8 * n);
+                dropY = 2.0 * n;
+            }
+            else if (phase > 0.0)
+            {
+                double s = Math.Min(phase / LifeSegmentAppear, 1.0);
+                double n = 1.0 - (1.0 - s) * (1.0 - s) * (1.0 - s);
+                alpha = (float)s;
+                scale = (float)(0.2 + 0.8 * n);
+            }
+
+            fill.transform.position = UndeadUnits.ToPosition(cx, y + dropY);
+            fill.transform.localScale = new Vector3(scale, scale, 1f);
+            fill.color = new Color(1f, 1f, 1f, alpha * (float)_lifeFadeSeconds);
         }
 
         private UndeadSpriteSet FirstEnemySet()
@@ -552,6 +899,11 @@ namespace JinHyung.UndeadSlayer
         private int FireballCount()
         {
             return _sim.Fireballs.Count;
+        }
+
+        private int KunaiCount()
+        {
+            return _sim.Kunais.Count;
         }
 
         private bool WriteFireball(int index, SpriteRenderer renderer)
@@ -913,6 +1265,28 @@ namespace JinHyung.UndeadSlayer
             double angle = Mathf.Atan2((float)-p.Velocity.Y, (float)p.Velocity.X) * Mathf.Rad2Deg;
             renderer.transform.localRotation = Quaternion.Euler(0f, 0f, (float)angle);
             renderer.sortingOrder = SortOrder(p.Position.Y) + 1;
+            return true;
+        }
+
+        /// <summary>
+        /// 전사가 던진 쿠나이 [소스 <c>Pd.instantiate</c>] — <b>날아가는 쪽을 향해 돈다</b>
+        /// (<c>rotation = atan2(dir.y, dir.x)</c>).
+        /// <para>⚠ 원본 월드는 y 가 «아래»가 +라 각도 부호가 뒤집힌다 — 총알과 같은 규약이다.</para>
+        /// <para>★ 애니메이션이 없다 [실측 — 컷 1장]. 프레임을 돌리지 않는다.</para>
+        /// </summary>
+        private bool WriteKunai(int index, SpriteRenderer renderer)
+        {
+            UndeadSimulation.Kunai k = _sim.Kunais[index];
+
+            if (k.Active == false || _kunaiSet == null)
+                return false;
+
+            renderer.sprite = _kunaiSet.Get(0, 0.0);
+            Place(renderer.transform, k.Position, _kunaiSet);
+
+            double angle = Mathf.Atan2((float)-k.Direction.Y, (float)k.Direction.X) * Mathf.Rad2Deg;
+            renderer.transform.localRotation = Quaternion.Euler(0f, 0f, (float)angle);
+            renderer.sortingOrder = SortOrder(k.Position.Y) + 1;
             return true;
         }
 

@@ -117,7 +117,9 @@ namespace JinHyung.EditorTools
         {
             // ★★ 실측 규격이 있으면 «그것»으로 굽는다 — 실루엣과 팔레트를 목표로 삼는다.
             //   손으로 찍은 도트 맵은 규격이 없는 것(타일셋·체력바처럼 원본 프레임이 없는 것)만 남는다.
-            UndeadArtSpecBaker.ArtSpec spec = UndeadArtSpecBaker.Find(a.Code);
+            // ★ 규격은 «다른 행»의 것을 빌려 올 수 있다 — 같은 그림을 다른 인셋으로 쓸 때다 [표 SpecCode].
+            UndeadArtSpecBaker.ArtSpec spec = UndeadArtSpecBaker.Find(
+                string.IsNullOrEmpty(a.SpecCode) ? a.Code : a.SpecCode);
 
             if (spec != null)
             {
@@ -150,7 +152,8 @@ namespace JinHyung.EditorTools
                 case "family": return BakeFamily(a);
                 case "farmer": return BakeFarmer(a);
                 case "sheep": return BakeSheep(a);
-                case "hp_segment": return BakeHpSegment(a);
+                case "hp_segment_bg": return BakeHpSegmentBg(a);
+                case "hp_segment_fill": return BakeHpSegmentFill(a);
 
                 // 투사체·불·보스·나무 (.Fx)
                 case "projectile1": return BakeBolt(a);
