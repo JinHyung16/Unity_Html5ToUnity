@@ -26,6 +26,9 @@ namespace JinHyung.UndeadSlayer
         /// <summary>입력. 배선이 넣는다 — 매니저가 유니티 입력을 직접 읽지 않는다(테스트가 막힌다).</summary>
         public System.Func<UndeadVec2> MoveInputSource { get; set; }
 
+        /// <summary>스킬 키를 읽는 곳 — 배선이 꽂는다. 없으면 스킬이 <b>영원히 안 나간다</b>.</summary>
+        public System.Func<EUndeadSkill> SkillInputSource { get; set; }
+
         /// <summary>
         /// 지금 «정지» 상태인가. 레벨업 카드나 부활 창이 떠 있으면 참이다.
         /// <para>
@@ -35,6 +38,22 @@ namespace JinHyung.UndeadSlayer
         /// </para>
         /// </summary>
         public bool Paused { get; set; } = true;
+
+        /// <summary>
+        /// 지금 판이 도는 <b>바이옴</b> — <b>1 묘지 · 2 겨울 황무지</b> [소스 <c>vu({biome})</c>].
+        ///
+        /// <para>
+        /// ★ 로비 포털이 정한다. <b>판을 새로 세우기 «전»에</b> 바꿔야 한다 —
+        /// <see cref="ResetRun"/> 이 이 값으로 시작 자리를 고른다.
+        /// </para>
+        /// </summary>
+        public int Biome { get; private set; } = 1;
+
+        /// <summary>바이옴을 바꾼다 [소스 <c>op(biome)</c>] — 다음 <see cref="ResetRun"/> 부터 먹는다.</summary>
+        public void SetBiome(int biome)
+        {
+            Biome = biome;
+        }
 
         public UndeadSimulation Simulation
         {
@@ -56,6 +75,12 @@ namespace JinHyung.UndeadSlayer
         /// <summary>한 판을 클리어했다 — 퀘스트 넷을 다 마쳤다.</summary>
         public event System.Action OnRunCleared;
 
+        /// <summary>
+        /// 과제 하나가 «완료»됐다 [소스 <c>taskCompletionPrompt.queueCompletion</c>].
+        /// <para>⚠ 이건 «퀘스트 체인 클리어»와 다른 사건이다 — 원본의 프롬프트는 이쪽에 물린다.</para>
+        /// </summary>
+        public event System.Action<int> OnTaskCompleted;
+
         protected override void OnInitialize()
         {
             _levels = GameRoot.Instance.UndeadLevelDataContainer;
@@ -73,7 +98,12 @@ namespace JinHyung.UndeadSlayer
             _simulation.OnQuestRescued += HandleQuestRescued;
             _simulation.OnMageCompleted += HandleWeaponUnlocked;
             _simulation.OnRunCleared += HandleRunCleared;
+            _simulation.OnTaskCompleted += HandleTaskCompleted;
             _simulation.SetEnemyTypes(BuildEnemyTypes());
+
+            // ★★ 과제를 세운다 — <b>안 부르면 과제가 0개인 채로 돈다</b>(그런데 오류는 안 난다).
+            _simulation.SetupTasks(BuildTaskDefinitions());
+
             StartRun(config);
         }
 
@@ -87,9 +117,11 @@ namespace JinHyung.UndeadSlayer
                 _simulation.OnQuestRescued -= HandleQuestRescued;
                 _simulation.OnMageCompleted -= HandleWeaponUnlocked;
                 _simulation.OnRunCleared -= HandleRunCleared;
+                _simulation.OnTaskCompleted -= HandleTaskCompleted;
             }
 
             OnRunCleared = null;
+            OnTaskCompleted = null;
             OnWeaponUnlocked = null;
             OnQuestRescued = null;
             OnHeroDied = null;
@@ -107,6 +139,17 @@ namespace JinHyung.UndeadSlayer
                 return;
 
             UndeadVec2 input = MoveInputSource != null ? MoveInputSource() : UndeadVec2.Zero;
+
+            // ★ 스킬은 «시뮬을 돌리기 전»에 받는다 — 그래야 누른 프레임에 곧바로 나간다.
+            //   ⚠ 정지 중에는 안 받는다 [소스 isGameplayPaused] — 카드가 떠 있을 때 눌리면 안 된다.
+            if (SkillInputSource != null)
+            {
+                EUndeadSkill pressed = SkillInputSource();
+
+                if (pressed != EUndeadSkill.None)
+                    _simulation.ActivateSkill(pressed);
+            }
+
             _simulation.Step(deltaTime, input);
 
             if (_deathDelayRemaining < 0.0)
@@ -146,10 +189,30 @@ namespace JinHyung.UndeadSlayer
             Paused = true;
         }
 
+        /// <summary>
+        /// 시작 자리 — <b>바이옴 표가 정본이다</b> [소스 <c>i.x = 1===t ? 1620 : 640</c>].
+        /// <para>⚠ 표에 그 바이옴이 없으면 <b>조용히 (0,0) 에서 시작하지 않는다</b> — 시끄럽게 알리고 1 로 선다.</para>
+        /// </summary>
+        private UndeadVec2 HeroStart()
+        {
+            UndeadBiomeDataContainer biomes = GameRoot.Instance.UndeadBiomeDataContainer;
+            UndeadBiomeData row = biomes == null ? null : biomes.Get(Biome);
+
+            if (row == null)
+            {
+                Log.Error($"바이옴 {Biome} 이 표에 없다 — 바이옴 1 자리에서 시작한다");
+                row = biomes == null ? null : biomes.Get(1);
+            }
+
+            return row == null ? UndeadVec2.Zero : new UndeadVec2(row.HeroStartX, row.HeroStartY);
+        }
+
         private void StartRun(UndeadConfigData config)
         {
             // ★ 시작 자리는 «원본 저작값»이다 [소스 — 바이옴 1 은 (1620, 1010)].
-            _simulation.Reset(new UndeadVec2(config.HeroStartX, config.HeroStartY), _levels.GoalForLevel(1));
+            // ⚠ 바이옴을 «먼저» 심는다 — Reset 이 도는 동안 과제 지표 판정이 이 값을 본다
+            _simulation.SetBiome(Biome);
+            _simulation.Reset(HeroStart(), _levels.GoalForLevel(1));
             _simulation.NextGoalForReward = _levels.GoalForLevel(2);
         }
 
@@ -189,6 +252,11 @@ namespace JinHyung.UndeadSlayer
             OnRunCleared?.Invoke();
         }
 
+        private void HandleTaskCompleted(int taskIndex)
+        {
+            OnTaskCompleted?.Invoke(taskIndex);
+        }
+
         /// <summary>번개를 받았다 — <b>게임을 멈추고</b> 해금 화면을 띄운다 [소스 — <c>tickerId="pause"</c>].</summary>
         private void HandleWeaponUnlocked()
         {
@@ -197,6 +265,109 @@ namespace JinHyung.UndeadSlayer
         }
 
         /// <summary>적 종류를 <b>표에서</b> 옮겨 담는다 — 스폰 우선순위 순이다.</summary>
+        /// <summary>
+        /// 스킬 표를 <see cref="EUndeadSkill"/> <b>순서대로</b> 배열에 담는다.
+        ///
+        /// <para>
+        /// ⚠ <b>표의 줄 순서가 아니라 <c>Order</c> 가 슬롯 번호다.</b> 줄 순서를 믿으면
+        /// 표를 한 줄 옮겼을 때 쿨다운이 서로 바뀐다 — 그런데 <b>오류는 안 난다</b>.
+        /// </para>
+        /// </summary>
+        private static double[] BuildSkillSeconds(System.Func<UndeadSkillData, double> pick)
+        {
+            var values = new double[UndeadSimulation.SkillCount];
+            UndeadSkillDataContainer table = GameRoot.Instance.UndeadSkillDataContainer;
+
+            if (table == null)
+            {
+                Log.Error("스킬 표가 없다 — 컨테이너 등록을 본다");
+                return values;
+            }
+
+            IReadOnlyList<UndeadSkillData> all = table.AllValues;
+
+            for (int i = 0; i < all.Count; i++)
+            {
+                if (all[i].Order >= 0 && all[i].Order < values.Length)
+                    values[all[i].Order] = pick(all[i]);
+                else
+                    Log.Error($"스킬 {all[i].Code} 의 Order {all[i].Order} 가 슬롯 범위 밖이다");
+            }
+
+            return values;
+        }
+
+        /// <summary>과제 표를 시뮬이 쓰는 정의로 옮긴다 — 시뮬은 <c>JinHyung.Data</c> 를 안 본다.</summary>
+        private static UndeadSimulation.UndeadTaskDefinition[] BuildTaskDefinitions()
+        {
+            UndeadTaskDataContainer table = GameRoot.Instance.UndeadTaskDataContainer;
+
+            if (table == null)
+            {
+                Log.Error("과제 표가 없다 — 컨테이너 등록을 본다");
+                return System.Array.Empty<UndeadSimulation.UndeadTaskDefinition>();
+            }
+
+            IReadOnlyList<UndeadTaskData> all = table.AllValues;
+            var list = new UndeadSimulation.UndeadTaskDefinition[all.Count];
+
+            for (int i = 0; i < all.Count; i++)
+            {
+                list[i] = new UndeadSimulation.UndeadTaskDefinition
+                {
+                    Code = all[i].Code,
+                    Order = all[i].Order,
+                    MetricId = all[i].MetricId,
+                    GoalOffset = all[i].GoalOffset,
+                    RewardSkill = SkillOf(all[i].RewardSkill),
+                    PrerequisiteSkills = SkillsOf(all[i].PrerequisiteSkills),
+                };
+            }
+
+            return list;
+        }
+
+        /// <summary>스킬 코드를 슬롯 번호로 — <b>표의 <c>Order</c> 를 지난다</b>(코드 문자열을 코드에 박지 않는다).</summary>
+        private static EUndeadSkill SkillOf(string code)
+        {
+            if (string.IsNullOrEmpty(code))
+                return EUndeadSkill.None;
+
+            UndeadSkillData data = GameRoot.Instance.UndeadSkillDataContainer?.Get(code);
+
+            if (data == null)
+            {
+                Log.Error($"스킬 코드가 표에 없다 — {code}");
+                return EUndeadSkill.None;
+            }
+
+            return (EUndeadSkill)data.Order;
+        }
+
+        private static EUndeadSkill[] SkillsOf(string codes)
+        {
+            if (string.IsNullOrEmpty(codes))
+                return System.Array.Empty<EUndeadSkill>();
+
+            string[] parts = codes.Split(';');
+            var list = new List<EUndeadSkill>(parts.Length);
+
+            for (int i = 0; i < parts.Length; i++)
+            {
+                string code = parts[i].Trim();
+
+                if (code.Length == 0)
+                    continue;
+
+                EUndeadSkill skill = SkillOf(code);
+
+                if (skill != EUndeadSkill.None)
+                    list.Add(skill);
+            }
+
+            return list.ToArray();
+        }
+
         private static List<UndeadSimulation.EnemyType> BuildEnemyTypes()
         {
             var list = new List<UndeadSimulation.EnemyType>(8);
@@ -236,8 +407,6 @@ namespace JinHyung.UndeadSlayer
             return new UndeadSimConfig
             {
                 HeroMoveSpeed = c.HeroMoveSpeedWorld,
-                HeroStartX = c.HeroStartX,
-                HeroStartY = c.HeroStartY,
                 HeroMaxHp = c.HeroMaxHp,
                 HeroInvincibleSeconds = c.HeroInvincibleSeconds,
                 DeathDelaySeconds = c.DeathDelaySeconds,
@@ -247,6 +416,24 @@ namespace JinHyung.UndeadSlayer
                 ReviveDifficultyMultiplier = c.ReviveDifficultyMultiplier,
                 ReviveDifficultyRecoverySeconds = c.ReviveDifficultyRecoverySeconds,
                 HeroHitTintSeconds = c.HeroHitTintSeconds,
+                EnemyHitTintSeconds = c.EnemyHitTintSeconds,
+
+                // ── 액티브 스킬 [소스] — 쿨다운·지속은 «스킬 표»가, 나머지 상수는 설정 표가 든다
+                SkillCooldownSeconds = BuildSkillSeconds(skill => skill.CooldownSeconds),
+                SkillActiveSeconds = BuildSkillSeconds(skill => skill.ActiveSeconds),
+                DashDistance = c.DashDistance,
+                DashStepUnits = c.DashStepUnits,
+                DashDamageMultiplier = c.DashDamageMultiplier,
+                DashEndKnockbackRadius = c.DashEndKnockbackRadius,
+                DashEndKnockbackForce = c.DashEndKnockbackForce,
+                TrailSegmentSpacing = c.TrailSegmentSpacing,
+                TrailSegmentLifeSeconds = c.TrailSegmentLifeSeconds,
+                TrailSegmentRadius = c.TrailSegmentRadius,
+                TrailDamageMultiplier = c.TrailDamageMultiplier,
+                TrailTargetThrottleSeconds = c.TrailTargetThrottleSeconds,
+                FlashMoveSimulationScale = c.FlashMoveSimulationScale,
+                MageRewardBubbleSeconds = c.MageRewardBubbleSeconds,
+                FamilyWarningBubbleSeconds = c.FamilyWarningBubbleSeconds,
                 HeroBlinkIntervalSeconds = c.HeroBlinkIntervalSeconds,
                 HeroBlinkAlpha = c.HeroBlinkAlpha,
                 HeroColliderX = c.HeroColliderX,

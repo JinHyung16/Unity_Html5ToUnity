@@ -116,6 +116,27 @@ TextureImporter:
   - first:
       213: -3305565880405277883
     second: biome_graveyard_tiles_0_38
+  - first:
+      213: -2122297711010104249
+    second: biome_graveyard_tiles_0_39
+  - first:
+      213: 6453916401493929365
+    second: biome_graveyard_tiles_0_40
+  - first:
+      213: -5484069741631028111
+    second: biome_graveyard_tiles_0_41
+  - first:
+      213: -4672985342745228778
+    second: biome_graveyard_tiles_0_42
+  - first:
+      213: -3178471833403541590
+    second: biome_graveyard_tiles_0_43
+  - first:
+      213: 291076170011191033
+    second: biome_graveyard_tiles_0_44
+  - first:
+      213: -7788867712033173094
+    second: biome_graveyard_tiles_0_45
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -135,7 +156,7 @@ TextureImporter:
     heightScale: 0.25
     normalMapFilter: 0
     flipGreenChannel: 0
-  isReadable: 0
+  isReadable: 1
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
@@ -1081,6 +1102,160 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: biome_graveyard_tiles_0_39
+      rect:
+        serializedVersion: 2
+        x: 936
+        y: 0
+        width: 24
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 74c3e9be9751c82e0800000000000000
+      internalID: -2122297711010104249
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: biome_graveyard_tiles_0_40
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 0
+        width: 24
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 59dec19d5cae09950800000000000000
+      internalID: 6453916401493929365
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: biome_graveyard_tiles_0_41
+      rect:
+        serializedVersion: 2
+        x: 984
+        y: 0
+        width: 24
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1744d9630aba4e3b0800000000000000
+      internalID: -5484069741631028111
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: biome_graveyard_tiles_0_42
+      rect:
+        serializedVersion: 2
+        x: 1008
+        y: 0
+        width: 24
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 61a401dd698362fb0800000000000000
+      internalID: -4672985342745228778
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: biome_graveyard_tiles_0_43
+      rect:
+        serializedVersion: 2
+        x: 1032
+        y: 0
+        width: 24
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aa7b56135bcc3e3d0800000000000000
+      internalID: -3178471833403541590
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: biome_graveyard_tiles_0_44
+      rect:
+        serializedVersion: 2
+        x: 1056
+        y: 0
+        width: 24
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9f629140c3c1a0400800000000000000
+      internalID: 291076170011191033
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: biome_graveyard_tiles_0_45
+      rect:
+        serializedVersion: 2
+        x: 1080
+        y: 0
+        width: 24
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a91d0c5451268e390800000000000000
+      internalID: -7788867712033173094
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
@@ -1128,7 +1303,14 @@ TextureImporter:
       biome_graveyard_tiles_0_36: -5746683105778159628
       biome_graveyard_tiles_0_37: 3333673703217684479
       biome_graveyard_tiles_0_38: -3305565880405277883
+      biome_graveyard_tiles_0_39: -2122297711010104249
       biome_graveyard_tiles_0_4: -3418754868412658802
+      biome_graveyard_tiles_0_40: 6453916401493929365
+      biome_graveyard_tiles_0_41: -5484069741631028111
+      biome_graveyard_tiles_0_42: -4672985342745228778
+      biome_graveyard_tiles_0_43: -3178471833403541590
+      biome_graveyard_tiles_0_44: 291076170011191033
+      biome_graveyard_tiles_0_45: -7788867712033173094
       biome_graveyard_tiles_0_5: -2017704171192777793
       biome_graveyard_tiles_0_6: 2979431098555883899
       biome_graveyard_tiles_0_7: -4232653501878406808

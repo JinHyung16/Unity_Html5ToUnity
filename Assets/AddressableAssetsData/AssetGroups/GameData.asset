@@ -15,6 +15,12 @@ MonoBehaviour:
   m_GroupName: GameData
   m_GUID: 42d88665a7c8e1b4880f07b591617a8b
   m_SerializeEntries:
+  - m_GUID: 0954fb8766ae5ef47a97aeba8187eea2
+    m_Address: UndeadSkillTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_data
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 19aedb78670c2564e87e538fcc9b93ab
     m_Address: UndeadTextTable
     m_ReadOnly: 0
@@ -47,6 +53,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 49e4d2428f303894195f2b3a1ff912fb
     m_Address: UndeadLevelTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_data
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 50a85aaeea7ffb1468f65cd9d89ced1d
+    m_Address: UndeadLobbyMap
     m_ReadOnly: 0
     m_SerializedLabels:
     - game_data
@@ -101,6 +113,18 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e2fd9cbb2aafec9468f080c2d7235c4a
     m_Address: UndeadEnemyTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_data
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f6feb7e3cb938a24a8fd30679f88d566
+    m_Address: UndeadTaskTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_data
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fa55708bc50cc1641a4a42179b4e79c1
+    m_Address: UndeadBiomeTable
     m_ReadOnly: 0
     m_SerializedLabels:
     - game_data

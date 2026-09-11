@@ -30,9 +30,7 @@ namespace JinHyung.Data
         public int HeroMoveSpeedSamples { get; set; }
 
         /// <summary>바이옴 1 의 시작 좌표 [소스].</summary>
-        public double HeroStartX { get; set; }
 
-        public double HeroStartY { get; set; }
 
         /// <summary>
         /// 최대 체력 [소스 — <c>maxHP = 7</c>].
@@ -45,6 +43,50 @@ namespace JinHyung.Data
 
         /// <summary>피격 시 <b>빨강(0xFF0000)</b> 물듦이 지속되는 시간 (초) [소스].</summary>
         public double HeroHitTintSeconds { get; set; }
+
+        /// <summary>적이 맞았을 때 «빨강 물듦» 길이 (초) [소스 <c>hitTintDuration = 200</c>].</summary>
+        public double EnemyHitTintSeconds { get; set; }
+
+        // ══════════════════════════════ 액티브 스킬 [소스 — 동작 클래스의 상수]
+
+        /// <summary>돌진이 지속시간 동안 전부 나아가는 거리 [소스 300].</summary>
+        public double DashDistance { get; set; }
+
+        /// <summary>돌진을 몇 «칸»으로 쪼개 옮기나 [소스 4].</summary>
+        public double DashStepUnits { get; set; }
+
+        /// <summary>돌진 피해 배수 [소스 2].</summary>
+        public double DashDamageMultiplier { get; set; }
+
+        /// <summary>돌진이 끝나는 자리에서 미는 반경 [소스 180].</summary>
+        public double DashEndKnockbackRadius { get; set; }
+
+        /// <summary>그때 미는 세기 [소스 12].</summary>
+        public double DashEndKnockbackForce { get; set; }
+
+        /// <summary>화염 자취 조각 간격 [소스 24].</summary>
+        public double TrailSegmentSpacing { get; set; }
+
+        /// <summary>조각이 남아 있는 시간 (초).</summary>
+        public double TrailSegmentLifeSeconds { get; set; }
+
+        /// <summary>조각의 판정 반경.</summary>
+        public double TrailSegmentRadius { get; set; }
+
+        /// <summary>자취 피해 배수 [소스 0.5].</summary>
+        public double TrailDamageMultiplier { get; set; }
+
+        /// <summary>같은 적을 다시 태우기까지 (초) [소스 0.5].</summary>
+        public double TrailTargetThrottleSeconds { get; set; }
+
+        /// <summary>섬광 이동이 올리는 시뮬 배율 [소스 2].</summary>
+        public double FlashMoveSimulationScale { get; set; }
+
+        /// <summary>마법사 보상 말풍선 (초) [소스 2].</summary>
+        public double MageRewardBubbleSeconds { get; set; }
+
+        /// <summary>가족 경고 말풍선 (초) [소스 5].</summary>
+        public double FamilyWarningBubbleSeconds { get; set; }
 
         /// <summary>무적 동안 깜빡이는 주기 (초) [소스].</summary>
         public double HeroBlinkIntervalSeconds { get; set; }

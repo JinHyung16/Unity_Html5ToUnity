@@ -1,0 +1,42 @@
+[
+  {
+    "Id": 1,
+    "Code": "dash",
+    "Order": 0,
+    "NameKey": "skillDashName",
+    "IconAddress": "skill_dash",
+    "CooldownSeconds": 7.0,
+    "DesktopKey": "Space",
+    "ActiveSeconds": 0.35
+  },
+  {
+    "Id": 2,
+    "Code": "blazing_trail",
+    "Order": 1,
+    "NameKey": "skillBlazingTrailName",
+    "IconAddress": "skill_blazing_trail",
+    "CooldownSeconds": 25.0,
+    "DesktopKey": "Q",
+    "ActiveSeconds": 8.0
+  },
+  {
+    "Id": 3,
+    "Code": "winter_pulse",
+    "Order": 2,
+    "NameKey": "skillWinterPulseName",
+    "IconAddress": "skill_winter_pulse",
+    "CooldownSeconds": 25.0,
+    "DesktopKey": "E",
+    "ActiveSeconds": 4.0
+  },
+  {
+    "Id": 4,
+    "Code": "flash_move",
+    "Order": 3,
+    "NameKey": "skillFlashMoveName",
+    "IconAddress": "skill_flash_move",
+    "CooldownSeconds": 20.0,
+    "DesktopKey": "F",
+    "ActiveSeconds": 10.0
+  }
+]

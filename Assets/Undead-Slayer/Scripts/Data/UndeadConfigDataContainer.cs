@@ -97,8 +97,6 @@ namespace JinHyung.Data
             if (config.MageMeetRadius <= 0.0)
                 sb.AppendLine("마법사 대화 반경이 0 이하다 — 퀘스트가 영영 안 열린다");
 
-            if (config.HeroStartX == 0.0 && config.HeroStartY == 0.0)
-                sb.AppendLine("시작 좌표가 (0,0) 이다 — 원본은 바이옴 1 에서 (1620, 1010) 이다");
 
             // 지형 타일은 환산 상수의 뿌리다 — 흔들리면 Tilemap 셀이 1 유닛이 아니게 된다.
             if (config.TerrainTileWorld != 24)

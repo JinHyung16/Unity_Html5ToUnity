@@ -16,8 +16,8 @@ namespace JinHyung.UndeadSlayer
     /// </para>
     ///
     /// <para>
-    /// ⚠ <b>「사원으로」의 목적지(로비)는 이관 범위 밖</b>이다 — 누르면 <b>대기 화면</b>으로 되돌린다.
-    /// 의도된 차이로 등재했다. 「계속」은 원본대로 그 판을 이어서 한다.
+    /// ★ 「사원으로」는 <b>로비</b>로 간다 (로비가 아직 안 열렸으면 바이옴 진입 화면이다).
+    /// 「계속」은 원본대로 그 판을 이어서 한다.
     /// </para>
     /// </summary>
     public sealed class UndeadTaskCompleteWindow : BaseWindow

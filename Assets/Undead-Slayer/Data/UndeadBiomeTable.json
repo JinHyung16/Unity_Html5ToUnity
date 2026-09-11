@@ -1,0 +1,20 @@
+[
+ {
+  "Id": 1,
+  "Code": "graveyard",
+  "NameKey": "portalGraveyardName",
+  "HeroStartX": 1620.0,
+  "HeroStartY": 1010.0,
+  "TilesetCode": "biome_graveyard_tiles",
+  "MediumObjectCode": "graveyard_evil_tree"
+ },
+ {
+  "Id": 2,
+  "Code": "winter",
+  "NameKey": "portalWinterName",
+  "HeroStartX": 640.0,
+  "HeroStartY": 610.0,
+  "TilesetCode": "biome_winter_tiles",
+  "MediumObjectCode": "snowman"
+ }
+]

@@ -52,6 +52,7 @@ namespace JinHyung.UndeadSlayer
             RegisterWindow(UndeadReviveWindow.Key);
             RegisterWindow(UndeadWeaponUnlockWindow.Key);
             RegisterWindow(UndeadTaskCompleteWindow.Key);
+            RegisterWindow(UndeadLobbyHudWindow.Key);
         }
 
         protected override void OnInitialize()
@@ -68,6 +69,14 @@ namespace JinHyung.UndeadSlayer
             _root.Game.OnFinalDeath += HandleDecline;
             _root.Game.OnWeaponUnlocked += HandleWeaponUnlocked;
             _root.Game.OnRunCleared += HandleRunCleared;
+            _root.Game.OnTaskCompleted += HandleTaskCompleted;
+
+            if (_root.Lobby != null)
+            {
+                _root.Lobby.OnEnterBiome += HandleEnterBiome;
+                _root.Lobby.OnRewardClaimed += HandleRewardClaimed;
+                _root.Lobby.IsModalOpen = IsAnyModalOpen;
+            }
         }
 
         /// <summary>⚠ 구독은 <b>짝으로</b> 끊는다.</summary>
@@ -84,6 +93,13 @@ namespace JinHyung.UndeadSlayer
                     _root.Game.OnFinalDeath -= HandleDecline;
                     _root.Game.OnWeaponUnlocked -= HandleWeaponUnlocked;
                     _root.Game.OnRunCleared -= HandleRunCleared;
+                    _root.Game.OnTaskCompleted -= HandleTaskCompleted;
+
+                if (_root.Lobby != null)
+                {
+                    _root.Lobby.OnEnterBiome -= HandleEnterBiome;
+                    _root.Lobby.OnRewardClaimed -= HandleRewardClaimed;
+                }
                 }
             }
         }
@@ -92,6 +108,8 @@ namespace JinHyung.UndeadSlayer
         {
             if (IsInitialized == false || _root == null || _root.Game == null)
                 return;
+
+            StepLobbyHud();
 
             UndeadSimulation sim = _root.Game.Simulation;
 
@@ -106,6 +124,10 @@ namespace JinHyung.UndeadSlayer
             hud.SetGauge(sim.Gauge, sim.GaugeGoal);
             hud.SetElapsed(sim.ElapsedSeconds);
             hud.SetLevel(sim.Level);
+
+            // ★ 스킬 슬롯 [소스 skillHud.update] — 가진 것만·쿨다운·키 뱃지가 매 프레임 갈린다
+            hud.SetSkills(sim);
+            StepTaskPrompt(UnityEngine.Time.deltaTime);
 
             // ★ 최고 기록은 «항상» 보인다 [소스 guiBestScore] — 대기 화면 전용이 아니다.
             //   시간은 «지금 시간과 최고 중 큰 값»이라 신기록을 세우는 동안 실시간으로 올라간다.
@@ -127,15 +149,39 @@ namespace JinHyung.UndeadSlayer
             hud.SetQuest(pointerAllowed, (float)fromCamera.X, (float)fromCamera.Y, sim.QuestDistanceMeters, Time.deltaTime);
         }
 
+        /// <summary>
+        /// 로비 UI 를 매 프레임 갱신한다.
+        /// <para>⚠ 로비 안에서만 돈다 — 전투 중에 돌면 «없는 NPC» 를 읽는다.</para>
+        /// </summary>
+        private void StepLobbyHud()
+        {
+            if (_root.Lobby == null || _root.Lobby.IsInside == false)
+                return;
+
+            UndeadLobbyHudWindow hud = GetWindow(UndeadLobbyHudWindow.Key);
+
+            if (hud == null || hud.IsOpen() == false)
+                return;
+
+            hud.Apply(_root.Lobby.Simulation, _root.Game.Simulation, _lobbyTexts);
+            hud.StepFade(Time.deltaTime);
+        }
+
         private void HandleScreenChanged(EUndeadScreenType previous, EUndeadScreenType next)
         {
             switch (next)
             {
+                case EUndeadScreenType.Lobby:
+                    OpenLobby();
+                    break;
+
                 case EUndeadScreenType.Ready:
+                    CloseLobby();
                     OpenReady();
                     break;
 
                 case EUndeadScreenType.Battle:
+                    CloseLobby();
                     GetWindow(UndeadBattleHudWindow.Key).Open();
                     CloseWindow(UndeadReadyWindow.Key);
                     CloseWindow(UndeadLevelUpWindow.Key);
@@ -176,6 +222,111 @@ namespace JinHyung.UndeadSlayer
         /// 바이옴 진입 화면. ★ <b>원본은 「시작」을 눌러야 전투가 시작된다</b> [실측] —
         /// 그동안 타이머는 <c>00:00</c> 이고 적도 안 나온다. 그래서 <b>멈춰 둔다</b>.
         /// </summary>
+        /// <summary>
+        /// 로비를 연다 [소스 <c>lobby</c> 씬].
+        ///
+        /// <para>
+        /// ⚠ <b>전투를 멈춘다</b> — 로비와 전투는 같은 씬에 있고, 안 멈추면 <b>보이지 않는 전투가 계속 돈다</b>.
+        /// </para>
+        /// </summary>
+        private void OpenLobby()
+        {
+            _root.Game.Paused = true;
+
+            CloseWindow(UndeadReadyWindow.Key);
+            CloseWindow(UndeadBattleHudWindow.Key);
+            CloseWindow(UndeadLevelUpWindow.Key);
+            CloseWindow(UndeadReviveWindow.Key);
+            CloseWindow(UndeadWeaponUnlockWindow.Key);
+            CloseWindow(UndeadTaskCompleteWindow.Key);
+
+            if (_root.Lobby == null)
+            {
+                Log.Error("로비 매니저가 없다 — 로비 화면이 빈 채로 뜬다");
+                return;
+            }
+
+            _root.Lobby.Enter();
+
+            UndeadLobbyHudWindow hud = GetWindow(UndeadLobbyHudWindow.Key);
+            hud.BindCamera(_lobbyCamera);
+            hud.OnRewardConfirmed -= HandleRewardConfirmed;
+            hud.OnRewardConfirmed += HandleRewardConfirmed;
+            hud.OnFadeCompleted -= HandleFadeCompleted;
+            hud.OnFadeCompleted += HandleFadeCompleted;
+            hud.Open();
+        }
+
+        /// <summary>로비 UI 가 월드 좌표를 화면으로 옮길 때 쓴다 — 배선이 꽂아 준다.</summary>
+        private Camera _lobbyCamera;
+
+        public void BindLobbyCamera(Camera camera)
+        {
+            _lobbyCamera = camera;
+        }
+
+        private void HandleRewardConfirmed()
+        {
+            GetWindow(UndeadLobbyHudWindow.Key)?.HideReward();
+        }
+
+        /// <summary>페이드가 다 찼다 — 그때 바이옴으로 넘어간다 [소스 <c>lobbyExitFade</c>].</summary>
+        private void HandleFadeCompleted()
+        {
+            _root.Game.ResetRun();
+            _root.GameFlow.ChangeScreen(EUndeadScreenType.Ready);
+        }
+
+        private void CloseLobby()
+        {
+            _root.Lobby?.Leave();
+            CloseWindow(UndeadLobbyHudWindow.Key);
+        }
+
+        /// <summary>포털에 들어갔다 — <b>바이옴 진입 화면</b>으로 간다 [소스 <c>lobbyExitFade.start(biome)</c>].</summary>
+        private void HandleEnterBiome(int biome)
+        {
+            // ★ 어느 바이옴으로 들어가는지는 «판을 세우기 전»에 정해 둔다 [소스 op(biome) → vu({biome})].
+            _root.Game.SetBiome(biome);
+
+            // ★ 곧바로 안 넘어간다 — <b>1초 페이드가 다 찬 뒤</b>다 [소스 lobbyExitFade].
+            GetWindow(UndeadLobbyHudWindow.Key)?.BeginFade();
+        }
+
+        /// <summary>NPC 앞에서 링이 다 차 보상을 받았다 — 스킬 보상 팝업을 띄운다 [소스 <c>skillRewardPopup</c>].</summary>
+        private void HandleRewardClaimed(int taskIndex, EUndeadSkill skill)
+        {
+            UndeadLobbyHudWindow hud = GetWindow(UndeadLobbyHudWindow.Key);
+
+            if (hud == null || _lobbyTexts == null)
+                return;
+
+            hud.ShowReward(_lobbyTexts.SkillName(skill), _lobbyTexts.SkillIcon(skill));
+        }
+
+        /// <summary>로비 UI 가 쓰는 문구·아이콘 창구 — 배선이 꽂아 준다.</summary>
+        private ILobbyTexts _lobbyTexts;
+
+        public void BindLobbyTexts(ILobbyTexts texts)
+        {
+            _lobbyTexts = texts;
+        }
+
+        /// <summary>모달이 떠 있나 — 로비의 수령이 이 값을 본다 [소스 <c>isModalOpen</c>].</summary>
+        private bool IsAnyModalOpen()
+        {
+            UndeadLevelUpWindow levelUp = GetWindow(UndeadLevelUpWindow.Key);
+            UndeadTaskCompleteWindow task = GetWindow(UndeadTaskCompleteWindow.Key);
+            UndeadWeaponUnlockWindow weapon = GetWindow(UndeadWeaponUnlockWindow.Key);
+
+            UndeadLobbyHudWindow lobbyHud = GetWindow(UndeadLobbyHudWindow.Key);
+
+            return (levelUp != null && levelUp.IsOpen())
+                   || (task != null && task.IsOpen())
+                   || (weapon != null && weapon.IsOpen())
+                   || (lobbyHud != null && lobbyHud.IsRewardOpen);
+        }
+
         private void OpenReady()
         {
             _root.Game.Paused = true;
@@ -224,6 +375,54 @@ namespace JinHyung.UndeadSlayer
             _root.GameFlow.ChangeScreen(EUndeadScreenType.TaskComplete);
         }
 
+        // ══════════════════════════════ 과제 완료 프롬프트 [소스 taskCompletionPrompt · Vd]
+
+        /// <summary>완료가 «쌓인» 뒤 프롬프트까지의 지연 (초) [소스 <c>delayElapsedMs &lt; 2000</c>].</summary>
+        private const double TaskPromptDelaySeconds = 2.0;
+
+        private double _taskPromptElapsed = -1.0;
+
+        /// <summary>
+        /// 한 판에 <b>한 번만</b> 뜬다 [소스 — 닫으면 <c>isSuppressed = true</c>].
+        /// <para>⚠ 없으면 과제를 끝낼 때마다 판이 멈춘다.</para>
+        /// </summary>
+        private bool _taskPromptSuppressed;
+
+        /// <summary>
+        /// 과제가 완료됐다 [소스 <c>queueCompletion</c>] — <b>바로 안 띄운다.</b>
+        /// <para>2초를 세고 나서 게임을 멈추고 띄운다. 그동안 죽으면 안 띄운다.</para>
+        /// </summary>
+        private void HandleTaskCompleted(int taskIndex)
+        {
+            if (_taskPromptSuppressed || _taskPromptElapsed >= 0.0)
+                return;
+
+            _taskPromptElapsed = 0.0;
+        }
+
+        /// <summary>매 프레임 — 지연을 세고 때가 되면 띄운다.</summary>
+        private void StepTaskPrompt(double dt)
+        {
+            if (_taskPromptElapsed < 0.0 || _taskPromptSuppressed)
+                return;
+
+            // 죽어 있는 동안에는 세지 않는다 [소스 handleHeroDeath — isWaitingForRevive]
+            if (_root.Game.Simulation == null || _root.Game.Simulation.HeroDead)
+                return;
+
+            _taskPromptElapsed += dt;
+
+            if (_taskPromptElapsed < TaskPromptDelaySeconds)
+                return;
+
+            _taskPromptElapsed = -1.0;
+            _taskPromptSuppressed = true;
+
+            // ★ 프롬프트가 뜨면 «게임이 선다» [소스 — tickerId "pause" + stopGameplay()]
+            _root.Game.Paused = true;
+            _root.GameFlow.ChangeScreen(EUndeadScreenType.TaskComplete);
+        }
+
         /// <summary>과제 완료 — 「한 판의 끝」. 「계속」은 이어서, 「로비로」는 한 판을 끝낸다.</summary>
         private void OpenTaskComplete()
         {
@@ -245,11 +444,18 @@ namespace JinHyung.UndeadSlayer
             _root.GameFlow.ChangeScreen(EUndeadScreenType.Battle);
         }
 
-        /// <summary>⚠ 로비는 <b>이관 범위 밖</b>이라 대기 화면으로 되돌린다 (의도된 차이).</summary>
+        /// <summary>
+        /// 「사원으로」 — <b>로비로 돌아간다</b> [소스 <c>isLobbyUnlocked ? "lobby" : "game"</c>].
+        /// <para>⚠ 로비가 아직 «안 열렸으면» 바이옴 진입 화면이다 — <see cref="NextHomeScreen"/> 이 가른다.</para>
+        /// </summary>
         private void HandleTaskTemple()
         {
+            // ★ 판이 새로 시작하면 «한 번만» 제약도 풀린다 [소스 — 새 판이면 coordinator 가 새로 선다]
+            _taskPromptSuppressed = false;
+            _taskPromptElapsed = -1.0;
+
             _root.Game.ResetRun();
-            _root.GameFlow.ChangeScreen(EUndeadScreenType.Ready);
+            _root.GameFlow.ChangeScreen(NextHomeScreen());
         }
 
         private void HandleHeroDied()
@@ -285,14 +491,31 @@ namespace JinHyung.UndeadSlayer
         /// <summary>
         /// 부활하지 않는다 — 한 판이 끝난다.
         /// <para>
-        /// ⚠ <b>원본이 그다음 어디로 가는지는 «이관 범위 밖»이다</b>(로비 「사원」).
-        /// 우리는 <b>대기 화면으로 되돌린다</b> — 「멈춤」은 사람이 갇힌다. 의도된 차이로 등재.
+        /// ⚠ 그다음은 <b>로비(사원)</b> 다 — 로비가 아직 안 열렸으면 바이옴 진입 화면이다
+        /// [소스 <c>isLobbyUnlocked ? "lobby" : "game"</c>].
         /// </para>
         /// </summary>
         private void HandleDecline()
         {
+            // ★ 판이 새로 시작하면 «한 번만» 제약도 풀린다 [소스 — 새 판이면 coordinator 가 새로 선다]
+            _taskPromptSuppressed = false;
+            _taskPromptElapsed = -1.0;
+
+            // ★★ <b>최종 사망이 로비를 연다</b> [소스 — <c>finalDeath</c> 에서 <c>isLobbyUnlocked = true</c>].
+            //   ⚠ 부활하고 «다시» 죽은 두 번째 죽음이다 — 첫 죽음에는 안 열린다.
+            UndeadRecord.UnlockLobby();
+
             _root.Game.ResetRun();
-            _root.GameFlow.ChangeScreen(EUndeadScreenType.Ready);
+            _root.GameFlow.ChangeScreen(NextHomeScreen());
+        }
+
+        /// <summary>
+        /// 판을 마치고 «돌아갈 곳» [소스 <c>isLobbyUnlocked ? "lobby" : "game"</c>].
+        /// <para>⚠ 로비가 열리기 «전»에는 로비를 거치지 않는다 — 바로 바이옴 진입 화면이다.</para>
+        /// </summary>
+        private static EUndeadScreenType NextHomeScreen()
+        {
+            return UndeadRecord.LobbyUnlocked ? EUndeadScreenType.Lobby : EUndeadScreenType.Ready;
         }
 
         /// <summary>

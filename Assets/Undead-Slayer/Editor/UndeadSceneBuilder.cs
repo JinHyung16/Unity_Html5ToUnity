@@ -95,6 +95,13 @@ namespace JinHyung.EditorTools
             var terrainView = tilemapGo.AddComponent<UndeadTerrainView>();
             SetRef(terrainView, "_tilemap", tilemapGo.GetComponent<Tilemap>());
 
+            // ★★ 로비 — <b>전투와 같은 씬</b>이다 [소스도 두 씬을 한 앱에서 갈아끼운다].
+            //   ⚠ 시작할 때는 꺼 둔다 — 로비는 «부활 없이 한 번 죽어야» 열린다.
+            var lobbyGo = new GameObject(nameof(UndeadLobbyView));
+            lobbyGo.transform.SetParent(worldRoot.transform, false);
+            var lobbyView = lobbyGo.AddComponent<UndeadLobbyView>();
+            SetRef(lobbyView, "_root", lobbyGo.transform);
+
             // ★ 뜨는 문구(+N XP · 피해) — 개체와 같은 이유로 «풀링»이다
             var floatingGo = new GameObject(nameof(UndeadFloatingTextView));
             floatingGo.transform.SetParent(worldRoot.transform, false);

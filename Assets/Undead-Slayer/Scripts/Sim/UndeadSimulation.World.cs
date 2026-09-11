@@ -90,6 +90,20 @@ namespace JinHyung.UndeadSlayer
         public IReadOnlyList<Meteor> Meteors { get { return _meteors; } }
         public IReadOnlyList<Fireplace> Fireplaces { get { return _fireplaces; } }
 
+        /// <summary>
+        /// 나무가 <b>얼마나 찼나</b> 0~1 [소스 <c>min(chargeElapsed / chargeDurationMs, 1)</c>].
+        ///
+        /// <para>
+        /// ★ <b>부드럽게 따라가는 <see cref="Tree.ChargeSmoothed"/> 와 «다른 값»이다</b> — 흔들림은 부드러운 쪽이,
+        /// <b>반짝임 속도는 «날것»</b>이 탄다 [소스 <c>sparkles.update(t, e)</c> 의 <c>e</c>].
+        /// </para>
+        /// </summary>
+        public double TreeChargeProgress(int index)
+        {
+            double duration = _config.TreeChargeSeconds * 1000.0;
+            return duration <= 0.0 ? 0.0 : Math.Min(_trees[index].ChargeMs / duration, 1.0);
+        }
+
         public int ActiveTreeCount { get; private set; }
         public int ActiveMeteorCount { get; private set; }
         public int ActiveFireplaceCount { get; private set; }
@@ -354,6 +368,14 @@ namespace JinHyung.UndeadSlayer
 
         private void BurstTree(int index)
         {
+            // ★ 과제 지표 — 「나무 활성화」는 <b>터진 것</b>을 센다 [소스 graveyard_evil_trees_activated].
+            //   ⚠ 「가까이 갔다」로 세면 서성이는 동안 계속 올라간다.
+            //   ⚠⚠ <b>바이옴 1 의 «나무»만 센다</b> [소스 — `1 !== biome || "graveyard_evil_tree" !== objectKind` 면 버린다].
+            //       겨울의 눈사람은 같은 오브젝트인데 <b>과제로는 안 쳐준다</b> — 안 걸러 두면
+            //       겨울에서 과제가 저절로 끝난다.
+            if (Biome == 1)
+                RecordTaskProgress(MetricTreesActivated, 1);
+
             _trees[index].Bursted = true;
             _trees[index].Activated = false;
             _trees[index].ChargeMs = 0.0;
@@ -504,6 +526,10 @@ namespace JinHyung.UndeadSlayer
                     continue;
 
                 HeroHp += healed;
+
+                // ★ 과제 지표 — 「체력 회복」은 <b>회복한 양</b>을 센다 [소스 fireplace_hp_restored].
+                RecordTaskProgress(MetricFireplaceHpRestored, healed);
+
                 _fireplaces[i].Lives--;
                 _fireplaces[i].CooldownSeconds = _config.FireplaceHealCooldown;
                 _fireplaceLives[ChunkKey(_fireplaces[i].TileX, _fireplaces[i].TileY)] = _fireplaces[i].Lives;

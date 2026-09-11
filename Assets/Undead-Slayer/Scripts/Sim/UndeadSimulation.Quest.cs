@@ -66,6 +66,9 @@ namespace JinHyung.UndeadSlayer
         {
             public int State;
             public UndeadVec2 Position;
+
+            /// <summary>왼쪽을 보고 있나 — <b>가는 쪽</b>이다 [소스 — <c>b&lt;0 ? -baseScale : b&gt;0 &amp;&amp; baseScale</c>].</summary>
+            public bool FacingLeft;
         }
 
         /// <summary>
@@ -184,6 +187,58 @@ namespace JinHyung.UndeadSlayer
 
         public UndeadVec2 MagePosition { get; private set; }
 
+        /// <summary>
+        /// 조각이 <b>히어로 손에 매달리는</b> 자리 [소스 <c>heroOffsets</c>].
+        /// <para>⚠ <b>마법사 «자리»(±18, −112)와 다른 값</b>이다 — 한쪽 값을 양쪽에 쓰면
+        /// 손에서도 마법사 자리에서도 그럴듯해 보이는데 <b>둘 다 틀린다</b>.</para>
+        /// </summary>
+        private const double FragmentHeroOffsetX = 28.0;
+        private const double FragmentHeroOffsetY = -92.0;
+
+        /// <summary>마법사 앞 <b>조각 자리</b> [소스 <c>slotOffsets</c>].</summary>
+        public const double MageSlotOffsetX = 18.0;
+        public const double MageSlotOffsetY = -112.0;
+
+        /// <summary>자리 원의 반지름 [소스 <c>circle(0,0,16)</c>].</summary>
+        public const double MageSlotRadius = 16.0;
+
+        /// <summary>조각 후광의 반지름 [소스 <c>halo.circle(0,0,18)</c>].</summary>
+        public const double FragmentHaloRadius = 18.0;
+
+        /// <summary>
+        /// 조각이 목표로 <b>미끄러져 가는</b> 세기 [소스 <c>moveLerpBase</c>] —
+        /// 한 프레임 비율은 <c>1 − base^(dt/16.667)</c> 다.
+        /// <para>⚠ 순간이동이 아니다. 붙였다 떼는 «따라오는 맛»이 여기서 나온다.</para>
+        /// </summary>
+        private const double FragmentMoveLerpBase = 0.0015;
+
+        /// <summary>이 안에 들어와야 «꽂혔다» [소스 <c>isDocked = 거리 &lt;= 6</c>].</summary>
+        private const double FragmentDockRadius = 6.0;
+
+        /// <summary>세상에 놓인 조각이 위아래로 떠 있는 폭·속도 [소스 <c>10·sin(.005t)</c>].</summary>
+        private const double FragmentBobPixels = 10.0;
+        private const double FragmentBobSpeed = 0.005;
+
+        /// <summary>자리 원이 사라지는 속도 (알파/ms) [소스 <c>fadeSpeed</c>] — 꽉 찬 1 이 ≈556ms 만에 0 이 된다.</summary>
+        private const double MageSlotFadePerMs = 0.0018;
+
+        /// <summary>
+        /// 마법사 앞 <b>조각 자리 원</b>의 알파 [소스 <c>slotsAlpha</c>].
+        /// <para>★ 둘 다 꽂히면 여기가 0 으로 빠지고, <b>다 빠진 «뒤»에</b> 보상 말풍선이 뜬다.</para>
+        /// </summary>
+        public double MageSlotAlpha { get; private set; } = 1.0;
+
+        /// <summary>조각의 «떠다니는 시계» (ms) — 자리도 배율도 회전도 이 하나를 본다.</summary>
+        public double FragmentFloatMs { get; private set; }
+
+        /// <summary>조각이 자리에 «꽂혔나» — 거리로 판정한다 [소스 <c>isDocked</c>].</summary>
+        public bool Fragment0Docked { get; private set; }
+
+        public bool Fragment1Docked { get; private set; }
+
+        private UndeadVec2 _fragment0Spawn;
+        private UndeadVec2 _fragment1Spawn;
+
         public UndeadVec2 Fragment0Position { get; private set; }
 
         public UndeadVec2 Fragment1Position { get; private set; }
@@ -197,6 +252,23 @@ namespace JinHyung.UndeadSlayer
         public bool BossActive { get; private set; }
 
         public UndeadVec2 BossPosition { get; private set; }
+
+        /// <summary>보스가 왼쪽을 보고 있나 [소스 — 히어로가 왼쪽에 있으면 참, 아니면 거짓].</summary>
+        public bool BossFacingLeft { get; private set; }
+
+        /// <summary>
+        /// 마법사·가족·농부가 지금 하는 말 [소스 <c>showBubble</c>].
+        /// <para>★ «사건에 잠깐» 뜨는 것이라 남은 시간이 함께 돈다.</para>
+        /// </summary>
+        public EUndeadNpcSpeech MageSpeech { get; private set; }
+
+        public EUndeadNpcSpeech FamilySpeech { get; private set; }
+
+        public EUndeadNpcSpeech FarmerSpeech { get; private set; }
+
+        private double _mageSpeechRemaining;
+        private double _familySpeechRemaining;
+        private double _farmerSpeechRemaining;
 
         public int BossHp { get; private set; }
 
@@ -333,6 +405,10 @@ namespace JinHyung.UndeadSlayer
             MageCompleted = false;
             Fragment0State = 0;
             Fragment1State = 0;
+            Fragment0Docked = false;
+            Fragment1Docked = false;
+            MageSlotAlpha = 1.0;
+            FragmentFloatMs = 0.0;
 
             BossPhase = EBossPhase.WaitForHero;
             SummonRemaining = 0.0;
@@ -347,6 +423,12 @@ namespace JinHyung.UndeadSlayer
 
             FarmerPhase = EFarmerPhase.WaitForHero;
             _npcThanksRemaining = 0.0;
+            MageSpeech = EUndeadNpcSpeech.None;
+            FamilySpeech = EUndeadNpcSpeech.None;
+            FarmerSpeech = EUndeadNpcSpeech.None;
+            _mageSpeechRemaining = 0.0;
+            _familySpeechRemaining = 0.0;
+            _farmerSpeechRemaining = 0.0;
             _fountainLeft = 0;
             _fountainTimer = 0.0;
             SpawnPaused = false;
@@ -360,6 +442,8 @@ namespace JinHyung.UndeadSlayer
             MagePosition = heroPosition + _config.MageOffset;
             Fragment0Position = MagePosition + _config.Fragment1Offset;
             Fragment1Position = MagePosition + _config.Fragment2Offset;
+            _fragment0Spawn = Fragment0Position;
+            _fragment1Spawn = Fragment1Position;
             FamilyPosition = heroPosition + _config.FamilyOffset;
             FarmerPosition = heroPosition + _config.FarmerOffset;
 
@@ -382,6 +466,7 @@ namespace JinHyung.UndeadSlayer
             //   (CurrentQuest = Done) 전사가 그 자리에 굳었다. 원본은 판이 끝날 때까지 따라온다.
             StepWarriorCompanion(dt);
             StepKunais(dt);
+            StepNpcSpeech(dt);
 
             switch (CurrentQuest)
             {
@@ -411,7 +496,7 @@ namespace JinHyung.UndeadSlayer
                     break;
 
                 case EUndeadQuest.Mage:
-                    StepMage();
+                    StepMage(dt);
                     break;
 
                 case EUndeadQuest.FirstBoss:
@@ -807,8 +892,24 @@ namespace JinHyung.UndeadSlayer
 
         // ══════════════════════════════ 퀘스트 2 — 마법사
 
-        private void StepMage()
+        /// <summary>
+        /// 마법사 — <b>조각 둘을 주워다 앞에 꽂는다</b>.
+        ///
+        /// <para>
+        /// ★ 조각은 <b>순간이동하지 않는다</b> [소스 <c>moveTo</c>] — 목표로 «미끄러져» 가고,
+        /// 6 안에 들어와야 «꽂힌 것»이다. 순간이동으로 두면 <b>줍는 손맛과 꽂히는 맛이 통째로 없다</b>.
+        /// </para>
+        ///
+        /// <para>
+        /// ★ 둘 다 꽂혀도 <b>곧바로 끝나지 않는다</b> [소스 <c>fadingSlots</c>] —
+        /// 자리 원이 ≈556ms 에 걸쳐 사라지고, <b>그 뒤에</b> 보상 말풍선이 뜬다.
+        /// </para>
+        /// </summary>
+        private void StepMage(double dt)
         {
+            double dtMs = dt * 1000.0;
+            FragmentFloatMs += dtMs;
+
             double toMage = (MagePosition - HeroPosition).Magnitude;
 
             if (MageMet == false)
@@ -826,38 +927,107 @@ namespace JinHyung.UndeadSlayer
             if (Fragment1State == 0 && (Fragment1Position - HeroPosition).Magnitude <= _config.FragmentPickupRadius)
                 Fragment1State = 1;
 
-            if (Fragment0State == 1)
-                Fragment0Position = new UndeadVec2(HeroPosition.X - 18.0, HeroPosition.Y - 112.0);
-
-            if (Fragment1State == 1)
-                Fragment1Position = new UndeadVec2(HeroPosition.X + 18.0, HeroPosition.Y - 112.0);
-
+            // ★ 마법사 곁에 오면 «손 → 마법사»로 넘어간다 [소스 mageBindRadius]
             if (toMage <= _config.FragmentDeliverRadius)
             {
                 if (Fragment0State == 1)
-                {
                     Fragment0State = 2;
-                    Fragment0Position = new UndeadVec2(MagePosition.X - 18.0, MagePosition.Y - 112.0);
-                }
 
                 if (Fragment1State == 1)
-                {
                     Fragment1State = 2;
-                    Fragment1Position = new UndeadVec2(MagePosition.X + 18.0, MagePosition.Y - 112.0);
-                }
             }
 
-            if (Fragment0State != 2 || Fragment1State != 2)
+            Fragment0Position = StepFragment(0, Fragment0State, Fragment0Position, _fragment0Spawn, dtMs,
+                                             out bool docked0);
+            Fragment1Position = StepFragment(1, Fragment1State, Fragment1Position, _fragment1Spawn, dtMs,
+                                             out bool docked1);
+            Fragment0Docked = docked0;
+            Fragment1Docked = docked1;
+
+            if (Fragment0Docked == false || Fragment1Docked == false)
+                return;
+
+            // ★ 자리 원이 다 사라진 «뒤»에 끝난다 [소스 fadingSlots → showingRewardBubble]
+            MageSlotAlpha = Math.Max(0.0, MageSlotAlpha - MageSlotFadePerMs * dtMs);
+
+            if (MageSlotAlpha > 0.0)
                 return;
 
             MageCompleted = true;
+
+            // ★ 「날 구해줬어, 이건 네 보상이야!」 [소스 — 슬롯이 사라진 뒤 medium 말풍선 2초]
+            MageSpeech = EUndeadNpcSpeech.MageReward;
+            _mageSpeechRemaining = _config.MageRewardBubbleSeconds;
             // 다음 과제(첫 보스)는 전사가 «예고»한 뒤 열린다 [소스 introduction.type "warrior"]
             CurrentQuest = EUndeadQuest.None;
             LightningCount += _config.LightningRewardCount;
             OnMageCompleted?.Invoke();
         }
 
+        /// <summary>
+        /// 조각 하나를 한 프레임 옮긴다. 돌려주는 값은 <b>새 자리</b>다.
+        ///
+        /// <para>
+        /// ⚠ 목표로 가는 비율은 <c>1 − base^(dt/16.667)</c> 다 [소스] — <b>프레임 수와 무관</b>하게 같은 곡선이다.
+        /// <c>base·dt</c> 로 두면 프레임이 빠른 기계에서 더 빨리 붙는다.
+        /// </para>
+        /// </summary>
+        private UndeadVec2 StepFragment(int index, int state, UndeadVec2 position, UndeadVec2 spawn,
+                                        double dtMs, out bool docked)
+        {
+            docked = false;
+
+            // ① 세상에 놓여 있다 — 자리에서 위아래로 떠 있다 [소스 y + 10·sin(.005t)]
+            if (state == 0)
+                return new UndeadVec2(spawn.X, spawn.Y + FragmentBobPixels * Math.Sin(FragmentBobSpeed * FragmentFloatMs));
+
+            double sign = index == 0 ? -1.0 : 1.0;
+
+            UndeadVec2 target = state == 1
+                ? new UndeadVec2(HeroPosition.X + sign * FragmentHeroOffsetX, HeroPosition.Y + FragmentHeroOffsetY)
+                : new UndeadVec2(MagePosition.X + sign * MageSlotOffsetX, MagePosition.Y + MageSlotOffsetY);
+
+            double blend = 1.0 - Math.Pow(FragmentMoveLerpBase, dtMs / 16.667);
+            var moved = new UndeadVec2(position.X + (target.X - position.X) * blend,
+                                       position.Y + (target.Y - position.Y) * blend);
+
+            if (state == 2)
+                docked = (moved - target).Magnitude <= FragmentDockRadius;
+
+            return moved;
+        }
+
         // ══════════════════════════════ 퀘스트 3 — 첫 보스
+
+        /// <summary>
+        /// NPC 말풍선 [소스 — <c>introductionText</c> 는 «만나기 전 상시», <c>showBubble</c> 은 «시간제»].
+        ///
+        /// <para>⚠ 둘을 한 규칙으로 합치면 소개 문구가 몇 초 뒤 사라지거나 감사 문구가 안 사라진다.</para>
+        /// </summary>
+        private void StepNpcSpeech(double dt)
+        {
+            _mageSpeechRemaining = Math.Max(0.0, _mageSpeechRemaining - dt);
+            _familySpeechRemaining = Math.Max(0.0, _familySpeechRemaining - dt);
+            _farmerSpeechRemaining = Math.Max(0.0, _farmerSpeechRemaining - dt);
+
+            if (_mageSpeechRemaining <= 0.0)
+            {
+                // 만나기 «전»에는 소개 문구가 계속 떠 있다
+                MageSpeech = MageQuestStarted && MageMet == false
+                    ? EUndeadNpcSpeech.MageIntro
+                    : EUndeadNpcSpeech.None;
+            }
+
+            if (_familySpeechRemaining <= 0.0)
+                FamilySpeech = EUndeadNpcSpeech.None;
+
+            if (_farmerSpeechRemaining <= 0.0)
+            {
+                FarmerSpeech = CurrentQuest == EUndeadQuest.FarmerSheep && FarmerPhase == EFarmerPhase.WaitForHero
+                    ? EUndeadNpcSpeech.FarmerIntro
+                    : EUndeadNpcSpeech.None;
+            }
+        }
 
         private void StepFirstBoss(double dt)
         {
@@ -869,6 +1039,10 @@ namespace JinHyung.UndeadSlayer
 
                     // ★ 가족에게 닿으면 소환이 시작되고 «적 생성이 멈춘다» [소스]
                     BossPhase = EBossPhase.Summoning;
+
+                    // ★ 「이 어두운 영혼을 통과해서 지나갈 수 없어!」 [소스 — 5초]
+                    FamilySpeech = EUndeadNpcSpeech.FamilyWarning;
+                    _familySpeechRemaining = _config.FamilyWarningBubbleSeconds;
                     SummonRemaining = _config.DarkSoulSummonSeconds;
                     SpawnPaused = true;
                     return;
@@ -894,6 +1068,10 @@ namespace JinHyung.UndeadSlayer
                     // 분수가 끝나면 적이 다시 나오고 가족이 인사한다 [소스]
                     SpawnPaused = false;
                     _npcThanksRemaining = _config.NpcThanksSeconds;
+
+                    // ★ 「고마워! 이제 우리도 계속 갈 수 있어」 [소스 — 3초]
+                    FamilySpeech = EUndeadNpcSpeech.FamilyThanks;
+                    _familySpeechRemaining = _config.NpcThanksSeconds;
                     BossPhase = EBossPhase.Leaving;
                     return;
 
@@ -942,6 +1120,11 @@ namespace JinHyung.UndeadSlayer
                 BossPosition = new UndeadVec2(BossPosition.X + toHero.X / distance * step,
                                               BossPosition.Y + toHero.Y / distance * step);
             }
+
+            // ★ 보스는 «히어로 쪽»을 본다 [소스 — <c>hero.x &lt; boss.x ? -abs : abs</c>].
+            //   ⚠ 다른 개체와 달리 <b>게이트도 「유지」도 없다</b> — 매 프레임 갱신되고 «같으면 오른쪽»이다.
+            //     원본이 그렇게 쓰여 있다. 다른 개체 규칙을 여기에 옮겨 붙이지 않는다.
+            BossFacingLeft = HeroPosition.X < BossPosition.X;
 
             // ── 공격 : 주기마다 «연사»로 불덩이를 뿌린다 [소스]
             if (_bossBurstLeft > 0)
@@ -1126,13 +1309,26 @@ namespace JinHyung.UndeadSlayer
                 {
                     // 따라오는 양은 히어로 뒤에 늘어선다
                     double offset = 40.0 + i * 26.0;
-                    _sheep[i].Position = new UndeadVec2(HeroPosition.X - offset, HeroPosition.Y + 12.0);
+                    var next = new UndeadVec2(HeroPosition.X - offset, HeroPosition.Y + 12.0);
+
+                    // ★ 보는 쪽은 «가는 쪽»이다 [소스] — 안 움직이면 그대로 둔다
+                    double dx = next.X - _sheep[i].Position.X;
+
+                    if (dx < 0.0)
+                        _sheep[i].FacingLeft = true;
+                    else if (dx > 0.0)
+                        _sheep[i].FacingLeft = false;
+
+                    _sheep[i].Position = next;
 
                     if (toFarmer <= _config.FarmerMeetRadius)
                     {
                         _sheep[i].State = 2;
                         _sheep[i].Position = new UndeadVec2(FarmerPosition.X + (i - 2) * 40.0,
                                                             FarmerPosition.Y + 60.0);
+
+                        // ★ 과제 지표 — 「양 구하기」는 <b>농부에게 닿은 양</b>을 센다 [소스 sheep_returned_to_farmers]
+                        RecordTaskProgress(MetricSheepReturned, 1);
                     }
                 }
 
@@ -1144,6 +1340,11 @@ namespace JinHyung.UndeadSlayer
                 return;
 
             _npcThanksRemaining = _config.NpcThanksSeconds;
+
+            // ★ 「나의 영웅! 고마워!」 [소스 — 3초]
+            FarmerSpeech = EUndeadNpcSpeech.FarmerThanks;
+            _farmerSpeechRemaining = _config.NpcThanksSeconds;
+
             FarmerPhase = EFarmerPhase.Thanks;
         }
 

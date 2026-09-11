@@ -46,8 +46,17 @@ namespace JinHyung.EditorTools
         private const string UiDir = ArtRoot + "/UI";
         private const string DataFolder = "Assets/Undead-Slayer/Data";
 
-        /// <summary>지형 타일셋 — 표에 없다(아틀라스가 아니라 «별도 텍스처»다 · 05_연출). 24×24 격자.</summary>
-        public const string TilesetCode = "biome_graveyard_tiles";
+        /// <summary>
+        /// 지형 타일셋 — <b>표에 없다</b>(아틀라스가 아니라 «별도 텍스처»다 · 05_연출). 24×24 격자.
+        /// <para>★ <b>바이옴마다 한 벌</b>이다 [소스 <c>jl = [1, 2]</c>] — 규칙은 같고 «칸 그림»만 갈린다.</para>
+        /// </summary>
+        public static readonly string[] TilesetCodes = { "biome_graveyard_tiles", "biome_winter_tiles" };
+
+        /// <summary>
+        /// 로비 타일셋 — <b>표 밖이다</b> (전투 타일셋과 같은 규약).
+        /// <para>★ 로비가 «실제로 쓰는» 65칸만 골라 한 줄로 굽는다 — 원본 타일셋은 1615칸이다.</para>
+        /// </summary>
+        public const string LobbyTilesetCode = "biome_lobby_tiles";
 
         // ── 공통 팔레트. 원본 «화면»에서 집은 색조다 (아트 재제작 — 픽셀 동일이 아니라 «퀄리티 동일»이 기준 · 확정표 12).
         private static readonly Color Clear = new Color(0f, 0f, 0f, 0f);
@@ -100,15 +109,55 @@ namespace JinHyung.EditorTools
                 baked++;
             }
 
-            Save(BakeTileset(), $"{GameDir}/{TilesetCode}.png");
-            baked++;
+            // ★ 지형 타일셋 — 바이옴마다 한 벌. 원본 타일 아틀라스를 실측한 규격에서 «그대로» 칠한다.
+            for (int i = 0; i < TilesetCodes.Length; i++)
+            {
+                if (BakeFromSpec(TilesetCodes[i], $"{GameDir}/{TilesetCodes[i]}.png"))
+                    baked++;
+                else
+                    failed++;
+            }
+
+            // ★ 로비 타일셋 — 규격에서 «그대로» 칠한다 (손으로 찍은 도트 맵이 아니다)
+            if (BakeFromSpec(LobbyTilesetCode, $"{GameDir}/{LobbyTilesetCode}.png"))
+                baked++;
+            else
+                failed++;
 
             AssetDatabase.Refresh();
 
             if (failed > 0)
                 Log.Error($"Undead Slayer 아트 굽기 — {baked}장 중 {failed}장 결함 (위 오류)");
             else
-                Log.Success($"Undead Slayer 아트 굽기 완료 — {baked}장 (전부 재제작 · 원본 추출 0 · 타일셋 {JinHyung.UndeadSlayer.UndeadTerrainView.TilesetColumns}칸)");
+                Log.Success($"Undead Slayer 아트 굽기 완료 — {baked}장 (전부 재제작 · 원본 추출 0"
+                            + $" · 지형 타일셋 {TilesetCodes.Length}벌 × {JinHyung.UndeadSlayer.UndeadTerrainView.TilesetColumns}칸)");
+        }
+
+        /// <summary>
+        /// 표에 없는 <b>한 줄 시트</b>(타일셋)를 규격에서 굽는다.
+        /// <para>⚠ 규격이 없으면 <b>조용히 넘어가지 않는다</b> — 시트가 통째로 비면 화면이 검게 나온다.</para>
+        /// </summary>
+        private static bool BakeFromSpec(string code, string path)
+        {
+            UndeadArtSpecBaker.ArtSpec spec = UndeadArtSpecBaker.Find(code);
+
+            if (spec == null)
+            {
+                Log.Error($"타일셋 규격이 없다 — {code}");
+                return false;
+            }
+
+            Texture2D texture = UndeadArtSpecBaker.BakeSheet(spec, New, Put);
+
+            if (texture == null)
+            {
+                Log.Error($"타일셋을 못 구웠다 — {code}");
+                return false;
+            }
+
+            texture.Apply();
+            Save(texture, path);
+            return true;
         }
 
         // ══════════════════════════════ 개체별 굽기 — 표의 Code 로 갈린다

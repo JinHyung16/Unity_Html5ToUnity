@@ -31,6 +31,27 @@ namespace JinHyung.Data
             get { return GetContainer<UndeadUpgradeDataContainer>(); }
         }
 
+        public UndeadSkillDataContainer UndeadSkillDataContainer
+        {
+            get { return GetContainer<UndeadSkillDataContainer>(); }
+        }
+
+        public UndeadTaskDataContainer UndeadTaskDataContainer
+        {
+            get { return GetContainer<UndeadTaskDataContainer>(); }
+        }
+
+        /// <summary>바이옴 표 — <b>1 묘지 · 2 겨울 황무지</b>.</summary>
+        public UndeadBiomeDataContainer UndeadBiomeDataContainer
+        {
+            get { return GetContainer<UndeadBiomeDataContainer>(); }
+        }
+
+        public UndeadLobbyMapDataContainer UndeadLobbyMapDataContainer
+        {
+            get { return GetContainer<UndeadLobbyMapDataContainer>(); }
+        }
+
         public UndeadArtDataContainer UndeadArtDataContainer
         {
             get { return GetContainer<UndeadArtDataContainer>(); }

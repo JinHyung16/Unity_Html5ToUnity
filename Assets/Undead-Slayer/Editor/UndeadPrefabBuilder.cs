@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using System.IO;
 using JinHyung.Core;
+using JinHyung.Data;
 using JinHyung.UI;
 using JinHyung.UI.Fx;
 using JinHyung.UndeadSlayer;
@@ -46,6 +48,12 @@ namespace JinHyung.EditorTools
 
         /// <summary>우리 캔버스 세로 (확정표 3).</summary>
         private const float CanvasHeight = 1080f;
+
+        /// <summary>
+        /// 데이터 표가 사는 곳 — <b>편집 모드에서 직접 읽는다</b>.
+        /// <para>⚠ <c>GameRoot</c> 의 컨테이너는 «재생 중»에만 있다. 편집 모드에서 쓰면 조용히 <c>null</c> 이다.</para>
+        /// </summary>
+        private const string DataFolder = "Assets/Undead-Slayer/Data";
 
         /// <summary>원본 → 우리 환산 배율. <b>세로 하나로 전부 환산된다</b>.</summary>
         private const float Scale = CanvasHeight / OriginHeight;
@@ -94,6 +102,7 @@ namespace JinHyung.EditorTools
             BuildRevive();
             BuildWeaponUnlock();
             BuildTaskComplete();
+            BuildLobbyHud();
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
@@ -180,6 +189,9 @@ namespace JinHyung.EditorTools
             questText.fontStyle = FontStyles.Bold;
             Outline(questText, QuestTextFont, 3f, Color.black);   // [소스 distanceText stroke {0, 3}]
             PlaceFromCenter(questText.gameObject, 120f, QuestTextFont * 1.6f);
+
+            // ── 스킬 슬롯 넷 [소스 skillHud] — 오른쪽 아래. 가진 것만 보이고 왼쪽부터 붙는다.
+            BuildSkillSlots(root.transform, window);
 
             SetRef(window, "_gaugeFill", fillImage);
             SetRef(window, "_gaugeText", gaugeText);
@@ -412,6 +424,249 @@ namespace JinHyung.EditorTools
         /// <para>디머 .78 · 판 <c>task_bg</c> 폭 min(540, 화면−40) 높이 292 가운데 · 제목 30 bold 금색 (판 y+52) ·
         /// 문구 21 흰색 (판 y+124 · 줄 30) · 버튼 둘 y+204 높이 60 — 「로비로」 <c>#8A3F32</c>/<c>#E69A85</c> · 「계속」 <c>#2E7D32</c>/<c>#9BE7A2</c>.</para>
         /// </summary>
+        // ══════════════════════════════ 로비 HUD [소스 Vu · Tu · Ad · ip · wu]
+
+        private const float TaskPanelW = 280f;      // [소스 panel.width = 280]
+        private const float TaskBarW = 192f;        // [소스 roundRect(−96, r, 192, 10, 5)]
+        private const float TaskBarH = 10f;
+        private const float PortalPanelW = 196f;    // [소스 Su = 196]
+        private const float PortalPanelH = 64f;
+
+        /// <summary>
+        /// 로비 위에 얹히는 것들을 굽는다 — <b>과제 말풍선 둘 · 포털 말풍선 둘 · 수령 링 · 보상 팝업 · 페이드</b>.
+        ///
+        /// <para>
+        /// ⚠ 자리는 <b>런타임이 매 프레임</b> 놓는다 (주인을 따라다닌다) — 여기서는 «부품과 크기»만 만든다.
+        /// </para>
+        /// </summary>
+        private static void BuildLobbyHud()
+        {
+            var root = new GameObject(nameof(UndeadLobbyHudWindow), typeof(RectTransform), typeof(CanvasGroup));
+            Stretch(root.GetComponent<RectTransform>());
+
+            var window = root.AddComponent<UndeadLobbyHudWindow>();
+            SetEnum(window, "_windowType", (int)EWindowType.Normal);
+
+            const int slots = 2;
+            var taskRoots = new UnityEngine.Object[slots];
+            var taskTitles = new UnityEngine.Object[slots];
+            var taskProgress = new UnityEngine.Object[slots];
+            var taskBars = new UnityEngine.Object[slots];
+            var rewardTitles = new UnityEngine.Object[slots];
+            var rewardIcons = new UnityEngine.Object[slots];
+            var rewardNames = new UnityEngine.Object[slots];
+            var portalRoots = new UnityEngine.Object[slots];
+            var portalNames = new UnityEngine.Object[slots];
+            var portalReqs = new UnityEngine.Object[slots];
+            var portalProgress = new UnityEngine.Object[slots];
+
+            for (int i = 0; i < slots; i++)
+            {
+                // ── 과제 말풍선 [소스 Vu] — 패널 폭 280 · 주인 위에 선다
+                var bubble = new GameObject("TaskBubble" + i, typeof(RectTransform));
+                bubble.transform.SetParent(root.transform, false);
+                RectTransform bubbleRect = bubble.GetComponent<RectTransform>();
+                bubbleRect.anchorMin = new Vector2(0.5f, 0.5f);
+                bubbleRect.anchorMax = new Vector2(0.5f, 0.5f);
+                bubbleRect.pivot = new Vector2(0.5f, 0f);
+                bubbleRect.sizeDelta = new Vector2(TaskPanelW * Scale, 190f * Scale);
+
+                GameObject panel = Sprite9(bubble.transform, "Panel", "task_bg");
+                Stretch(panel.GetComponent<RectTransform>());
+
+                TMP_Text title = Text(bubble.transform, "Title", string.Empty, 16f, new Color32(0xFF, 0xD3, 0x6A, 0xFF));
+                TopAt(title.rectTransform, 15f, 260f, 56f);
+                title.fontStyle = FontStyles.Bold;
+
+                TMP_Text progress = Text(bubble.transform, "Progress", string.Empty, 14f, new Color32(0xDF, 0xF4, 0xFF, 0xFF));
+                TopAt(progress.rectTransform, 86f, 260f, 20f);
+                progress.fontStyle = FontStyles.Bold;
+
+                GameObject track = SpriteImage(bubble.transform, "BarTrack", "task_bg");
+                TopAt(track.GetComponent<RectTransform>(), 116f, TaskBarW, TaskBarH);
+                track.GetComponent<Image>().color = new Color32(0x08, 0x0D, 0x16, 0xE6);
+
+                GameObject fill = SpriteImage(track.transform, "BarFill", "task_bg");
+                RectTransform fillRect = fill.GetComponent<RectTransform>();
+                fillRect.anchorMin = new Vector2(0f, 0f);
+                fillRect.anchorMax = new Vector2(0f, 1f);
+                fillRect.pivot = new Vector2(0f, 0.5f);
+                fillRect.offsetMin = Vector2.zero;
+                fillRect.offsetMax = Vector2.zero;
+                fillRect.sizeDelta = Vector2.zero;
+                fill.GetComponent<Image>().color = new Color32(0x62, 0xB8, 0xE8, 0xFF);
+
+                TMP_Text rewardTitle = Text(bubble.transform, "RewardTitle", string.Empty, 16f, Color.white);
+                TopAt(rewardTitle.rectTransform, 140f, 260f, 20f);
+                rewardTitle.fontStyle = FontStyles.Bold;
+
+                GameObject icon = SpriteImage(bubble.transform, "RewardIcon", "skill_dash");
+                RectTransform iconRect = icon.GetComponent<RectTransform>();
+                iconRect.anchorMin = new Vector2(0.5f, 1f);
+                iconRect.anchorMax = new Vector2(0.5f, 1f);
+                iconRect.pivot = new Vector2(0.5f, 0.5f);
+                iconRect.sizeDelta = new Vector2(68f * Scale, 68f * Scale);
+                iconRect.anchoredPosition = new Vector2(-100f * Scale, -168f * Scale);
+                icon.GetComponent<Image>().preserveAspect = true;
+
+                TMP_Text rewardName = Text(bubble.transform, "RewardName", string.Empty, 14f, new Color32(0xBF, 0xF7, 0xC7, 0xFF));
+                RectTransform nameRect = rewardName.rectTransform;
+                nameRect.anchorMin = new Vector2(0.5f, 1f);
+                nameRect.anchorMax = new Vector2(0.5f, 1f);
+                nameRect.pivot = new Vector2(0f, 0.5f);
+                nameRect.sizeDelta = new Vector2(180f * Scale, 48f * Scale);
+                nameRect.anchoredPosition = new Vector2(-56f * Scale, -168f * Scale);
+                rewardName.alignment = TextAlignmentOptions.Left;
+                rewardName.fontStyle = FontStyles.Bold;
+
+                taskRoots[i] = bubbleRect;
+                taskTitles[i] = title;
+                taskProgress[i] = progress;
+                taskBars[i] = fillRect;
+                rewardTitles[i] = rewardTitle;
+                rewardIcons[i] = icon.GetComponent<Image>();
+                rewardNames[i] = rewardName;
+
+                // ── 포털 말풍선 [소스 Tu] — skill_bg 196×64
+                var portal = new GameObject("PortalBubble" + i, typeof(RectTransform));
+                portal.transform.SetParent(root.transform, false);
+                RectTransform portalRect = portal.GetComponent<RectTransform>();
+                portalRect.anchorMin = new Vector2(0.5f, 0.5f);
+                portalRect.anchorMax = new Vector2(0.5f, 0.5f);
+                portalRect.pivot = new Vector2(0.5f, 0f);
+                portalRect.sizeDelta = new Vector2(PortalPanelW * Scale, PortalPanelH * Scale);
+
+                GameObject portalPanel = Sprite9(portal.transform, "Panel", "skill_bg");
+                Stretch(portalPanel.GetComponent<RectTransform>());
+
+                TMP_Text portalName = Text(portal.transform, "Name", string.Empty, 17f, new Color32(0xDF, 0xF4, 0xFF, 0xFF));
+                TopAt(portalName.rectTransform, 14f, 176f, 20f);
+                portalName.fontStyle = FontStyles.Bold;
+
+                TMP_Text portalReq = Text(portal.transform, "Requirement", string.Empty, 12f, Color.white);
+                TopAt(portalReq.rectTransform, 34f, 176f, 18f);
+
+                TMP_Text portalProg = Text(portal.transform, "Progress", string.Empty, 14f, new Color32(0xFF, 0xD3, 0x6A, 0xFF));
+                TopAt(portalProg.rectTransform, 53f, 176f, 18f);
+                portalProg.fontStyle = FontStyles.Bold;
+
+                portalRoots[i] = portalRect;
+                portalNames[i] = portalName;
+                portalReqs[i] = portalReq;
+                portalProgress[i] = portalProg;
+            }
+
+            // ── 수령 링 [소스 Ad — 히어로 기준 (0,75) · 배율 1.8]
+            GameObject ring = SpriteImage(root.transform, "ClaimRing", "quest_progress");
+            var ringRect = ring.GetComponent<RectTransform>();
+            ringRect.anchorMin = new Vector2(0.5f, 0.5f);
+            ringRect.anchorMax = new Vector2(0.5f, 0.5f);
+            ringRect.pivot = new Vector2(0.5f, 1f);
+            ringRect.sizeDelta = new Vector2(24f * 1.8f * Scale, 24f * 1.8f * Scale);
+
+            var ringImage = ring.GetComponent<Image>();
+            ringImage.type = Image.Type.Filled;
+            ringImage.fillMethod = Image.FillMethod.Radial360;
+            ringImage.fillOrigin = (int)Image.Origin360.Top;
+            ringImage.enabled = false;
+            SetRef(window, "_claimRing", ringImage);
+
+            BuildRewardPopup(root.transform, window);
+
+            // ── 진입 페이드 [소스 wu — 검정 · 1초]
+            GameObject fade = SpriteImage(root.transform, "Fade", "skill_bg");
+            Stretch(fade.GetComponent<RectTransform>());
+            var fadeImage = fade.GetComponent<Image>();
+            fadeImage.color = new Color(0f, 0f, 0f, 0f);
+            fadeImage.enabled = false;
+            SetRef(window, "_fade", fadeImage);
+
+            SetRefArray(window, "_taskRoots", taskRoots);
+            SetRefArray(window, "_taskTitles", taskTitles);
+            SetRefArray(window, "_taskProgress", taskProgress);
+            SetRefArray(window, "_taskBarFills", taskBars);
+            SetRefArray(window, "_taskRewardTitles", rewardTitles);
+            SetRefArray(window, "_taskRewardIcons", rewardIcons);
+            SetRefArray(window, "_taskRewardNames", rewardNames);
+            SetRefArray(window, "_portalRoots", portalRoots);
+            SetRefArray(window, "_portalNames", portalNames);
+            SetRefArray(window, "_portalRequirements", portalReqs);
+            SetRefArray(window, "_portalProgress", portalProgress);
+            SavePrefab(root, $"{UiPrefabRoot}/{nameof(UndeadLobbyHudWindow)}.prefab");
+        }
+
+        /// <summary>말풍선 안에서 «위에서 몇 px» 자리에 상자를 놓는다 — 원본 좌표를 그대로 쓴다.</summary>
+        private static void TopAt(RectTransform rect, float fromTop, float width, float height)
+        {
+            rect.anchorMin = new Vector2(0.5f, 1f);
+            rect.anchorMax = new Vector2(0.5f, 1f);
+            rect.pivot = new Vector2(0.5f, 1f);
+            rect.sizeDelta = new Vector2(width * Scale, height * Scale);
+            rect.anchoredPosition = new Vector2(0f, -fromTop * Scale);
+        }
+
+        /// <summary>
+        /// 보상 팝업 [소스 <c>skillRewardPopup</c>] — 디머 · 패널 · 제목 <c>taskReward</c> 25 ·
+        /// 스킬 이름 30 · 아이콘 ×3 · 확인 버튼.
+        /// </summary>
+        private static void BuildRewardPopup(Transform parent, Component window)
+        {
+            var popup = new GameObject("RewardPopup", typeof(RectTransform));
+            popup.transform.SetParent(parent, false);
+            RectTransform popupRect = popup.GetComponent<RectTransform>();
+            Stretch(popupRect);
+            Dimmer(popup.transform, 0.78f);
+
+            const float panelW = 460f;
+            const float panelH = 300f;
+
+            GameObject panel = Sprite9(popup.transform, "Panel", "task_bg");
+            RectTransform panelRect = panel.GetComponent<RectTransform>();
+            PlaceFromCenter(panel, panelW, panelH);
+            panelRect.sizeDelta = new Vector2(panelW * Scale, panelH * Scale);
+
+            TMP_Text title = Text(panel.transform, "Title",
+                                  GameRoot.Instance.UndeadTextDataContainer != null ? "" : "", 25f,
+                                  new Color32(0xFF, 0xD3, 0x6A, 0xFF));
+            TopAt(title.rectTransform, 28f, panelW - 40f, 32f);
+            title.fontStyle = FontStyles.Bold;
+            title.text = LoadTextTable() != null ? LoadTextTable().Ko("taskReward") : "";
+
+            TMP_Text skillName = Text(panel.transform, "SkillName", string.Empty, 30f, Color.white);
+            TopAt(skillName.rectTransform, 76f, panelW - 40f, 40f);
+            skillName.fontStyle = FontStyles.Bold;
+
+            GameObject icon = SpriteImage(panel.transform, "Icon", "skill_dash");
+            RectTransform iconRect = icon.GetComponent<RectTransform>();
+            iconRect.anchorMin = new Vector2(0.5f, 1f);
+            iconRect.anchorMax = new Vector2(0.5f, 1f);
+            iconRect.pivot = new Vector2(0.5f, 0.5f);
+            // ⚠ 원본은 아이콘을 «배율 3» 으로 키운다 — 상자에 맞추는 것이 아니다
+            iconRect.sizeDelta = new Vector2(64f * 3f * Scale, 46f * 3f * Scale);
+            iconRect.anchoredPosition = new Vector2(0f, -190f * Scale);
+            icon.GetComponent<Image>().preserveAspect = true;
+
+            GameObject confirm = Sprite9(panel.transform, "Confirm", "btn_shadowed");
+            RectTransform confirmRect = confirm.GetComponent<RectTransform>();
+            confirmRect.anchorMin = new Vector2(0.5f, 1f);
+            confirmRect.anchorMax = new Vector2(0.5f, 1f);
+            confirmRect.pivot = new Vector2(0.5f, 1f);
+            confirmRect.sizeDelta = new Vector2(200f * Scale, 60f * Scale);
+            confirmRect.anchoredPosition = new Vector2(0f, -228f * Scale);
+
+            Button confirmButton = MakeButton(confirm);
+            TMP_Text confirmText = Text(confirm.transform, "Label",
+                                        LoadTextTable() != null ? LoadTextTable().Ko("ok") : "", 24f, Color.white);
+            Stretch(confirmText.rectTransform);
+            confirmText.fontStyle = FontStyles.Bold;
+
+            SetRef(window, "_rewardPopup", popupRect);
+            SetRef(window, "_rewardSkillName", skillName);
+            SetRef(window, "_rewardSkillIcon", icon.GetComponent<Image>());
+            SetRef(window, "_rewardConfirm", confirmButton);
+            popup.SetActive(false);
+        }
+
         private static void BuildTaskComplete()
         {
             var root = new GameObject(nameof(UndeadTaskCompleteWindow), typeof(RectTransform), typeof(CanvasGroup));
@@ -619,6 +874,170 @@ namespace JinHyung.EditorTools
         /// 화면 <b>아래 모서리</b>에 붙인다 — 원본 앵커가 <c>(0,1)</c>/<c>(1,1)</c>(좌·우 하단)이다.
         /// <para>⚠ 가운데 정렬로 두면 문구 길이가 바뀔 때 «자리»가 흔들린다 — 모서리 기준이라 안 흔들린다.</para>
         /// </summary>
+        // ══════════════════════════════ 스킬 슬롯 [소스 Wd · Hd]
+
+        private const float SkillSlotSize = 54f;      // [소스 zd = 54]
+        private const float SkillSlotStride = 62f;    // [소스 x = 62·i]
+        private const float SkillRightMargin = 12f;   // [소스 x = 화면오른쪽 − 12 − 전체폭]
+        private const float SkillBottomMargin = 42f;  // [소스 y = 화면아래 − 42 − zd]
+        private const float SkillIconOffsetY = 8f;    // [소스 데스크톱이면 icon.y += 8]
+        private const float SkillCooldownFont = 20f;  // [소스 fontSize 20 · stroke {0,4}]
+        private const float SkillKeyFont = 11f;       // [소스 fontSize 11 · fill #161622]
+        private const float SkillBadgeHeight = 16f;
+        private const float SkillBadgeWideWidth = 48f;   // [소스 Space 면 48]
+        private const float SkillBadgeNarrowWidth = 24f;
+
+        /// <summary>
+        /// 슬롯 넷을 굽는다. <b>표가 분모다</b> — 표에 스킬이 넷이면 슬롯도 넷이다.
+        ///
+        /// <para>
+        /// ⚠ 안 가진 스킬은 <b>런타임이 통째로 끈다</b> (칸까지 빠진다). 여기서는 «자리와 부품»만 만든다.
+        /// </para>
+        /// </summary>
+        private static void BuildSkillSlots(Transform parent, Component window)
+        {
+            var rootObject = new GameObject("SkillRoot", typeof(RectTransform));
+            rootObject.transform.SetParent(parent, false);
+
+            var rootRect = rootObject.GetComponent<RectTransform>();
+            rootRect.anchorMin = new Vector2(1f, 0f);
+            rootRect.anchorMax = new Vector2(1f, 0f);
+            rootRect.pivot = new Vector2(1f, 0f);
+            rootRect.sizeDelta = new Vector2(0f, SkillSlotSize * Scale);
+            rootRect.anchoredPosition = new Vector2(-SkillRightMargin * Scale, SkillBottomMargin * Scale);
+
+            // ⚠ <b>편집 모드에는 런타임 컨테이너가 없다</b> — JSON 을 직접 읽는다
+            //   (다른 빌더와 같은 방식이다. <c>GameRoot</c> 를 쓰면 «조용히 null» 이 된다).
+            UndeadSkillDataContainer table = LoadSkillTable();
+
+            if (table == null)
+                return;
+
+            IReadOnlyList<UndeadSkillData> all = table.AllValues;
+            var slots = new UndeadSkillSlot[all.Count];
+
+            for (int i = 0; i < all.Count; i++)
+            {
+                UndeadSkillData data = all[i];
+                slots[data.Order] = BuildSkillSlot(rootRect, data);
+            }
+
+            SetRef(window, "_skillRoot", rootRect);
+            SetRefArray(window, "_skillSlots", slots);
+        }
+
+        private static UndeadSkillSlot BuildSkillSlot(RectTransform parent, UndeadSkillData data)
+        {
+            var go = new GameObject($"Skill_{data.Code}", typeof(RectTransform));
+            go.transform.SetParent(parent, false);
+
+            var rect = go.GetComponent<RectTransform>();
+            rect.anchorMin = new Vector2(0f, 0f);
+            rect.anchorMax = new Vector2(0f, 0f);
+            rect.pivot = new Vector2(0f, 0f);
+            rect.sizeDelta = new Vector2(SkillSlotSize * Scale, SkillSlotSize * Scale);
+            rect.anchoredPosition = new Vector2(SkillSlotStride * data.Order * Scale, 0f);
+
+            // ★ 흐려지는 것은 «아이콘 묶음»뿐이다 — 쿨다운 숫자는 또렷하게 남는다 [소스 item.alpha]
+            var itemObject = new GameObject("Item", typeof(RectTransform), typeof(CanvasGroup));
+            itemObject.transform.SetParent(go.transform, false);
+            var itemRect = itemObject.GetComponent<RectTransform>();
+            Stretch(itemRect);
+
+            GameObject background = Sprite9(itemObject.transform, "Bg", "skill_bg");
+            Stretch(background.GetComponent<RectTransform>());
+
+            GameObject icon = SpriteImage(itemObject.transform, "Icon", data.IconAddress);
+            var iconRect = icon.GetComponent<RectTransform>();
+            iconRect.anchorMin = new Vector2(0.5f, 0.5f);
+            iconRect.anchorMax = new Vector2(0.5f, 0.5f);
+            iconRect.pivot = new Vector2(0.5f, 0.5f);
+            iconRect.sizeDelta = new Vector2(SkillSlotSize * Scale, SkillSlotSize * Scale);
+
+            // ⚠ 원본은 데스크톱에서 아이콘을 «아래로» 8 내린다 — 키 뱃지 자리를 비우려는 것이다
+            iconRect.anchoredPosition = new Vector2(0f, -SkillIconOffsetY * Scale);
+            icon.GetComponent<Image>().preserveAspect = true;
+
+            // 키 뱃지 — 왼쪽 위 (3,3) 부터 [소스 roundRect(3,3,w,16,3)]
+            float badgeWidth = data.DesktopKey == "Space" ? SkillBadgeWideWidth : SkillBadgeNarrowWidth;
+            GameObject badge = SpriteImage(itemObject.transform, "KeyBadge", "skill_bg");
+            var badgeRect = badge.GetComponent<RectTransform>();
+            badgeRect.anchorMin = new Vector2(0f, 1f);
+            badgeRect.anchorMax = new Vector2(0f, 1f);
+            badgeRect.pivot = new Vector2(0f, 1f);
+            badgeRect.sizeDelta = new Vector2(badgeWidth * Scale, SkillBadgeHeight * Scale);
+            badgeRect.anchoredPosition = new Vector2(3f * Scale, -3f * Scale);
+            badge.GetComponent<Image>().color = new Color32(0xF5, 0xE8, 0xC8, 0xF2);
+
+            TMP_Text keyText = Text(badge.transform, "KeyText", KeyLabel(data.DesktopKey), SkillKeyFont,
+                                    new Color32(0x16, 0x16, 0x22, 0xFF));
+            Stretch(keyText.rectTransform);
+            keyText.fontStyle = FontStyles.Bold;
+            Fit(keyText, (badgeWidth - 4f) * Scale, 12f * Scale);
+
+            // 쿨다운 숫자는 «묶음 밖»이다 — 흐려지면 안 읽힌다
+            TMP_Text cooldown = Text(go.transform, "Cooldown", string.Empty, SkillCooldownFont, Color.white);
+            Stretch(cooldown.rectTransform);
+            cooldown.fontStyle = FontStyles.Bold;
+            Outline(cooldown, SkillCooldownFont, 4f, Color.black);
+
+            var slot = go.AddComponent<UndeadSkillSlot>();
+            SetRef(slot, "_item", itemObject.GetComponent<CanvasGroup>());
+            SetRef(slot, "_background", background.GetComponent<Image>());
+            SetRef(slot, "_icon", icon.GetComponent<Image>());
+            SetRef(slot, "_cooldownText", cooldown);
+            SetRef(slot, "_keyBadge", badge.GetComponent<Image>());
+            SetRef(slot, "_keyText", keyText);
+            SetEnumValue(slot, "_skill", data.Order);
+            return slot;
+        }
+
+        /// <summary>편집 모드에서 표를 읽는다 — 런타임 컨테이너가 없기 때문이다.</summary>
+        private static UndeadSkillDataContainer LoadSkillTable()
+        {
+            var table = new UndeadSkillDataContainer();
+            string path = Path.Combine(DataFolder, table.Name + ".json");
+
+            if (File.Exists(path) == false)
+            {
+                Log.Error($"스킬 표가 없다: {path}");
+                return null;
+            }
+
+            table.LoadJson(File.ReadAllText(path));
+
+            if (table.Validate(out string error))
+                return table;
+
+            Log.Error("스킬 표가 검사를 통과하지 못했다 — 슬롯을 안 굽는다: " + error);
+            return null;
+        }
+
+        private static UndeadTextDataContainer LoadTextTable()
+        {
+            var table = new UndeadTextDataContainer();
+            string path = Path.Combine(DataFolder, table.Name + ".json");
+
+            if (File.Exists(path) == false)
+            {
+                Log.Error($"문구 표가 없다: {path}");
+                return null;
+            }
+
+            table.LoadJson(File.ReadAllText(path));
+            return table;
+        }
+
+        /// <summary>화면에 찍히는 키 이름 [소스 — <c>Space</c> 는 문구 표, 나머지는 <c>Key</c> 접두어를 뗀다].</summary>
+        private static string KeyLabel(string desktopKey)
+        {
+            if (desktopKey != "Space")
+                return desktopKey;
+
+            UndeadTextDataContainer texts = LoadTextTable();
+            return texts != null ? texts.Ko("keyboardSpace") : "Space";
+        }
+
         private static void CornerAt(RectTransform rect, bool left)
         {
             float ax = left ? 0f : 1f;
@@ -641,9 +1060,59 @@ namespace JinHyung.EditorTools
         private static void Outline(TMP_Text text, Color color, float strokePixels, float originFont)
         {
             text.fontStyle |= FontStyles.Bold;
-            text.outlineColor = color;
-            text.outlineWidth = Mathf.Clamp01(strokePixels / Mathf.Max(1f, originFont));
+            text.fontSharedMaterial = OutlineMaterial(color, Mathf.Clamp01(strokePixels / Mathf.Max(1f, originFont)));
         }
+
+        /// <summary>
+        /// 테두리가 걸린 <b>재질 «에셋»</b>을 만들어(또는 재사용해) 돌려준다.
+        ///
+        /// <para>
+        /// ⚠⚠ <b>[사고] 테두리가 굽는 순간 사라졌다.</b> <c>text.outlineWidth</c>·<c>outlineColor</c> 는
+        /// <c>fontMaterial</c>(«인스턴스 재질»)에 쓰인다. 인스턴스 재질은 <b>어느 에셋에도 안 붙어 있어
+        /// 프리팹을 저장하면 통째로 버려진다</b> — 실측으로 구운 프리팹의 <c>m_fontMaterial</c> 이
+        /// 전부 <c>fileID: 0</c> 이었고, 재생에서 <b>모든 문구의 <c>_OutlineWidth</c> 가 0</b> 이었다.
+        /// 원본은 거의 모든 문구에 <c>stroke</c> 를 건다 — 테두리가 없으면 세계 위의 글자가 안 읽힌다.
+        /// </para>
+        ///
+        /// <para>
+        /// ⇒ <b>재질을 «에셋»으로 저장하고 <c>fontSharedMaterial</c> 에 물린다.</b>
+        /// 같은 (색·두께)는 한 벌만 만든다 — 문구마다 새로 만들면 배치가 깨진다.
+        /// </para>
+        /// </summary>
+        private static Material OutlineMaterial(Color color, float width)
+        {
+            var font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(FontAssetPath);
+
+            if (font == null)
+            {
+                Log.Error($"폰트 에셋이 없다: {FontAssetPath} — 먼저 UndeadFontSetup.Setup 을 돌린다");
+                return null;
+            }
+
+            var key = new Color32(color.r > 0.5f ? (byte)1 : (byte)0, 0, 0, 0);
+            string name = $"UndeadSlayer Outline {ColorUtility.ToHtmlStringRGB(color)} {width:0.000}";
+            string path = $"{OutlineMaterialFolder}/{name}.mat";
+            var existing = AssetDatabase.LoadAssetAtPath<Material>(path);
+
+            if (existing != null)
+                return existing;
+
+            Directory.CreateDirectory(OutlineMaterialFolder);
+
+            var material = new Material(font.material) { name = name };
+            material.EnableKeyword("OUTLINE_ON");
+            material.SetColor(ShaderUtilities.ID_OutlineColor, color);
+            material.SetFloat(ShaderUtilities.ID_OutlineWidth, width);
+
+            AssetDatabase.CreateAsset(material, path);
+            return material;
+        }
+
+        /// <summary>
+        /// 테두리 재질이 사는 곳 — <b><c>Resources/</c> 다.</b>
+        /// <para>프리팹이 참조하므로 어차피 빌드에 들어간다. 폰트 에셋 옆에 둔다.</para>
+        /// </summary>
+        private const string OutlineMaterialFolder = "Assets/Undead-Slayer/Resources/Font";
 
         private static GameObject SpriteImage(Transform parent, string name, string art)
         {
@@ -720,10 +1189,8 @@ namespace JinHyung.EditorTools
         /// </summary>
         private static void Outline(TMP_Text text, float originFont, float originStrokeWidth, Color strokeColor)
         {
-            text.fontMaterial = new Material(text.fontMaterial);   // 공유 재질을 건드리면 «모든» 글자에 번진다
-            text.fontMaterial.EnableKeyword("OUTLINE_ON");
-            text.outlineColor = strokeColor;
-            text.outlineWidth = Mathf.Clamp01(originStrokeWidth / Mathf.Max(1f, originFont));
+            // ⚠ 인스턴스 재질(`fontMaterial`)에 쓰면 프리팹 저장 때 버려진다 — <see cref="OutlineMaterial"/> 참고
+            text.fontSharedMaterial = OutlineMaterial(strokeColor, Mathf.Clamp01(originStrokeWidth / Mathf.Max(1f, originFont)));
         }
 
         /// <summary>원본 좌상단 기준 좌표를 «위쪽 앵커»로 옮긴다.</summary>
@@ -880,6 +1347,39 @@ namespace JinHyung.EditorTools
 
             property.enumValueIndex = value;
             serialized.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        /// <summary>
+        /// enum 필드에 <b>«값»을 넣는다</b> — <see cref="SetEnum"/> 과 다르다.
+        ///
+        /// <para>
+        /// ⚠⚠ <b>[사고]</b> <c>SerializedProperty.enumValueIndex</c> 는 «값»이 아니라
+        /// <b>«enum 목록에서 몇 번째인가»</b>다. 첫 항목이 <c>0</c> 이 아닌 enum
+        /// (예: <c>None = −1</c> 을 앞에 둔 것)에 쓰면 <b>전부 한 칸씩 밀린다</b> —
+        /// 실측으로 슬롯 넷이 <c>None · Dash · BlazingTrail · WinterPulse</c> 로 구워졌다.
+        /// 값이 «있긴 해서» 오류도 안 났다.
+        /// </para>
+        ///
+        /// <para>⇒ 밑값을 쓰려면 <c>intValue</c> 다. 그리고 <b>되읽어 확인한다</b>.</para>
+        /// </summary>
+        private static void SetEnumValue(Object target, string field, int value)
+        {
+            var serialized = new SerializedObject(target);
+            SerializedProperty property = serialized.FindProperty(field);
+
+            if (property == null)
+            {
+                Log.Error($"{target.GetType().Name} 에 {field} 이 없다");
+                return;
+            }
+
+            property.intValue = value;
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+
+            int written = new SerializedObject(target).FindProperty(field).intValue;
+
+            if (written != value)
+                Log.Error($"{target.GetType().Name}.{field} 에 {value} 를 넣었는데 {written} 이 들어갔다");
         }
     }
 }

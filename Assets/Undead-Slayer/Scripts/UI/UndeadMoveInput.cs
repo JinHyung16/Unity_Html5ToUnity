@@ -41,6 +41,33 @@ namespace JinHyung.UndeadSlayer
             return new UndeadVec2(touch.x, -touch.y);
         }
 
+        /// <summary>
+        /// 이번 프레임에 <b>새로 눌린</b> 스킬 슬롯 — 없으면 <see cref="EUndeadSkill.None"/>.
+        ///
+        /// <para>
+        /// [소스 <c>desktopKeyCode</c>] <c>Space</c> 돌진 · <c>Q</c> 화염 자취 · <c>E</c> 겨울 파동 · <c>F</c> 섬광 이동.
+        /// </para>
+        ///
+        /// <para>
+        /// ⚠ <b><c>isPressed</c> 가 아니라 <c>wasPressedThisFrame</c> 이다.</b> 누르고 있으면
+        /// 쿨다운이 끝나는 순간마다 자동으로 다시 나간다 — 원본은 «누를 때마다» 한 번이다.
+        /// </para>
+        /// </summary>
+        public EUndeadSkill ReadSkillPress()
+        {
+            Keyboard k = Keyboard.current;
+
+            if (k == null)
+                return EUndeadSkill.None;
+
+            if (k.spaceKey.wasPressedThisFrame) return EUndeadSkill.Dash;
+            if (k.qKey.wasPressedThisFrame) return EUndeadSkill.BlazingTrail;
+            if (k.eKey.wasPressedThisFrame) return EUndeadSkill.WinterPulse;
+            if (k.fKey.wasPressedThisFrame) return EUndeadSkill.FlashMove;
+
+            return EUndeadSkill.None;
+        }
+
         private static Vector2 ReadKeyboard()
         {
             Keyboard k = Keyboard.current;

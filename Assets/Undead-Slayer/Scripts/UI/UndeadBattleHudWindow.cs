@@ -53,9 +53,76 @@ namespace JinHyung.UndeadSlayer
         [SerializeField] private TMP_Text _bestTimeText;
 
         /// <summary>
+        /// 스킬 슬롯 넷 [소스 <c>skillHud</c>] — <b>가진 것만 보이고</b>, 자리는 <b>오른쪽으로 정렬</b>된다.
+        /// <para>⚠ 슬롯 순서는 <see cref="EUndeadSkill"/> 이고, 안 가진 것은 «칸까지» 빠진다.</para>
+        /// </summary>
+        [SerializeField] private UndeadSkillSlot[] _skillSlots;
+
+        /// <summary>슬롯이 붙는 자리 — 가진 개수에 따라 폭이 변해 오른쪽 정렬을 다시 잡는다.</summary>
+        [SerializeField] private RectTransform _skillRoot;
+
+        /// <summary>
         /// 게이지. <b>목표를 0 으로 주지 않는다</b> — 관측 범위를 넘으면 데이터가 없다는 뜻이라
         /// 그 자리는 배선이 판정한다.
         /// </summary>
+        /// <summary>
+        /// 스킬 슬롯을 매 프레임 갱신한다 [소스 <c>skillHud.update</c>].
+        ///
+        /// <para>
+        /// ★ <b>가진 것만</b> 보이고 <b>왼쪽부터 붙여</b> 놓는다 — 슬롯 사이 62, 오른쪽 여백 12
+        /// [소스 <c>x = 62·i</c> · <c>container.x = 화면오른쪽 − 12 − 전체폭</c>].
+        /// </para>
+        ///
+        /// <para>
+        /// ⚠ <b>[사고 · #174]</b> 이 창은 스킬 시스템이 통째로 미이관인 채로 여러 회차를 통과했다.
+        /// 「슬롯이 있나」가 아니라 <b>「가진 스킬 수만큼 보이나」</b>를 검사가 세야 한다.
+        /// </para>
+        /// </summary>
+        public void SetSkills(UndeadSimulation simulation)
+        {
+            if (_skillSlots == null || simulation == null)
+                return;
+
+            int shown = 0;
+
+            for (int i = 0; i < _skillSlots.Length; i++)
+            {
+                if (_skillSlots[i] == null)
+                    continue;
+
+                EUndeadSkill skill = _skillSlots[i].Skill;
+                bool owned = simulation.OwnsSkill(skill);
+
+                _skillSlots[i].Apply(owned, simulation.SkillCooldownRemaining(skill), simulation.SkillReady(skill));
+
+                if (owned == false)
+                    continue;
+
+                // 가진 것끼리 «빈칸 없이» 붙는다 — 안 가진 슬롯은 자리를 안 차지한다
+                var rect = _skillSlots[i].transform as RectTransform;
+
+                if (rect != null)
+                    rect.anchoredPosition = new Vector2(SkillSlotStride * shown * CanvasScale, 0f);
+
+                shown++;
+            }
+
+            if (_skillRoot != null)
+            {
+                float width = shown > 0 ? SkillSlotSize * shown + SkillSlotGap * (shown - 1) : 0f;
+                _skillRoot.sizeDelta = new Vector2(width * CanvasScale, SkillSlotSize * CanvasScale);
+            }
+        }
+
+        /// <summary>슬롯 한 변 [소스 <c>zd = 54</c>].</summary>
+        private const float SkillSlotSize = 54f;
+
+        /// <summary>슬롯 사이 간격 [소스 8].</summary>
+        private const float SkillSlotGap = 8f;
+
+        /// <summary>슬롯이 놓이는 간격 [소스 <c>x = 62·i</c>].</summary>
+        private const float SkillSlotStride = 62f;
+
         public void SetGauge(int value, int goal)
         {
             if (_gaugeText != null)
@@ -192,19 +259,47 @@ namespace JinHyung.UndeadSlayer
             }
         }
 
-        /// <summary>[소스 <c>fd</c>] — 1000 미만은 <c>Nm</c> · 10km 미만은 소수 한 자리 · 그 위는 정수 km.</summary>
+        /// <summary>
+        /// [소스 <c>fd</c>] — 1000 미만은 <c>N + 단위</c> · 10km 미만은 소수 한 자리 · 그 위는 정수 km.
+        ///
+        /// <para>
+        /// ⚠ <b>단위 글자는 «문구 표»에서 온다</b> [소스 <c>metersShort</c>].
+        /// 코드에 <c>"m"</c> 을 박으면 <b>번역이 안 따라간다</b> — 실제로 박혀 있었고,
+        /// 표의 <c>metersShort</c> 는 <b>읽는 곳이 없는 채로</b> 남아 있었다 (<c>재발방지 #174</c>).
+        /// </para>
+        /// </summary>
         private static string FormatDistance(int meters)
         {
             int m = Mathf.Max(1, meters);
 
             if (m < 1000)
-                return $"{m}m";
+                return m + MetersShort;
 
             float km = m / 1000f;
             return km < 10f ? $"{km:F1}km" : $"{Mathf.RoundToInt(km)}km";
         }
 
+        /// <summary>미터 단위 글자 — 문구 표에서 한 번만 읽어 둔다.</summary>
+        private static string MetersShort
+        {
+            get
+            {
+                if (_metersShort == null)
+                    _metersShort = JinHyung.Data.GameRoot.Instance.UndeadTextDataContainer.Ko("metersShort");
+
+                return _metersShort;
+            }
+        }
+
+        private static string _metersShort;
+
         private const float DesignHeight = 580f;
+
+        /// <summary>
+        /// 원본 논리 px → 캔버스 px. <b>프리팹 빌더의 <c>Scale</c> 과 같은 수</b>여야 한다 —
+        /// 다르면 구운 자리와 런타임이 옮기는 자리가 어긋난다.
+        /// </summary>
+        private const float CanvasScale = 1080f / DesignHeight;
         private const float EdgeMarginX = 58f;     // [소스 p = h − 58]
         private const float EdgeMarginY = 48f;     // [소스 m = l − 48]
         private const float FloatAmplitude = 7f;   // [소스 visual.x = 7·sin(.007·t)]

@@ -108,6 +108,25 @@ namespace JinHyung.UndeadSlayer
 
             /// <summary>그림 배율 — 스폰 때 정해진다 [소스].</summary>
             public double SpriteScale;
+
+            /// <summary>
+            /// 왼쪽을 보고 있나 — <b>«상태»다. 매 프레임 다시 재는 값이 아니다</b>
+            /// [소스 <c>e&lt;0 ? scale.x=-abs : e&gt;0 &amp;&amp; (scale.x=abs)</c> — <b>0 이면 그대로 둔다</b>].
+            ///
+            /// <para>
+            /// ⚠ <b>[사고]</b> 뷰가 <c>적.x &gt; 히어로.x</c> 를 매 프레임 다시 쟀다. 히어로에 «붙으면»
+            /// 그 부등식이 프레임마다 뒤집혀 <b>적이 좌우로 떤다</b> (실측 20초에 55회).
+            /// 원본은 ① <b>거리가 5 를 넘을 때만</b> 갱신하고 ② <b>차이가 0 이면 유지</b>한다 —
+            /// 둘 다 「붙었을 때 떨림」을 막는 장치다.
+            /// </para>
+            /// </summary>
+            public bool FacingLeft;
+
+            /// <summary>
+            /// 피격 «빨강 물듦»이 남은 시간 (초) [소스 <c>hitTintDuration = 200</c>].
+            /// <para>⚠ 히어로만 옮기고 여기를 빠뜨리면 <b>적이 맞고 있는지 화면에서 안 보인다</b>.</para>
+            /// </summary>
+            public double HitTintRemaining;
         }
 
         /// <summary>
@@ -171,12 +190,29 @@ namespace JinHyung.UndeadSlayer
 
         // ══════════════════════════════ 상태
 
+        /// <summary>
+        /// 이 판의 <b>바이옴</b> — <b>1 묘지 · 2 겨울 황무지</b> [소스 <c>staticBiome</c>].
+        ///
+        /// <para>
+        /// ★ <b>세계 생성은 두 바이옴이 같다</b> — 시드도 노이즈도 하나다
+        /// [소스 <c>noiseBiome = () =&gt; staticBiome</c>]. 규칙에서 갈리는 것은
+        /// <b>시작 자리</b>와 <b>「나무 활성화」 과제를 세느냐</b> 둘뿐이고, 나머지는 전부 «그림»이다.
+        /// </para>
+        /// </summary>
+        public int Biome { get; private set; } = 1;
+
         public UndeadVec2 HeroPosition { get; private set; }
 
         /// <summary>카메라가 보는 «월드 점». 히어로를 <b>지수적으로 뒤따른다</b> [소스].</summary>
         public UndeadVec2 CameraPivot { get; private set; }
 
         public bool HeroMoving { get; private set; }
+
+        /// <summary>
+        /// 히어로가 왼쪽을 보고 있나 — <b>«상태»다</b> [소스 <c>Nl.update</c>].
+        /// <para>가로 입력이 없으면 <b>마지막 방향을 유지</b>한다. 그래서 매 프레임 다시 재면 안 된다.</para>
+        /// </summary>
+        public bool HeroFacingLeft { get; private set; }
 
         public double HeroAnimFrame { get; private set; }
 
@@ -338,6 +374,12 @@ namespace JinHyung.UndeadSlayer
             _budgetsSeeded = false;
         }
 
+        /// <summary>바이옴을 정한다 — <b><see cref="Reset"/> 보다 «먼저»</b> 부른다.</summary>
+        public void SetBiome(int biome)
+        {
+            Biome = biome == 2 ? 2 : 1;
+        }
+
         public void Reset(UndeadVec2 heroPosition, int firstGoal)
         {
             Array.Clear(_enemies, 0, _enemies.Length);
@@ -352,6 +394,8 @@ namespace JinHyung.UndeadSlayer
             HeroPosition = heroPosition;
             CameraPivot = heroPosition;
             HeroMoving = false;
+            HeroFacingLeft = false;
+            ResetSkills();
             HeroAnimFrame = 0.0;
             ElapsedSeconds = 0.0;
             Level = 1;
@@ -437,6 +481,10 @@ namespace JinHyung.UndeadSlayer
             if (dt <= 0.0)
                 return;
 
+            // ★★ <b>시뮬 배율</b> [소스 <c>simulationScale</c>] — 섬광 이동이 도는 동안 세계가 2배로 흐른다.
+            //   ⚠ 스킬 자신의 남은 시간도 «같은 배율»로 줄어야 한다 — 안 그러면 10초가 20초가 된다.
+            dt *= SimulationScale;
+
             double dtMs = dt * 1000.0;
 
             ElapsedSeconds += dt;
@@ -451,6 +499,7 @@ namespace JinHyung.UndeadSlayer
             StepGems(dt);
             StepQuest(dt);
             StepWorld(dt);
+            StepSkills(dt);
 
             if (HeroInvincibleRemaining > 0.0)
                 HeroInvincibleRemaining -= dt;
@@ -475,6 +524,18 @@ namespace JinHyung.UndeadSlayer
         {
             UndeadVec2 dir = moveInput.Normalized;
             HeroMoving = dir.X != 0.0 || dir.Y != 0.0;
+
+            // ★★ 보는 쪽 [소스 — <c>direction.x&lt;0 ? scale.x=-abs : direction.x&gt;0 &amp;&amp; (scale.x=abs)</c>].
+            //   ⚠ <b>세로로만 가거나 멈추면 «그대로 둔다»</b> — 그래서 «상태»다.
+            //   ⚠ 벽에 막혀도 갱신된다 — 원본이 충돌 처리 «전»에 이 줄을 돈다.
+            if (dir.X < 0.0)
+                HeroFacingLeft = true;
+            else if (dir.X > 0.0)
+                HeroFacingLeft = false;
+
+            // ★ 돌진은 «마지막으로 향하던 쪽»으로 나간다 [소스 getLastNonZeroDirection] — 멈춰 있어도 쓸 수 있게.
+            if (HeroMoving)
+                HeroLastDirection = dir;
 
             if (HeroMoving && HeroDead == false)
             {
@@ -513,6 +574,11 @@ namespace JinHyung.UndeadSlayer
 
                 active++;
 
+                // ★★ 겨울 파동이 도는 동안 적은 «통째로 멈춘다» [소스 — isFrozen 이면 update 를 건너뛴다].
+                //   ⚠ 움직임만 멈추는 것이 아니다 — 애니메이션·공격·넉백까지 전부 선다.
+                if (EnemiesFrozen)
+                    continue;
+
                 UndeadVec2 toHero = HeroPosition - _enemies[i].Position;
                 double distance = toHero.Magnitude;
 
@@ -536,11 +602,21 @@ namespace JinHyung.UndeadSlayer
                 if (_enemies[i].AttackCooldown > 0.0)
                     _enemies[i].AttackCooldown -= dt;
 
+                if (_enemies[i].HitTintRemaining > 0.0)
+                    _enemies[i].HitTintRemaining -= dt;
+
                 if (distance > _config.EnemyChaseDeadZone)
                 {
                     double step = _enemies[i].Speed * dt;
                     _enemies[i].Position = new UndeadVec2(_enemies[i].Position.X + toHero.X / distance * step,
                                                           _enemies[i].Position.Y + toHero.Y / distance * step);
+
+                    // ★ 보는 쪽은 «움직이는 쪽»이고, 이 게이트 «안»에서만 갱신된다 [소스].
+                    //   ⚠ 밖으로 빼면 히어로에 붙었을 때 부호가 프레임마다 뒤집혀 «떤다».
+                    if (toHero.X < 0.0)
+                        _enemies[i].FacingLeft = true;
+                    else if (toHero.X > 0.0)
+                        _enemies[i].FacingLeft = false;
                 }
 
                 AdvanceKnockback(ref _enemies[i], dtMs);
@@ -593,7 +669,8 @@ namespace JinHyung.UndeadSlayer
 
         private void HitHero(int damage)
         {
-            if (HeroDead || HeroInvincibleRemaining > 0.0)
+            // ★ 돌진 중에는 «접촉·투사체» 피해를 안 받는다 [소스 canReceiveDamageFrom — isDashProtected]
+            if (HeroDead || HeroInvincibleRemaining > 0.0 || HeroDashProtected)
                 return;
 
             HeroHp -= damage;
@@ -916,6 +993,11 @@ namespace JinHyung.UndeadSlayer
         private void DamageEnemy(int index, int damage, double knockback)
         {
             _enemies[index].Health -= damage;
+
+            // ★★ 맞으면 «빨갛게 물든다» [소스 <c>hit → showTemporaryHitTint(0xFF0000, 200)</c>].
+            //   ⚠ [사고] 이게 통째로 없었다 — 히어로 피격 틴트는 옮겼는데 <b>적 쪽은 안 옮겼다</b>.
+            //     원본은 총알이 닿을 때마다 적이 깜빡 붉어져서 «맞고 있다»가 보인다.
+            _enemies[index].HitTintRemaining = _config.EnemyHitTintSeconds;
 
             // 총알은 «미는 힘»도 준다 [소스 — 세기 2]
             UndeadVec2 away = _enemies[index].Position - HeroPosition;

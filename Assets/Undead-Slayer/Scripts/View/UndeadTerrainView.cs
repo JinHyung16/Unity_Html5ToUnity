@@ -30,11 +30,17 @@ namespace JinHyung.UndeadSlayer
     {
         // ── 시드·주파수는 시뮬과 같은 곳(UndeadTerrainSeeds)에서 읽는다 — 그림과 판정이 같은 노이즈를 봐야 한다.
 
-        /// <summary>길 능선 문턱 [소스 <c>au</c> — <c>(road+1)/2 &gt; .9</c>].</summary>
+        /// <summary>길 능선 문턱 [소스 <c>au</c>·<c>pu</c> — <c>(road+1)/2 &gt; .9</c>]. <b>두 바이옴이 같다.</b></summary>
         private const double RoadThreshold = 0.9;
 
-        /// <summary>풀밭 문턱 [소스 <c>au</c> — <c>(grass+1)/2 &lt; .32</c>]. ⚠ 회차 9 는 이 영역을 «길»로 오독했다.</summary>
-        private const double GrassThreshold = 0.32;
+        /// <summary>
+        /// 풀밭(눈밭) 문턱 — <b>바이옴마다 다르다</b> [소스 <c>au</c> <c>&lt; .32</c> · <c>pu</c> <c>&lt; .75</c>].
+        /// <para>★ 겨울은 문턱이 두 배 넘게 높아 <b>화면 대부분이 눈밭</b>이다 — 이 한 숫자가 두 바이옴의 인상을 가른다.</para>
+        /// <para>⚠ 회차 9 는 이 영역을 «길»로 오독했다.</para>
+        /// </summary>
+        private const double GraveyardGrassThreshold = 0.32;
+
+        private const double WinterGrassThreshold = 0.75;
 
         /// <summary>
         /// 타일셋 한 줄의 칸 순서. <b>빌더(굽기)·로더(자르기)·여기(고르기)가 같은 열거를 읽는다.</b>
@@ -49,26 +55,39 @@ namespace JinHyung.UndeadSlayer
         /// ⚠ 예전 판은 25종만 두어 <b>길 가장자리 8종·풀 안쪽 모서리 4종·풀 변종 1·길 변종 1</b>을 잃었다.
         /// 잃은 종류는 «다른 타일로 대체»되므로 화면이 정상으로 보이고, 어떤 검사에도 안 걸린다.
         /// </para>
+        ///
+        /// <para>
+        /// ★★ <b>두 바이옴의 «합집합»이다.</b> 묘지는 풀 변종을 <b>셋</b>만 쓰고 겨울은 <b>열</b>을 쓴다 —
+        /// 안 쓰는 자리는 그 갈래의 <b>바닥 타일로 채워</b> 굽는다. 시트에 구멍을 두면
+        /// 어느 바이옴에서 어느 칸이 비는지가 그림에만 나타난다.
+        /// </para>
         /// </summary>
         public enum ETile
         {
-            Ground,                                                                      // 3
-            GroundDetail0, GroundDetail1, GroundDetail2, GroundDetail3, GroundDetail4,   // 4 5 22 23 24
-            GroundDetail5, GroundDetail6, GroundDetail7, GroundDetail8, GroundDetail9,   // 41 42 43 60 61
+            Ground,                                                                      // 3 / 611
+            GroundDetail0, GroundDetail1, GroundDetail2, GroundDetail3, GroundDetail4,
+            GroundDetail5, GroundDetail6, GroundDetail7, GroundDetail8, GroundDetail9,
 
-            Grass, GrassA, GrassB, GrassC,                                               // 99 1 2 40
-            GrassNW, GrassN, GrassNE,                                                    // 79 80 81
-            GrassW, GrassE,                                                              // 98 100
-            GrassSW, GrassS, GrassSE,                                                    // 117 118 119
-            GrassInNW, GrassInNE, GrassInSW, GrassInSE,                                  // 6 7 25 26
+            Grass,                                                                       // 99 / 707
+            GrassVar0, GrassVar1, GrassVar2, GrassVar3, GrassVar4,
+            GrassVar5, GrassVar6, GrassVar7, GrassVar8, GrassVar9,
+            GrassNW, GrassN, GrassNE,
+            GrassW, GrassE,
+            GrassSW, GrassS, GrassSE,
+            GrassInNW, GrassInNE, GrassInSW, GrassInSE,
 
-            Road, RoadA, RoadB, RoadC,                                                   // 102 95 96 97
-            RoadNW, RoadN, RoadNE,                                                       // 82 83 84
-            RoadW, RoadE,                                                                // 101 103
-            RoadSW, RoadS, RoadSE,                                                       // 120 121 122
+            Road,                                                                        // 102 / 716
+            RoadVar0, RoadVar1, RoadVar2,
+            RoadNW, RoadN, RoadNE,
+            RoadW, RoadE,
+            RoadSW, RoadS, RoadSE,
         }
 
-        public const int TilesetColumns = 39;
+        /// <summary>⚠ 굽는 쪽(<c>measure_biome_tiles.py</c> 의 역할 목록)과 <b>한 쌍</b>이다.</summary>
+        public const int TilesetColumns = 46;
+
+        /// <summary>바이옴 — <b>1 묘지 · 2 겨울 황무지</b> [소스 <c>jl = [1, 2]</c>].</summary>
+        public int Biome { get; private set; } = 1;
 
         /// <summary>칸의 «갈래» — 원본 <c>tileType</c> (길 102 · 풀 99 · 그 밖 3).</summary>
         public enum ETileKind
@@ -133,10 +152,34 @@ namespace JinHyung.UndeadSlayer
         /// <summary>지금 칠해져 있는 칸 수 — <b>검사가 이 값을 센다</b>.</summary>
         public int PaintedCellCount { get; private set; }
 
-        public void Bind(Tilemap tilemap, TileBase[] tiles)
+        private TileBase[] _graveyardTiles;
+        private TileBase[] _winterTiles;
+
+        /// <summary>
+        /// 타일맵과 <b>바이옴 두 벌</b>을 물린다.
+        /// <para>⚠ 겨울 벌이 없으면 묘지 벌로 대신한다 — <b>조용히 «다른 바이옴 그림»이 나온다</b>는 뜻이라 오류를 남긴다.</para>
+        /// </summary>
+        public void Bind(Tilemap tilemap, TileBase[] graveyardTiles, TileBase[] winterTiles)
         {
             _tilemap = tilemap;
-            _tiles = tiles;
+            _graveyardTiles = graveyardTiles;
+            _winterTiles = winterTiles;
+
+            if (winterTiles == null || winterTiles.Length < TilesetColumns)
+                Log.Error("겨울 타일셋을 못 읽었다 — 바이옴 2 가 묘지 그림으로 나온다");
+
+            _tiles = Biome == 2 && winterTiles != null ? winterTiles : graveyardTiles;
+        }
+
+        /// <summary>
+        /// 바이옴을 바꾼다 — <b>타일 벌을 갈고 창을 다시 칠한다</b>.
+        /// <para>⚠ 다시 칠하지 않으면 카메라가 «칸을 넘을 때»까지 옛 바이옴 그림이 남는다.</para>
+        /// </summary>
+        public void SetBiome(int biome)
+        {
+            Biome = biome == 2 ? 2 : 1;
+            _tiles = Biome == 2 && _winterTiles != null ? _winterTiles : _graveyardTiles;
+            _lastCenter = new Vector3Int(int.MinValue, int.MinValue, 0);
         }
 
         /// <summary>
@@ -355,26 +398,18 @@ namespace JinHyung.UndeadSlayer
 
             if (IsRoad(x, y))
             {
-                int r = (int)Math.Round(100.0 * e % 10.0);
+                // 길 변종은 <b>두 바이옴이 같은 식</b>이다 [소스 au·pu — 100·e % 10]
+                int r = JsRound(100.0 * e % 10.0);
 
-                if (r == 1) return ETile.RoadA;   // 95
-                if (r == 3) return ETile.RoadB;   // 96
-                if (r == 6) return ETile.RoadC;   // 97
+                if (r == 1) return ETile.RoadVar0;
+                if (r == 3) return ETile.RoadVar1;
+                if (r == 6) return ETile.RoadVar2;
 
-                return ETile.Road;                // 102
+                return ETile.Road;
             }
 
             if (IsGrassRaw(x, y))
-            {
-                double s = (GrassValue(x, y) + 1.0) * 0.5 / 0.3;
-                int g = (int)Math.Round(100.0 * s % 10.0);
-
-                if (g == 0 || g == 3 || g == 6 || g == 9) return ETile.GrassB;    // 2
-                if (g == 1 || g == 4 || g == 7 || g == 10) return ETile.GrassA;   // 1
-                if (g == 2) return ETile.GrassC;                                  // 40
-
-                return ETile.Grass;                                               // 99
-            }
+                return GrassTile(x, y);
 
             // 바닥 — 10% 띠마다 4% 폭의 장식 [소스]
             if (e < 0.04) return ETile.GroundDetail0;
@@ -397,6 +432,56 @@ namespace JinHyung.UndeadSlayer
             if (e < 0.9) return ETile.Ground;
             if (e < 0.94) return ETile.GroundDetail9;
             return ETile.Ground;
+        }
+
+        /// <summary>
+        /// 풀(눈) 변종 — <b>바이옴마다 «식»이 다르다</b>.
+        /// <para>[소스 <c>au</c>] 묘지는 <c>round(100·s) % 10</c> 로 <b>셋</b> 중에 고르고,
+        /// [소스 <c>pu</c>] 겨울은 <c>round(1000·s) % 13</c> 로 <b>열</b> 중에 고른다 —
+        /// 겨울 바닥이 훨씬 잘게 섞여 보이는 이유가 이것이다.</para>
+        /// <para>⚠ 어느 쪽도 맞지 않으면 <b>바닥 타일</b>이다 — 겨울은 13 중 셋(8·11·12)이 그렇다.</para>
+        /// </summary>
+        private ETile GrassTile(int x, int y)
+        {
+            double s = (GrassValue(x, y) + 1.0) * 0.5 / 0.3;
+
+            if (Biome == 2)
+            {
+                switch (JsRound(1000.0 * s % 13.0))
+                {
+                    case 0: return ETile.GrassVar0;
+                    case 1: return ETile.GrassVar1;
+                    case 2: return ETile.GrassVar2;
+                    case 3: return ETile.GrassVar3;
+                    case 4: return ETile.GrassVar4;
+                    case 5: return ETile.GrassVar5;
+                    case 6: return ETile.GrassVar6;
+                    case 7: return ETile.GrassVar7;
+                    case 9: return ETile.GrassVar8;
+                    case 10: return ETile.GrassVar9;
+                    default: return ETile.Grass;
+                }
+            }
+
+            // ⚠ 여기 «어느 변종»인지는 굽는 쪽 역할 순서와 한 쌍이다 —
+            //   묘지 변종은 순서대로 원본 타일 2 · 1 · 40 이다.
+            int g = JsRound(100.0 * s % 10.0);
+
+            if (g == 0 || g == 3 || g == 6 || g == 9) return ETile.GrassVar0;    // 2
+            if (g == 1 || g == 4 || g == 7 || g == 10) return ETile.GrassVar1;   // 1
+            if (g == 2) return ETile.GrassVar2;                                  // 40
+
+            return ETile.Grass;                                                  // 99
+        }
+
+        /// <summary>
+        /// 자바스크립트 <c>Math.round</c> — <b>언제나 «반올림 위로»</b> 다.
+        /// <para>⚠ C# 의 <c>Math.Round</c> 는 «짝수로» 반올림한다(2.5 → 2). 타일 변종을 고르는 나눗셈이라
+        /// 딱 .5 가 나오면 <b>다른 칸이 나온다</b>.</para>
+        /// </summary>
+        private static int JsRound(double value)
+        {
+            return (int)Math.Floor(value + 0.5);
         }
 
         /// <summary>① 의 갈래 — 아직 «목 제거» 전이다.</summary>
@@ -426,7 +511,8 @@ namespace JinHyung.UndeadSlayer
             if (IsRoad(x, y))
                 return false;
 
-            return (GrassValue(x, y) + 1.0) * 0.5 < GrassThreshold;
+            return (GrassValue(x, y) + 1.0) * 0.5
+                   < (Biome == 2 ? WinterGrassThreshold : GraveyardGrassThreshold);
         }
 
         private double Detail(int x, int y)

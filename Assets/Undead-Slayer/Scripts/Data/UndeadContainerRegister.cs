@@ -23,6 +23,10 @@ namespace JinHyung.Data
             DataManager.Instance.Register(new UndeadEnemyDataContainer());
             DataManager.Instance.Register(new UndeadUpgradeDataContainer());
             DataManager.Instance.Register(new UndeadArtDataContainer());
+            DataManager.Instance.Register(new UndeadSkillDataContainer());
+            DataManager.Instance.Register(new UndeadBiomeDataContainer());
+            DataManager.Instance.Register(new UndeadTaskDataContainer());
+            DataManager.Instance.Register(new UndeadLobbyMapDataContainer());
             DataManager.Instance.Register(new UndeadPopupDataContainer());
         }
     }

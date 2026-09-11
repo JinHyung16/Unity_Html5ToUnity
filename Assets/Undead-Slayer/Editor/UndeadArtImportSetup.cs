@@ -37,7 +37,13 @@ namespace JinHyung.EditorTools
         private const string DataFolder = "Assets/Undead-Slayer/Data";
 
         /// <summary>지형 타일셋 — 표에 없다(아틀라스가 아니라 별도 텍스처다). 24×24 격자로 자른다.</summary>
-        private const string TilesetName = "biome_graveyard_tiles";
+        /// <summary>
+        /// 타일셋 이름들 — <b>아트 표 밖</b>이라 이름으로 가른다.
+        /// <para>⚠ 여기 빠뜨리면 <b>격자가 안 잘려</b> 타일이 하나도 안 읽히는데 오류는 안 난다.</para>
+        /// </summary>
+        private static readonly string[] TilesetNames =
+            { "biome_graveyard_tiles", "biome_winter_tiles", "biome_lobby_tiles" };
+
 
         public static void Setup()
         {
@@ -95,13 +101,22 @@ namespace JinHyung.EditorTools
 
                 importer.SetPlatformTextureSettings(settings);
 
-                if (code == TilesetName)
+                if (System.Array.IndexOf(TilesetNames, code) >= 0)
                 {
-                    var tileset = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
-
-                    if (tileset != null)
-                        SliceGrid(importer, 24, 24, tileset.width / 24, tileset.height / 24, new Vector2(0.5f, 0.5f));   // 한 줄 14칸 (UndeadTerrainView.ETile)
-                    sliced++;
+                    // ⚠⚠ [사고] 여기서 <c>LoadAssetAtPath</c> 로 «임포트된» 텍스처를 읽었다.
+                    //   새로 넣은 시트는 그 시점에 «기본 설정»(NPOT ToNearest)으로 이미 한 번 임포트돼 있어
+                    //   1104×24 가 <b>1024×32</b> 로 잡혔고, 격자가 46칸이 아니라 <b>42칸</b>으로 잘렸다.
+                    //   위에서 npotScale 을 끄지만 그것은 SaveAndReimport «뒤»에 먹는다.
+                    //   ⇒ 격자 수는 <b>PNG 파일 원본 크기</b>에서 뽑는다.
+                    if (PngSize(path, out int sheetWidth, out int sheetHeight))
+                    {
+                        SliceGrid(importer, 24, 24, sheetWidth / 24, sheetHeight / 24, new Vector2(0.5f, 0.5f));
+                        sliced++;
+                    }
+                    else
+                    {
+                        Log.Error($"{code}: PNG 크기를 못 읽었다 — 격자를 못 자른다");
+                    }
                 }
                 else if (byCode.TryGetValue(code, out UndeadArtData a))
                 {
@@ -145,6 +160,35 @@ namespace JinHyung.EditorTools
             AssetDatabase.Refresh();
             Log.Success($"Undead Slayer 아트 임포트 설정 완료 — {done}장 (격자 자르기 {sliced}장) · " +
                         $"월드 PPU {UndeadUnits.WorldPixelsPerUnit} · UI PPU {UndeadUnits.UiPixelsPerUnit} · Point · 무압축");
+        }
+
+        /// <summary>
+        /// PNG <b>파일</b>의 픽셀 크기 — 헤더(IHDR)를 그대로 읽는다.
+        /// <para>★ 임포트된 텍스처를 안 쓰는 이유는 위 <c>[사고]</c> 주석에 있다.</para>
+        /// </summary>
+        private static bool PngSize(string path, out int width, out int height)
+        {
+            width = 0;
+            height = 0;
+
+            byte[] bytes;
+
+            try
+            {
+                bytes = File.ReadAllBytes(path);
+            }
+            catch (System.Exception)
+            {
+                return false;
+            }
+
+            // 8바이트 서명 + 4바이트 길이 + "IHDR" 다음이 폭·높이 (빅엔디언)
+            if (bytes.Length < 24 || bytes[1] != 'P' || bytes[2] != 'N' || bytes[3] != 'G')
+                return false;
+
+            width = (bytes[16] << 24) | (bytes[17] << 16) | (bytes[18] << 8) | bytes[19];
+            height = (bytes[20] << 24) | (bytes[21] << 16) | (bytes[22] << 8) | bytes[23];
+            return width > 0 && height > 0;
         }
 
         /// <summary>

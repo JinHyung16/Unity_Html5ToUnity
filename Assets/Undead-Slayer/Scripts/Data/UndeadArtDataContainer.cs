@@ -63,8 +63,14 @@ namespace JinHyung.Data
         /// 한 장으로 두면 <b>목숨이 줄 때 칸 자체가 사라진다</b>.
         /// ⚠ 둘 다 <see cref="UndeadArtData.DrawnByCode"/> 다 — 원본이 아틀라스가 아니라 <c>Graphics</c> 로 그린다.
         /// </para>
+        /// <para>
+        /// 52 → <b>62</b> — 액티브 스킬 아이콘 4 · 화염 자취 · <b>로비 NPC 2 · 포털 3</b>
+        /// (⚠ 로비 타일셋은 <b>표 밖</b>이다 — 전투 타일셋과 같은 규약)(<c>skill_dash</c> · <c>skill_blazing_trail</c> ·
+        /// <c>skill_winter_pulse</c> · <c>skill_flash_move</c>). 스킬 시스템이 통째로 미이관이라
+        /// 아이콘도 없었다 (<c>재발방지 #174</c>).
+        /// </para>
         /// </summary>
-        public const int MeasuredRowCount = 52;
+        public const int MeasuredRowCount = 65;
 
         /// <summary>월드 아트 = <c>Game</c> · UI 아트 = <c>Ui</c>. 다른 값이 들어오면 오류다.</summary>
         public const string CategoryGame = "Game";

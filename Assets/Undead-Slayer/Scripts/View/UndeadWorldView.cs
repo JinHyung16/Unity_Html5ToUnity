@@ -37,6 +37,9 @@ namespace JinHyung.UndeadSlayer
         private readonly List<SpriteRenderer> _enemyPool = new List<SpriteRenderer>(512);
         private readonly List<SpriteRenderer> _projectilePool = new List<SpriteRenderer>(64);
         private readonly List<SpriteRenderer> _kunaiPool = new List<SpriteRenderer>(32);
+
+        /// <summary>화염 자취 조각 [소스 <c>blazing_trail</c> 의 <c>segments</c>].</summary>
+        private readonly List<SpriteRenderer> _trailPool = new List<SpriteRenderer>(128);
         private readonly List<SpriteRenderer> _gemPool = new List<SpriteRenderer>(256);
         private readonly List<SpriteRenderer> _orbPool = new List<SpriteRenderer>(16);
         private readonly List<SpriteRenderer> _fireballPool = new List<SpriteRenderer>(64);
@@ -62,7 +65,22 @@ namespace JinHyung.UndeadSlayer
 
         /// <summary>구조 진행 링의 높이 — 전사 «발» 기준 [소스 — <c>actionProgress.y = −96</c>].</summary>
         private const double ActionProgressY = 96.0;
-        private const float HelpTextSize = 3.5f;
+        /// <summary>
+        /// 말풍선 글자의 <b>원본 크기</b> — <c>16</c> px 에서 시작해 상자에 들 때까지 <b>한 단씩</b> 내린다
+        /// [소스 <c>fitTextToBubble</c>].
+        /// </summary>
+        private const float BubbleFontMaxOrigin = 16f;
+
+        /// <summary>더 못 내려가는 바닥 — 보통 <c>12</c>, <c>medium</c> 풍선은 <c>10</c> 이다 [소스].</summary>
+        private const float BubbleFontMinOrigin = 12f;
+
+        private const float BubbleFontMinOriginMedium = 10f;
+
+        /// <summary>
+        /// 월드 <see cref="TextMeshPro"/> 의 <c>fontSize</c> 는 <b>단위의 1/10</b> 을 em 으로 쓴다 —
+        /// 그래서 원본 px 를 단위로 바꾼 뒤 10 을 곱해야 «원본과 같은 글자 크기»가 된다.
+        /// </summary>
+        private const float TmpWorldFontScale = 10f;
         private const float HelpTextWidth = 6f;
         private const float HelpTextHeight = 1.6f;
 
@@ -102,6 +120,13 @@ namespace JinHyung.UndeadSlayer
         private Transform _enemyRoot;
         private Transform _projectileRoot;
         private Transform _kunaiRoot;
+        private Transform _trailRoot;
+
+        /// <summary>NPC 말풍선 — <b>한 벌을 돌려 쓴다</b>. 원본에서 마법사·가족·농부는 «다른 퀘스트»라 동시에 안 뜬다.</summary>
+        private SpriteRenderer _npcBubble;
+
+        private TextMeshPro _npcBubbleText;
+        private UndeadSpriteSet _trailSet;
         private Transform _gemRoot;
         private SpriteRenderer _hero;
         /// <summary>체력바 — 히어로 «위»에 붙는 칸들 [소스 — y −60 · 12×6 · 여백 1].</summary>
@@ -132,6 +157,46 @@ namespace JinHyung.UndeadSlayer
         private SpriteRenderer _questBubble;
         private SpriteRenderer _questMage;
         private SpriteRenderer[] _questFragments;
+
+        /// <summary>
+        /// 조각의 <b>후광</b>과 마법사 앞 <b>조각 자리</b> — 원본이 <c>Graphics</c> 로 그리는 도형이다
+        /// [소스 <c>halo.circle(0,0,18)</c> · <c>createSlots</c>].
+        /// <para>⚠ 채움과 테두리는 <b>색도 알파도 다르다</b> — 한 장으로 못 그린다.</para>
+        /// </summary>
+        private SpriteRenderer[] _fragmentHaloFill;
+        private SpriteRenderer[] _fragmentHaloEdge;
+        private SpriteRenderer[] _mageSlotFill;
+        private SpriteRenderer[] _mageSlotEdge;
+
+        // [소스 halo.fill({color: 7391743, alpha: .15}) · stroke({color: 14678015, alpha: .95})]
+        private static readonly Color HaloFill = Hex(0x70C9FF);
+        private static readonly Color HaloEdge = Hex(0xDFF7FF);
+        private const float HaloFillAlpha = 0.15f;
+        private const float HaloEdgeAlpha = 0.95f;
+
+        /// <summary>후광이 숨 쉬는 폭·속도 [소스 <c>1 + .08·sin(.006t)</c>].</summary>
+        private const double HaloPulse = 0.08;
+        private const double HaloPulseSpeed = 0.006;
+
+        // [소스 slot.fill({color: 1651274, alpha: .85}) · stroke({color: 14217471})]
+        private static readonly Color SlotFill = Hex(0x19324A);
+        private static readonly Color SlotEdge = Hex(0xD8F0FF);
+        private const float SlotFillAlpha = 0.85f;
+
+        /// <summary>조각 배율은 <b>상태마다 다르다</b> [소스 worldScale · heroScale · mageScale].</summary>
+        private const double FragmentWorldScale = 2.8;
+        private const double FragmentWorldScalePulse = 0.14;
+        private const double FragmentWorldScaleSpeed = 0.007;
+        private const double FragmentHeroScale = 2.55;
+        private const double FragmentMageScale = 2.35;
+
+        /// <summary>조각은 <b>계속 돈다</b> [소스 <c>sprite.rotation += .002·t</c>] — 라디안/ms 다.</summary>
+        private const double FragmentSpinPerMs = 0.002;
+
+        private static Color Hex(int rgb)
+        {
+            return new Color(((rgb >> 16) & 0xFF) / 255f, ((rgb >> 8) & 0xFF) / 255f, (rgb & 0xFF) / 255f, 1f);
+        }
         private TMP_Text _questHelpText;
 
         private UndeadSimulation _sim;
@@ -194,34 +259,36 @@ namespace JinHyung.UndeadSlayer
         private readonly List<SpriteRenderer> _meteorPool = new List<SpriteRenderer>(16);
         private readonly List<SpriteRenderer> _fireplacePool = new List<SpriteRenderer>(16);
         private readonly List<SpriteRenderer> _heartPool = new List<SpriteRenderer>(32);
+        private readonly List<SpriteRenderer> _sparklePool = new List<SpriteRenderer>(64);
+        private Transform _sparkleRoot;
 
         /// <summary>
-        /// 모닥불 위로 떠오르는 하트 [소스 <c>Gl</c> · 설정 <c>zl</c>] —
-        /// <b>모닥불 하나에 최대 3개</b> · 초당 1.2개 · 1.1~1.6초 · 알파 .8 → 0 · 크기 .4~.5 가 8% 자란다.
-        /// <para>⚠ 자리·크기는 <b>입자 컨테이너 배율(1.3, 1.8)</b>을 곱한 값이 화면 값이다 — 안 곱하면 궤적이 좁아진다.</para>
+        /// 모닥불 위로 떠오르는 하트 [소스 <c>Gl</c>] · 사악한 나무의 반짝임 [소스 <c>hd</c>] —
+        /// <b>둘 다 <see cref="UndeadParticleEmitter"/> 한 틀</b>이고 «개체마다 하나»다.
+        ///
+        /// <para>
+        /// ⚠ 슬롯은 <b>청크가 바뀌면 다른 나무·모닥불이 들어온다</b> — 그래서 «어느 칸의 것인가»를 같이 들고
+        /// 칸이 바뀌면 이미터를 새로 만든다. 안 그러면 <b>남의 불티가 새 나무에서 계속 튄다</b>.
+        /// </para>
         /// </summary>
-        private struct HeartParticle
-        {
-            public bool Active;
-            public int Owner;
-            public double X;
-            public double Y;
-            public double Vx;
-            public double Vy;
-            public double LifeMs;
-            public double AgeMs;
-            public double Size;
-        }
+        private UndeadHeartEmitter[] _heartEmitters = new UndeadHeartEmitter[0];
+        private UndeadSparkleEmitter[] _treeSparkles = new UndeadSparkleEmitter[0];
+        private long[] _heartEmitterTiles = new long[0];
+        private long[] _treeSparkleTiles = new long[0];
+        private bool[] _treeWasBursted = new bool[0];
 
-        private const int HeartsPerFire = 3;              // [소스 zl.maxParticles]
-        private const int MaxHearts = 96;
-        private const double HeartSpawnPerSecond = 1.2;   // [소스 getParticleSpawnRate]
-        private const double HeartEmitterY = -20.0 + -14.0;   // [소스 heartsParticles.y −20 · zl.containerY −14]
-        private const double HeartContainerScaleX = 1.3;  // [소스 zl.containerScaleX]
-        private const double HeartContainerScaleY = 1.8;  // [소스 zl.containerScaleY]
-        private const double HeartAccumulatorCap = 3.0;   // [소스 zl.spawnAccumulatorCap]
-        private readonly HeartParticle[] _hearts = new HeartParticle[MaxHearts];
-        private double[] _heartSpawnAccum = new double[0];
+        /// <summary>모닥불 이미터가 서는 높이 [소스 <c>heartsParticles.y = −20</c>].</summary>
+        private const double HeartEmitterY = -20.0;
+
+        /// <summary>나무 이미터가 서는 높이 [소스 <c>sparkles.y = −100</c>].</summary>
+        private const double TreeSparkleEmitterY = -100.0;
+
+        /// <summary>나무가 터질 때 한꺼번에 뿜는 알 [소스 <c>emitBurst(20, 1)</c>].</summary>
+        private const int TreeBurstSparkles = 20;
+
+        /// <summary>이번 프레임에 그릴 입자 — <b>(주인, 알)</b> 쌍을 평평하게 편 것이다.</summary>
+        private readonly List<int> _heartDraw = new List<int>(96);
+        private readonly List<int> _sparkleDraw = new List<int>(256);
         private SpriteRenderer[] _sheep;
         private UndeadSpriteSet _bossSet;
         private SpriteRenderer _encounterSheep;
@@ -271,6 +338,7 @@ namespace JinHyung.UndeadSlayer
         public void BindWorldObjects(UndeadSpriteSet tree, UndeadSpriteSet treeActivated, UndeadSpriteSet treeInactive,
                                      UndeadSpriteSet meteor, UndeadSpriteSet fire, UndeadSpriteSet fireInactive, UndeadSpriteSet heart)
         {
+            _graveyardObject = new[] { tree, treeActivated, treeInactive };
             _treeSet = tree;
             _treeActivatedSet = treeActivated;
             _treeInactiveSet = treeInactive;
@@ -282,16 +350,68 @@ namespace JinHyung.UndeadSlayer
             _meteorRoot = NewRoot("Meteors");
             _fireplaceRoot = NewRoot("Fireplaces");
             _heartRoot = NewRoot("FireHearts");
+            _sparkleRoot = NewRoot("Sparkles");
 
             if (tree == null || treeActivated == null || treeInactive == null || meteor == null || fire == null || fireInactive == null || heart == null)
                 Log.Error("월드 오브젝트 스프라이트가 비었다 — 나무·유성·모닥불·하트 중 하나가 화면에 안 나온다");
         }
+
+        /// <summary>
+        /// 겨울 바이옴의 <b>중형 오브젝트(눈사람)</b> — 나무와 <b>같은 세 상태</b>다
+        /// [소스 <c>2===biome ? "snowman..." : "graveyard_evil_tree..."</c>].
+        /// </summary>
+        public void BindWinterObjects(UndeadSpriteSet snowman, UndeadSpriteSet activated, UndeadSpriteSet inactive)
+        {
+            _winterObject = new[] { snowman, activated, inactive };
+
+            if (snowman == null || activated == null || inactive == null)
+                Log.Error("눈사람 시트가 비었다 — 바이옴 2 에서 중형 오브젝트가 안 보인다");
+        }
+
+        /// <summary>
+        /// 바이옴을 바꾼다 — <b>중형 오브젝트 그림만</b> 갈린다 (규칙·자리는 같은 시뮬이 낸다).
+        /// <para>⚠ 겨울 벌이 없으면 <b>묘지 그림을 그대로 쓴다</b> — 조용히 비는 것보다 낫다.</para>
+        /// </summary>
+        public void SetBiome(int biome)
+        {
+            Biome = biome == 2 ? 2 : 1;
+
+            UndeadSpriteSet[] set = Biome == 2 && _winterObject != null && _winterObject[0] != null
+                ? _winterObject
+                : _graveyardObject;
+
+            if (set == null)
+                return;
+
+            _treeSet = set[0];
+            _treeActivatedSet = set[1];
+            _treeInactiveSet = set[2];
+        }
+
+        /// <summary>지금 그리는 바이옴 — <b>검사가 이 값을 본다</b>.</summary>
+        public int Biome { get; private set; } = 1;
+
+        private UndeadSpriteSet[] _graveyardObject;
+        private UndeadSpriteSet[] _winterObject;
 
         /// <summary>번개 구슬 — 히어로 둘레를 도는 궤도 무기 [소스].</summary>
         public void BindLightning(UndeadSpriteSet orb)
         {
             _orbSet = orb;
             _orbRoot = NewRoot("Lightning");
+        }
+
+        /// <summary>
+        /// 화염 자취 [소스 <c>blazing_trail</c>].
+        /// <para>⚠ 세트가 없으면 시뮬은 조각을 남기는데 <b>화면에는 아무것도 안 나온다</b> — 시끄럽게 알린다.</para>
+        /// </summary>
+        public void BindTrail(UndeadSpriteSet trail)
+        {
+            _trailSet = trail;
+            _trailRoot = NewRoot("Trail");
+
+            if (trail == null)
+                Log.Error("화염 자취 스프라이트 세트가 없다 — 스킬이 도는데 화면에 안 보인다");
         }
 
         /// <summary>
@@ -391,7 +511,7 @@ namespace JinHyung.UndeadSlayer
                                     UndeadSpriteSet mage, UndeadSpriteSet fragment,
                                     UndeadSpriteSet kunai, UndeadSpriteSet bubbleMedium,
                                     UndeadSpriteSet questProgress,
-                                    string[] speechTexts, TMP_FontAsset font)
+                                    string[] speechTexts, string[] npcSpeechTexts, TMP_FontAsset font)
         {
             if (_sim == null)
                 return;
@@ -443,6 +563,23 @@ namespace JinHyung.UndeadSlayer
                 _questFragments = new SpriteRenderer[2];
                 _questFragments[0] = NewRenderer(_questRoot, fragment);
                 _questFragments[1] = NewRenderer(_questRoot, fragment);
+
+                // ★ 후광은 조각 «뒤», 자리 원은 마법사 «뒤»에 깔린다 [소스 — addChild 순서]
+                _fragmentHaloFill = new SpriteRenderer[2];
+                _fragmentHaloEdge = new SpriteRenderer[2];
+                _mageSlotFill = new SpriteRenderer[2];
+                _mageSlotEdge = new SpriteRenderer[2];
+
+                for (int i = 0; i < 2; i++)
+                {
+                    float halo = (float)UndeadSimulation.FragmentHaloRadius;
+                    float slot = (float)UndeadSimulation.MageSlotRadius;
+
+                    _fragmentHaloFill[i] = NewShape($"fragmentHalo{i}Fill", UndeadShapes.Disc(halo));
+                    _fragmentHaloEdge[i] = NewShape($"fragmentHalo{i}Edge", UndeadShapes.Ring(halo));
+                    _mageSlotFill[i] = NewShape($"mageSlot{i}Fill", UndeadShapes.Disc(slot));
+                    _mageSlotEdge[i] = NewShape($"mageSlot{i}Edge", UndeadShapes.Ring(slot));
+                }
             }
 
             if (speechTexts == null || speechTexts.Length == 0)
@@ -450,6 +587,28 @@ namespace JinHyung.UndeadSlayer
                 Log.Error("전사의 말 문구가 없다 — 말풍선이 빈 채로 뜬다");
                 return;
             }
+
+            // ── NPC 말풍선 한 벌 [소스 — 마법사·가족·농부. 셋은 «다른 퀘스트»라 동시에 안 뜬다]
+            if (_bubbleMediumSet != null)
+            {
+                _npcBubble = NewRenderer(_questRoot, _bubbleMediumSet, timed: false);
+
+                var npcTextObject = new GameObject("NpcSpeechText");
+                npcTextObject.transform.SetParent(_questRoot, false);
+                _npcBubbleText = npcTextObject.AddComponent<TextMeshPro>();
+
+                if (font != null)
+                    _npcBubbleText.font = font;
+
+                _npcBubbleText.color = BubbleTextColor;
+                _npcBubbleText.enableWordWrapping = true;
+                _npcBubbleText.alignment = TextAlignmentOptions.Center;
+                _npcBubbleText.fontSize = BubbleFontSize(BubbleFontMaxOrigin);
+                _npcBubble.enabled = false;
+                _npcBubbleText.enabled = false;
+            }
+
+            _npcSpeechTexts = npcSpeechTexts;
 
             var textObject = new GameObject("HelpText");
             textObject.transform.SetParent(_questRoot, false);
@@ -460,7 +619,7 @@ namespace JinHyung.UndeadSlayer
                 _questHelpText.font = font;
 
             _questHelpText.text = speechTexts[0];
-            _questHelpText.fontSize = HelpTextSize;
+            _questHelpText.fontSize = BubbleFontSize(BubbleFontMaxOrigin);
             _questHelpText.color = BubbleTextColor;
             _questHelpText.enableWordWrapping = true;
             _questHelpText.alignment = TextAlignmentOptions.Center;
@@ -488,13 +647,12 @@ namespace JinHyung.UndeadSlayer
                     ApplySet(_questWarrior, WarriorSet());
 
                     // ★ 가는 쪽을 본다 [소스 updateFollow — scale.x 부호를 뒤집는다]
-                    Vector3 scale = _questWarrior.transform.localScale;
-                    scale.x = Mathf.Abs(scale.x) * (_sim.WarriorFacingLeft ? -1f : 1f);
-                    _questWarrior.transform.localScale = scale;
+                    ApplyFacing(_questWarrior.transform, _sim.WarriorFacingLeft);
                 }
             }
 
             RenderWarriorSpeech();
+            RenderNpcSpeech();
             RenderRescueRing();
 
             // ── 마법사. 전사를 구한 «뒤»에 나타난다 [소스 — 퀘스트가 순차다]
@@ -515,8 +673,9 @@ namespace JinHyung.UndeadSlayer
                 return;
 
             bool showFragments = _sim.MageMet;
-            SetFragment(_questFragments[0], showFragments, _sim.Fragment0Position);
-            SetFragment(_questFragments[1], showFragments, _sim.Fragment1Position);
+            SetFragment(0, _questFragments[0], showFragments, _sim.Fragment0Position, _sim.Fragment0State);
+            SetFragment(1, _questFragments[1], showFragments, _sim.Fragment1Position, _sim.Fragment1State);
+            RenderMageSlots();
         }
 
         /// <summary>
@@ -584,9 +743,11 @@ namespace JinHyung.UndeadSlayer
             double width = set != null ? set.Data.FrameWidth * set.Data.DisplayScaleX : 0.0;
             double height = set != null ? set.Data.FrameHeight * set.Data.DisplayScaleY : 0.0;
 
-            _questHelpText.rectTransform.sizeDelta = new Vector2(
-                UndeadUnits.ToUnits(width * (medium ? MediumTextWidthRatio : TextWidthRatio)),
-                UndeadUnits.ToUnits(height * (medium ? MediumTextHeightRatio : TextHeightRatio)));
+            float boxW = UndeadUnits.ToUnits(width * (medium ? MediumTextWidthRatio : TextWidthRatio));
+            float boxH = UndeadUnits.ToUnits(height * (medium ? MediumTextHeightRatio : TextHeightRatio));
+            _questHelpText.rectTransform.sizeDelta = new Vector2(boxW, boxH);
+
+            FitBubbleText(_questHelpText, boxW, boxH, medium);
 
             _questHelpText.transform.position = UndeadUnits.ToPosition(
                 _sim.WarriorPosition.X, _sim.WarriorPosition.Y - offsetY - height * BubbleTextCenterRatio);
@@ -632,6 +793,98 @@ namespace JinHyung.UndeadSlayer
         private double _bubbleElapsed;
 
         /// <summary>지금 할 말 — <b>예고</b>는 «어느 과제를 예고 중인지»가 문구를 정한다 [소스 <c>bubbleTextKey</c>].</summary>
+        /// <summary>
+        /// 마법사·가족·농부의 말풍선 [소스 <c>showBubble</c> · <c>introductionText</c>].
+        ///
+        /// <para>
+        /// 높이는 개체마다 다르다 — <b>마법사 −125 · 가족 −140 · 농부 −70</b> [소스].
+        /// 셋 다 <b><c>medium</c> 풍선</b>이다.
+        /// </para>
+        ///
+        /// <para>
+        /// ⚠ <b>[사고 · #174]</b> 문구 표에 여섯 줄이 다 있었는데 <b>읽는 곳이 없어</b>
+        /// 세 NPC 가 화면에서 <b>아무 말도 안 했다</b>. 「키가 다 있나」만 보는 감사로는 안 잡힌다.
+        /// </para>
+        /// </summary>
+        private void RenderNpcSpeech()
+        {
+            if (_npcBubble == null || _npcBubbleText == null || _bubbleMediumSet == null)
+                return;
+
+            EUndeadNpcSpeech speech = EUndeadNpcSpeech.None;
+            UndeadVec2 at = UndeadVec2.Zero;
+            double offsetY = 0.0;
+
+            if (_sim.MageSpeech != EUndeadNpcSpeech.None)
+            {
+                speech = _sim.MageSpeech;
+                at = _sim.MagePosition;
+                offsetY = MageBubbleY;
+            }
+            else if (_sim.FamilySpeech != EUndeadNpcSpeech.None)
+            {
+                speech = _sim.FamilySpeech;
+                at = _sim.FamilyPosition;
+                offsetY = FamilyBubbleY;
+            }
+            else if (_sim.FarmerSpeech != EUndeadNpcSpeech.None)
+            {
+                speech = _sim.FarmerSpeech;
+                at = _sim.FarmerPosition;
+                offsetY = FarmerBubbleY;
+            }
+
+            bool show = speech != EUndeadNpcSpeech.None;
+            _npcBubble.enabled = show;
+            _npcBubbleText.enabled = show;
+
+            if (show == false)
+                return;
+
+            ApplySet(_npcBubble, _bubbleMediumSet);
+
+            var bubbleAt = new UndeadVec2(at.X, at.Y + offsetY);
+            Place(_npcBubble.transform, bubbleAt, _npcBubble);
+            _npcBubble.sortingOrder = SortOrder(at.Y) + 1;
+
+            _npcBubbleText.text = NpcSpeechTextOf(speech);
+
+            double width = _bubbleMediumSet.Data.FrameWidth * _bubbleMediumSet.Data.DisplayScaleX;
+            double height = _bubbleMediumSet.Data.FrameHeight * _bubbleMediumSet.Data.DisplayScaleY;
+            float boxW = UndeadUnits.ToUnits(width * MediumTextWidthRatio);
+            float boxH = UndeadUnits.ToUnits(height * MediumTextHeightRatio);
+
+            _npcBubbleText.rectTransform.sizeDelta = new Vector2(boxW, boxH);
+            FitBubbleText(_npcBubbleText, boxW, boxH, true);
+
+            _npcBubbleText.transform.position = UndeadUnits.ToPosition(
+                at.X, at.Y + offsetY - height * BubbleTextCenterRatio);
+
+            _npcBubbleText.sortingOrder = _npcBubble.sortingOrder + 1;
+        }
+
+        /// <summary>말풍선 높이 [소스 — 개체마다 다르다].</summary>
+        private const double MageBubbleY = -125.0;
+
+        private const double FamilyBubbleY = -140.0;
+
+        private const double FarmerBubbleY = -70.0;
+
+        private string NpcSpeechTextOf(EUndeadNpcSpeech speech)
+        {
+            int index = (int)speech - 1;
+
+            if (_npcSpeechTexts == null || index < 0 || index >= _npcSpeechTexts.Length)
+            {
+                Log.Error($"NPC 문구가 없다 — {speech}");
+                return string.Empty;
+            }
+
+            return _npcSpeechTexts[index];
+        }
+
+        private string[] _npcSpeechTexts;
+
         private string SpeechTextOf(EUndeadWarriorSpeech speech)
         {
             if (_warriorSpeechTexts == null)
@@ -662,7 +915,63 @@ namespace JinHyung.UndeadSlayer
             return index < _warriorSpeechTexts.Length ? _warriorSpeechTexts[index] : string.Empty;
         }
 
-        private void SetFragment(SpriteRenderer renderer, bool show, UndeadVec2 at)
+        /// <summary>
+        /// 조각 하나 — <b>배율이 상태마다 다르고</b>(세상 2.8 · 손 2.55 · 마법사 2.35) <b>계속 돈다</b> [소스].
+        /// <para>⚠ 표의 표시 배율(2.8)은 «세상에 놓였을 때» 값이다 — 손에 들리면 여기서 덮어쓴다.</para>
+        /// </summary>
+        private void SetFragment(int index, SpriteRenderer renderer, bool show, UndeadVec2 at, int state)
+        {
+            if (renderer == null)
+                return;
+
+            renderer.enabled = show;
+            SetShape(_fragmentHaloFill[index], show, at, HaloFill, HaloFillAlpha);
+            SetShape(_fragmentHaloEdge[index], show, at, HaloEdge, HaloEdgeAlpha);
+
+            if (show == false)
+                return;
+
+            double float01 = _sim.FragmentFloatMs;
+            double scale = state == 1 ? FragmentHeroScale
+                : state == 2 ? FragmentMageScale
+                : FragmentWorldScale + FragmentWorldScalePulse * Math.Sin(FragmentWorldScaleSpeed * float01);
+
+            Place(renderer.transform, at, renderer);
+            renderer.transform.localScale = new Vector3((float)scale, (float)scale, 1f);
+            renderer.transform.localRotation = Quaternion.Euler(0f, 0f, (float)(-FragmentSpinPerMs * float01 * Mathf.Rad2Deg));
+            renderer.sortingOrder = SortOrder(at.Y) + 2;
+
+            // 후광은 조각과 «따로» 숨 쉰다 [소스 halo.scale.set(1 + .08·sin(.006t))]
+            float pulse = (float)(1.0 + HaloPulse * Math.Sin(HaloPulseSpeed * float01));
+            _fragmentHaloFill[index].transform.localScale = new Vector3(pulse, pulse, 1f);
+            _fragmentHaloEdge[index].transform.localScale = new Vector3(pulse, pulse, 1f);
+            _fragmentHaloFill[index].sortingOrder = SortOrder(at.Y) + 1;
+            _fragmentHaloEdge[index].sortingOrder = SortOrder(at.Y) + 1;
+        }
+
+        /// <summary>
+        /// 마법사 앞 <b>조각 자리</b> 둘 — <b>만난 뒤부터</b> 보이고, 둘 다 꽂히면 <b>서서히 사라진다</b> [소스].
+        /// </summary>
+        private void RenderMageSlots()
+        {
+            if (_mageSlotFill == null)
+                return;
+
+            bool show = _sim.MageMet && _sim.MageCompleted == false && _sim.MageSlotAlpha > 0.0;
+            float alpha = (float)_sim.MageSlotAlpha;
+
+            for (int i = 0; i < 2; i++)
+            {
+                double sign = i == 0 ? -1.0 : 1.0;
+                var at = new UndeadVec2(_sim.MagePosition.X + sign * UndeadSimulation.MageSlotOffsetX,
+                                        _sim.MagePosition.Y + UndeadSimulation.MageSlotOffsetY);
+
+                SetShape(_mageSlotFill[i], show, at, SlotFill, SlotFillAlpha * alpha);
+                SetShape(_mageSlotEdge[i], show, at, SlotEdge, alpha);
+            }
+        }
+
+        private void SetShape(SpriteRenderer renderer, bool show, UndeadVec2 at, Color color, float alpha)
         {
             if (renderer == null)
                 return;
@@ -672,8 +981,9 @@ namespace JinHyung.UndeadSlayer
             if (show == false)
                 return;
 
-            Place(renderer.transform, at, renderer);
-            renderer.sortingOrder = SortOrder(at.Y) + 2;
+            renderer.transform.position = UndeadUnits.ToPosition(at.X, at.Y);
+            renderer.color = new Color(color.r, color.g, color.b, alpha);
+            renderer.sortingOrder = SortOrder(at.Y) + 1;
         }
 
         /// <summary>
@@ -699,6 +1009,9 @@ namespace JinHyung.UndeadSlayer
                 Place(_hero.transform, _sim.HeroPosition, _heroSet);
                 _hero.sortingOrder = SortOrder(_sim.HeroPosition.Y);
 
+                // ★ 가는 쪽을 본다 [소스 Nl.update] — 가로 입력이 없으면 «마지막 방향»을 유지한다
+                ApplyFacing(_hero.transform, _sim.HeroFacingLeft);
+
                 // ★ 피격 연출 [소스] — 200ms 동안 «빨강»으로 물들고, 무적 동안 «깜빡인다».
                 //   ⚠ 알파는 시뮬이 준다 — 뷰가 자기 시계로 깜빡이면 정지 중에도 깜빡인다.
                 Color tint = _sim.HeroHitTintRemaining > 0.0 ? Color.red : Color.white;
@@ -715,6 +1028,7 @@ namespace JinHyung.UndeadSlayer
             active += Sync(_projectilePool, _projectileRoot, _projectileSet, ProjectileCount(), (i, r) => WriteProjectile(i, r));
             active += Sync(_gemPool, _gemRoot, _gemSet, GemCount(), (i, r) => WriteGem(i, r));
             active += Sync(_kunaiPool, _kunaiRoot, _kunaiSet, KunaiCount(), (i, r) => WriteKunai(i, r));
+            active += Sync(_trailPool, _trailRoot, _trailSet, TrailCount(), (i, r) => WriteTrail(i, r));
 
             active += Sync(_orbPool, _orbRoot, _orbSet, OrbCount(), (i, r) => WriteOrb(i, r));
 
@@ -723,8 +1037,9 @@ namespace JinHyung.UndeadSlayer
             active += Sync(_treePool, _treeRoot, _treeSet, _sim.Trees.Count, (i, r) => WriteTree(i, r));
             active += Sync(_meteorPool, _meteorRoot, _meteorSet, _sim.Meteors.Count, (i, r) => WriteMeteor(i, r));
             active += Sync(_fireplacePool, _fireplaceRoot, _fireSet, _sim.Fireplaces.Count, (i, r) => WriteFireplace(i, r));
-            StepHearts(Time.deltaTime);
-            active += Sync(_heartPool, _heartRoot, _heartSet, MaxHearts, (i, r) => WriteHeart(i, r));
+            StepParticles(Time.deltaTime);
+            active += Sync(_heartPool, _heartRoot, _heartSet, _heartDraw.Count, (i, r) => WriteHeart(i, r));
+            active += SyncSprite(_sparklePool, _sparkleRoot, UndeadParticleView.White, _sparkleDraw.Count, (i, r) => WriteSparkle(i, r));
 
             RenderQuest();
             RenderBossQuest();
@@ -906,6 +1221,42 @@ namespace JinHyung.UndeadSlayer
             return _sim.Kunais.Count;
         }
 
+        private int TrailCount()
+        {
+            return _trailSet != null ? _sim.TrailSegments.Count : 0;
+        }
+
+        /// <summary>
+        /// 화염 자취 한 조각 [소스 <c>skill_effect_blazing_trail</c>].
+        /// <para>★ 나이가 들수록 «옅어진다» — 원본은 조각을 페이드아웃시켜 지운다.</para>
+        /// </summary>
+        private bool WriteTrail(int index, SpriteRenderer renderer)
+        {
+            UndeadSimulation.TrailSegment segment = _sim.TrailSegments[index];
+
+            if (segment.Active == false || _trailSet == null)
+                return false;
+
+            renderer.sprite = _trailSet.Get(0, 0.0);
+            Place(renderer.transform, segment.Position, _trailSet);
+
+            // 자취는 «바닥»이다 — 개체보다 뒤로 보낸다
+            renderer.sortingOrder = SortOrder(segment.Position.Y) - TrailSortingOffset;
+
+            double life = _sim.TrailSegmentLifeSeconds;
+            float fade = life > 0.0 ? 1f - (float)(segment.AgeSeconds / life) : 1f;
+            Color color = BaseTint(_trailSet);
+            color.a *= Mathf.Clamp01(fade);
+            renderer.color = color;
+            return true;
+        }
+
+        /// <summary>얼었을 때 덮어쓰는 색 [소스 <c>9427199</c> = <c>#8FD8FF</c>].</summary>
+        private static readonly Color FrozenTint = new Color(0x8F / 255f, 0xD8 / 255f, 0xFF / 255f, 1f);
+
+        /// <summary>자취가 개체 뒤로 가도록 빼는 값 — 같은 y 에서도 «항상 뒤»여야 한다.</summary>
+        private const int TrailSortingOffset = 2;
+
         private bool WriteFireball(int index, SpriteRenderer renderer)
         {
             UndeadSimulation.Fireball f = _sim.Fireballs[index];
@@ -981,119 +1332,162 @@ namespace JinHyung.UndeadSlayer
             return true;
         }
 
-        /// <summary>하트 입자 — 재고가 남은 모닥불마다 초당 1.2개 [소스 <c>Gl</c>]. 값은 전부 소스 식이다.</summary>
-        private void StepHearts(float dt)
+        // ══════════════════════════════ 입자 — 모닥불 하트 · 나무 반짝임 [소스 Ll]
+
+        /// <summary>
+        /// 입자 이미터를 한 프레임 돌리고 <b>이번에 그릴 알을 «평평하게» 편다</b>.
+        ///
+        /// <para>
+        /// ★ 풀은 <b>살아 있는 알 수만큼만</b> 렌더러를 만든다 — 슬롯 64칸 × 32알을 그대로 돌면
+        /// 안 보이는 2048칸을 매 프레임 훑는다.
+        /// </para>
+        /// </summary>
+        private void StepParticles(float dt)
         {
+            double dtMs = dt * 1000.0;
+            StepHeartEmitters(dtMs);
+            StepTreeSparkles(dtMs);
+        }
+
+        private void StepHeartEmitters(double dtMs)
+        {
+            _heartDraw.Clear();
+
             if (_heartSet == null)
                 return;
 
-            if (_heartSpawnAccum.Length < _sim.Fireplaces.Count)
-                System.Array.Resize(ref _heartSpawnAccum, _sim.Fireplaces.Count);
+            int count = _sim.Fireplaces.Count;
 
-            for (int i = 0; i < _sim.Fireplaces.Count; i++)
+            if (_heartEmitters.Length < count)
+            {
+                System.Array.Resize(ref _heartEmitters, count);
+                System.Array.Resize(ref _heartEmitterTiles, count);
+            }
+
+            for (int i = 0; i < count; i++)
             {
                 UndeadSimulation.Fireplace f = _sim.Fireplaces[i];
 
-                if (f.Active == false || f.Lives <= 0)
+                if (f.Active == false)
                 {
-                    _heartSpawnAccum[i] = 0.0;
+                    _heartEmitters[i] = null;
                     continue;
                 }
 
-                _heartSpawnAccum[i] = System.Math.Min(HeartAccumulatorCap, _heartSpawnAccum[i] + dt * HeartSpawnPerSecond);
+                long tile = TileKey(f.TileX, f.TileY);
 
-                while (_heartSpawnAccum[i] >= 1.0)
+                // ⚠ 슬롯이 «다른 칸»으로 갈리면 이미터도 갈아야 한다 — 남의 하트가 이어 떠오른다
+                if (_heartEmitters[i] == null || _heartEmitterTiles[i] != tile)
                 {
-                    _heartSpawnAccum[i] -= 1.0;
-
-                    if (LiveHearts(i) >= HeartsPerFire)
-                        break;
-
-                    SpawnHeart(i, f.Position);
-                }
-            }
-
-            for (int i = 0; i < _hearts.Length; i++)
-            {
-                if (_hearts[i].Active == false)
-                    continue;
-
-                _hearts[i].AgeMs += dt * 1000.0;
-
-                if (_hearts[i].AgeMs >= _hearts[i].LifeMs)
-                {
-                    _hearts[i].Active = false;
-                    continue;
+                    _heartEmitters[i] = new UndeadHeartEmitter($"{f.TileX}_{f.TileY}_fire_sparks");
+                    _heartEmitterTiles[i] = tile;
                 }
 
-                // [소스 updateActiveParticle] vx *= 1 − .22·dt · vy −= .45·dt · x += vx·dt · y += vy·dt
-                _hearts[i].Vx *= 1.0 - 0.22 * dt;
-                _hearts[i].Vy -= 0.45 * dt;
-                _hearts[i].X += _hearts[i].Vx * dt;
-                _hearts[i].Y += _hearts[i].Vy * dt;
+                // [소스 isEmitterEnabled = !isInactive] — 재고가 없으면 새로 안 나온다
+                _heartEmitters[i].Step(dtMs, 0.0, f.Lives > 0);
+                Collect(_heartDraw, i, _heartEmitters[i]);
             }
         }
 
-        private int LiveHearts(int owner)
+        private void StepTreeSparkles(double dtMs)
         {
-            int count = 0;
+            _sparkleDraw.Clear();
 
-            for (int i = 0; i < _hearts.Length; i++)
-                if (_hearts[i].Active && _hearts[i].Owner == owner)
-                    count++;
+            int count = _sim.Trees.Count;
 
-            return count;
+            if (_treeSparkles.Length < count)
+            {
+                System.Array.Resize(ref _treeSparkles, count);
+                System.Array.Resize(ref _treeSparkleTiles, count);
+                System.Array.Resize(ref _treeWasBursted, count);
+            }
+
+            for (int i = 0; i < count; i++)
+            {
+                UndeadSimulation.Tree t = _sim.Trees[i];
+
+                if (t.Active == false)
+                {
+                    _treeSparkles[i] = null;
+                    continue;
+                }
+
+                long tile = TileKey(t.TileX, t.TileY);
+
+                if (_treeSparkles[i] == null || _treeSparkleTiles[i] != tile)
+                {
+                    _treeSparkles[i] = new UndeadSparkleEmitter($"{t.TileX}_{t.TileY}_sparks", UndeadSparklePalette.Fire);
+                    _treeSparkleTiles[i] = tile;
+                    _treeWasBursted[i] = t.Bursted;
+                }
+
+                // ★ 터지는 «순간»에 한꺼번에 뿜는다 [소스 burst() → emitBurst(20, 1)].
+                //   시뮬은 「터졌다」는 상태만 들고 있으므로 여기서 «바뀐 순간»을 잡는다.
+                if (_treeWasBursted[i] == false && t.Bursted)
+                    _treeSparkles[i].EmitBurst(TreeBurstSparkles, 1.0);
+
+                _treeWasBursted[i] = t.Bursted;
+
+                // [소스] 터진 뒤에는 progress 0 으로 «있던 알만» 마저 돈다
+                double progress = t.Bursted ? 0.0 : _sim.TreeChargeProgress(i);
+                _treeSparkles[i].Step(dtMs, progress, t.Bursted == false);
+                Collect(_sparkleDraw, i, _treeSparkles[i]);
+            }
         }
 
-        private void SpawnHeart(int owner, UndeadVec2 origin)
+        /// <summary>살아 있는 알을 <b>(주인 × 칸수 + 알)</b> 한 정수로 눌러 담는다.</summary>
+        private static void Collect(List<int> into, int owner, UndeadParticleEmitter emitter)
         {
-            for (int i = 0; i < _hearts.Length; i++)
+            for (int p = 0; p < emitter.Capacity; p++)
             {
-                if (_hearts[i].Active)
-                    continue;
-
-                // [소스 createParticleSpawn] e = 2r−1 · x = e·(3+6r) · y = 8r−10 · vx = e·(1.5+3.5r) · vy = −(5+8r) · life 1100+500r · size .4+.1r
-                //   ⚠ 여기 x·y·속도는 «컨테이너 안» 값이다 — 화면 값은 컨테이너 배율을 곱한 것이다.
-                double e = 2.0 * RandomUtil.Value() - 1.0;
-                _hearts[i] = new HeartParticle
-                {
-                    Active = true,
-                    Owner = owner,
-                    X = e * (3.0 + 6.0 * RandomUtil.Value()),
-                    Y = 8.0 * RandomUtil.Value() - 10.0,
-                    Vx = e * (1.5 + 3.5 * RandomUtil.Value()),
-                    Vy = -(5.0 + 8.0 * RandomUtil.Value()),
-                    LifeMs = 1100.0 + 500.0 * RandomUtil.Value(),
-                    AgeMs = 0.0,
-                    Size = 0.4 + 0.1 * RandomUtil.Value(),
-                };
-                return;
+                if (emitter[p].Active)
+                    into.Add(owner * emitter.Capacity + p);
             }
+        }
+
+        /// <summary>칸 좌표 두 개를 <b>정수 하나</b>로 — 슬롯이 다른 칸으로 갈렸는지 보는 열쇠다.</summary>
+        private static long TileKey(int tileX, int tileY)
+        {
+            return ((long)tileX << 32) ^ (uint)tileY;
         }
 
         private bool WriteHeart(int index, SpriteRenderer renderer)
         {
-            HeartParticle h = _hearts[index];
-
-            if (h.Active == false)
+            if (index >= _heartDraw.Count)
                 return false;
 
-            if (h.Owner >= _sim.Fireplaces.Count)
+            int packed = _heartDraw[index];
+            int owner = packed / UndeadHeartEmitter.HeartConfig.MaxParticles;
+            int slot = packed % UndeadHeartEmitter.HeartConfig.MaxParticles;
+
+            if (owner >= _sim.Fireplaces.Count || _heartEmitters[owner] == null)
                 return false;
 
-            UndeadSimulation.Fireplace owner = _sim.Fireplaces[h.Owner];
-
-            if (owner.Active == false)
-                return false;
-
-            double n = h.AgeMs / h.LifeMs;
-            float size = (float)(h.Size * (1.0 + 0.08 * n));
-            double worldX = owner.Position.X + h.X * HeartContainerScaleX;
-            double worldY = owner.Position.Y + HeartEmitterY + h.Y * HeartContainerScaleY;
+            UndeadSimulation.Fireplace f = _sim.Fireplaces[owner];
             renderer.sprite = _heartSet.Get(0, 0.0);
-            renderer.transform.localPosition = UndeadUnits.ToPosition(worldX, worldY);
-            renderer.transform.localScale = new Vector3((float)(size * HeartContainerScaleX), (float)(size * HeartContainerScaleY), 1f);
-            renderer.color = new Color(1f, 1f, 1f, (float)(0.8 * (1.0 - n)));
+
+            double worldY = UndeadParticleView.Draw(renderer, _heartEmitters[owner][slot],
+                                                    _heartEmitters[owner].Config, f.Position, HeartEmitterY);
+            renderer.sortingOrder = SortOrder(worldY) + 1;
+            return true;
+        }
+
+        private bool WriteSparkle(int index, SpriteRenderer renderer)
+        {
+            if (index >= _sparkleDraw.Count)
+                return false;
+
+            int packed = _sparkleDraw[index];
+            int owner = packed / UndeadSparkleEmitter.SparkleConfig.MaxParticles;
+            int slot = packed % UndeadSparkleEmitter.SparkleConfig.MaxParticles;
+
+            if (owner >= _sim.Trees.Count || _treeSparkles[owner] == null)
+                return false;
+
+            UndeadSimulation.Tree t = _sim.Trees[owner];
+
+            double worldY = UndeadParticleView.Draw(renderer, _treeSparkles[owner][slot],
+                                                    _treeSparkles[owner].Config, t.Position, TreeSparkleEmitterY);
             renderer.sortingOrder = SortOrder(worldY) + 1;
             return true;
         }
@@ -1110,6 +1504,7 @@ namespace JinHyung.UndeadSlayer
                     _boss.sprite = _bossSet != null ? _bossSet.Get(0, _sim.BossAnimFrame) : _boss.sprite;
                     Place(_boss.transform, _sim.BossPosition, _boss);
                     _boss.sortingOrder = SortOrder(_sim.BossPosition.Y);
+                    ApplyFacing(_boss.transform, _sim.BossFacingLeft);
                 }
             }
 
@@ -1184,6 +1579,7 @@ namespace JinHyung.UndeadSlayer
                 UndeadVec2 at = _sim.Sheep_[i].Position;
                 Place(_sheep[i].transform, at, _sheep[i]);
                 _sheep[i].sortingOrder = SortOrder(at.Y);
+                ApplyFacing(_sheep[i].transform, _sim.Sheep_[i].FacingLeft);
             }
         }
 
@@ -1240,15 +1636,26 @@ namespace JinHyung.UndeadSlayer
             renderer.transform.localScale = scale;
 
             // ★ 좌우 반전으로 방향을 낸다 [실측 — 원본 scale.x 가 −3 이었다]. 왼쪽 그림을 따로 굽지 않는다.
+            //   ⚠ 어느 쪽을 보는지는 «시뮬»이 든다 — 뷰가 매 프레임 다시 재면 붙었을 때 떤다.
             if (set.Data.FlipsHorizontally)
-            {
-                bool faceLeft = e.Position.X > _sim.HeroPosition.X;
-                Vector3 s = renderer.transform.localScale;
-                s.x = Mathf.Abs(s.x) * (faceLeft ? -1f : 1f);
-                renderer.transform.localScale = s;
-            }
+                ApplyFacing(renderer.transform, e.FacingLeft);
+
+            // ★ 색은 «세 겹»이다 [소스 applyCurrentTint] — 피격 빨강이 «가장 위», 그다음 얼림, 없으면 평소 색.
+            //   ⚠ 순서를 바꾸면 얼어 있는 적이 맞아도 안 붉어진다.
+            renderer.color = e.HitTintRemaining > 0.0 ? Color.red
+                           : _sim.EnemiesFrozen ? FrozenTint
+                           : BaseTint(set);
 
             return true;
+        }
+
+        /// <summary>표가 정한 평소 색 — 틴트를 «되돌릴» 때 쓴다 (흰색이 아니다).</summary>
+        private static Color BaseTint(UndeadSpriteSet set)
+        {
+            if (set == null || ColorUtility.TryParseHtmlString("#" + set.Data.TintHex, out Color tint) == false)
+                return Color.white;
+
+            return new Color(tint.r, tint.g, tint.b, (float)set.Data.Alpha);
         }
 
         private bool WriteProjectile(int index, SpriteRenderer renderer)
@@ -1343,6 +1750,61 @@ namespace JinHyung.UndeadSlayer
             }
 
             return used;
+        }
+
+        /// <summary>
+        /// 시트가 <b>없는</b> 풀 — 입자는 <b>흰 1×1 텍스처</b>라 <see cref="UndeadSpriteSet"/> 이 없다 [소스 <c>K.WHITE</c>].
+        /// <para>⚠ <see cref="Sync"/> 는 시트가 <c>null</c> 이면 통째로 건너뛴다 — 그래서 갈래를 하나 둔다.</para>
+        /// </summary>
+        private int SyncSprite(List<SpriteRenderer> pool, Transform root, Sprite sprite,
+                               int slotCount, System.Func<int, SpriteRenderer, bool> write)
+        {
+            if (sprite == null || root == null)
+                return 0;
+
+            int used = 0;
+
+            for (int i = 0; i < slotCount; i++)
+            {
+                SpriteRenderer renderer = used < pool.Count ? pool[used] : null;
+
+                if (renderer == null)
+                {
+                    var go = new GameObject("particle");
+                    go.transform.SetParent(root, false);
+                    renderer = go.AddComponent<SpriteRenderer>();
+                    renderer.sprite = sprite;
+                    pool.Add(renderer);
+                }
+
+                if (write(i, renderer) == false)
+                    continue;
+
+                if (renderer.enabled == false)
+                    renderer.enabled = true;
+
+                used++;
+            }
+
+            for (int i = used; i < pool.Count; i++)
+            {
+                if (pool[i].enabled)
+                    pool[i].enabled = false;
+            }
+
+            return used;
+        }
+
+        /// <summary>도형 스프라이트 하나 — <b>아트 표를 타지 않는다</b>(원본에도 그런 «컷»이 없다).</summary>
+        private SpriteRenderer NewShape(string name, Sprite sprite)
+        {
+            var go = new GameObject(name);
+            go.transform.SetParent(_questRoot, false);
+
+            var renderer = go.AddComponent<SpriteRenderer>();
+            renderer.sprite = sprite;
+            renderer.enabled = false;
+            return renderer;
         }
 
         private Transform NewRoot(string name)
@@ -1459,6 +1921,78 @@ namespace JinHyung.UndeadSlayer
         private static int SortOrder(double worldY)
         {
             return SortingBase - (int)worldY;
+        }
+
+        /// <summary>
+        /// 좌우 반전 — <b>배율 x 의 «부호»만</b> 준다 [소스 — <c>scale.x = ±Math.abs(scale.x)</c>].
+        ///
+        /// <para>
+        /// ⚠ <b>어느 쪽을 보는지는 여기서 «정하지 않는다».</b> 그 판정은 개체마다 규칙이 다르고
+        /// (게이트가 있는 것 · 「0 이면 유지」인 것 · 매 프레임 다시 재는 것) <b>«상태»여야 한다</b> —
+        /// 그래서 시뮬이 들고 이 함수는 <b>그리기만</b> 한다.
+        /// </para>
+        ///
+        /// <para>
+        /// ⚠ <b>[사고]</b> 히어로·보스·양은 이 처리가 <b>통째로 없었다</b>. 실측 2243 프레임에서
+        /// 히어로 배율 x 가 <c>3.000</c> 으로 고정이었다 — 왼쪽으로 걸어도 오른쪽을 보고 있었다.
+        /// 원본은 <b>다섯 자리</b>에서 반전한다 (히어로 · 일반 적 · 보스 · 양 · 동료 전사).
+        /// </para>
+        /// </summary>
+        /// <summary>원본 px 글자 크기를 월드 <see cref="TextMeshPro"/> 의 <c>fontSize</c> 로 바꾼다.</summary>
+        private static float BubbleFontSize(float originPx)
+        {
+            return UndeadUnits.ToUnits(originPx) * TmpWorldFontScale;
+        }
+
+        /// <summary>
+        /// 말풍선 글자를 상자에 맞춘다 [소스 <c>fitTextToBubble</c>].
+        ///
+        /// <para>
+        /// ★ <b>«배율로 줄이는» 것이 아니라 «크기를 한 단씩 내리는» 것이다.</b>
+        /// <c>16</c> 에서 시작해 <c>12</c>(<c>medium</c> 은 <c>10</c>)까지 1 씩 내리며 <b>처음 드는 크기</b>를 쓴다.
+        /// 짧은 문구는 <b>16 그대로</b> 뜬다.
+        /// </para>
+        ///
+        /// <para>
+        /// ⚠ <b>[사고]</b> 크기를 <c>3.5</c> 로 «고정»해 두었었다 — 원본 <c>16</c>px 의 <b>절반</b>이고,
+        /// 문구가 길든 짧든 늘 같은 크기였다. 실측에서 <c>도와줘!</c> 가 <c>3.5</c> 로 찍혔다.
+        /// 「상자에 맞추기」(<c>#164</c>)는 <b>배율만</b>이 아니다 — 원본이 «크기를 고르면» 그 규칙을 옮긴다.
+        /// </para>
+        /// </summary>
+        private static void FitBubbleText(TMP_Text text, float boxW, float boxH, bool medium)
+        {
+            if (text == null || boxW <= 0f || boxH <= 0f)
+                return;
+
+            float min = medium ? BubbleFontMinOriginMedium : BubbleFontMinOrigin;
+            text.transform.localScale = Vector3.one;
+
+            for (float origin = BubbleFontMaxOrigin; origin >= min; origin -= 1f)
+            {
+                text.fontSize = BubbleFontSize(origin);
+                Vector2 preferred = text.GetPreferredValues(text.text, boxW, 0f);
+
+                if (preferred.x <= boxW && preferred.y <= boxH)
+                    return;
+            }
+
+            // 바닥 크기로도 안 들면 «그때만» 배율로 줄인다 [소스 — Mh(bubbleText, …)]
+            text.fontSize = BubbleFontSize(min);
+            Vector2 last = text.GetPreferredValues(text.text, boxW, 0f);
+            float scale = Mathf.Min(1f, Mathf.Min(boxW / Mathf.Max(0.0001f, last.x),
+                                                  boxH / Mathf.Max(0.0001f, last.y)));
+            text.transform.localScale = new Vector3(scale, scale, 1f);
+        }
+
+        private static void ApplyFacing(Transform target, bool facingLeft)
+        {
+            if (target == null)
+                return;
+
+            Vector3 scale = target.localScale;
+            float magnitude = Mathf.Abs(scale.x);
+            scale.x = facingLeft ? -magnitude : magnitude;
+            target.localScale = scale;
         }
     }
 }

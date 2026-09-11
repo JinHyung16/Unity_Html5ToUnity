@@ -117,6 +117,25 @@ namespace JinHyung.EditorTools
         }
 
         /// <summary>
+        /// <b>표 없이</b> 규격 한 컷을 그대로 굽는다 — 타일셋처럼 «아트 표 밖»인 것에 쓴다.
+        ///
+        /// <para>
+        /// ★ 타일셋은 애니가 아니라 <b>한 장의 격자</b>다. 표에 넣으면 「돌리는 컷이 65개인데 fps 가 없다」로
+        /// 걸린다 — 그 검사가 맞다. 타일셋은 <b>표 밖</b>이 제자리다 (전투 타일셋과 같은 규약).
+        /// </para>
+        /// </summary>
+        public static Texture2D BakeSheet(ArtSpec spec, Func<int, int, Texture2D> newTexture,
+                                          Action<Texture2D, int, int, Color> put)
+        {
+            if (spec == null || spec.Cuts == null || spec.Cuts.Count == 0)
+                return null;
+
+            Texture2D tex = newTexture(spec.CutW, spec.CutH);
+            DrawCut(tex, 0, 0, spec.Cuts[0], put);
+            return tex;
+        }
+
+        /// <summary>
         /// 시트 한 장을 규격대로 굽는다.
         /// <para>⚠ 표의 <c>FrameWidth/Height</c> 와 규격의 컷 크기가 다르면 <b>표가 틀린 것</b>이다 — 굽지 않고 알린다.</para>
         /// </summary>

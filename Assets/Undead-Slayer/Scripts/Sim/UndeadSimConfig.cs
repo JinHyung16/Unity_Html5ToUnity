@@ -15,8 +15,6 @@ namespace JinHyung.UndeadSlayer
     {
         // ── 히어로
         public double HeroMoveSpeed;
-        public double HeroStartX;
-        public double HeroStartY;
         public int HeroMaxHp;
         public double HeroInvincibleSeconds;
 
@@ -28,6 +26,54 @@ namespace JinHyung.UndeadSlayer
         public double ReviveDifficultyMultiplier;
         public double ReviveDifficultyRecoverySeconds;
         public double HeroHitTintSeconds;
+        public double EnemyHitTintSeconds;
+
+        // ══════════════════════════════ 액티브 스킬 [소스 — 스킬 정의 배열 · 동작 클래스]
+
+        /// <summary>스킬별 재사용 대기 (초) — <see cref="EUndeadSkill"/> 순서다.</summary>
+        public double[] SkillCooldownSeconds;
+
+        /// <summary>스킬별 효과 지속 (초) — <see cref="EUndeadSkill"/> 순서다.</summary>
+        public double[] SkillActiveSeconds;
+
+        /// <summary>돌진이 지속시간 동안 «전부» 나아가는 거리 [소스 300].</summary>
+        public double DashDistance;
+
+        /// <summary>돌진을 몇 «칸»으로 쪼개 옮기나 [소스 4] — 잘게 쪼개야 통과하며 때린다.</summary>
+        public double DashStepUnits;
+
+        /// <summary>돌진 피해 = 총알 피해 × 이 값 [소스 2].</summary>
+        public double DashDamageMultiplier;
+
+        /// <summary>돌진이 끝나는 자리에서 미는 반경 [소스 √32400 = 180].</summary>
+        public double DashEndKnockbackRadius;
+
+        /// <summary>그때 미는 세기 [소스 12].</summary>
+        public double DashEndKnockbackForce;
+
+        /// <summary>화염 자취 조각 간격 [소스 24].</summary>
+        public double TrailSegmentSpacing;
+
+        /// <summary>조각 하나가 남아 있는 시간 (초).</summary>
+        public double TrailSegmentLifeSeconds;
+
+        /// <summary>조각의 판정 반경.</summary>
+        public double TrailSegmentRadius;
+
+        /// <summary>자취 피해 = 총알 피해 × 이 값 [소스 0.5].</summary>
+        public double TrailDamageMultiplier;
+
+        /// <summary>같은 적을 다시 태우기까지 (초) [소스 500ms].</summary>
+        public double TrailTargetThrottleSeconds;
+
+        /// <summary>섬광 이동이 올리는 시뮬 배율 [소스 2].</summary>
+        public double FlashMoveSimulationScale;
+
+        /// <summary>마법사 보상 말풍선 (초) [소스 <c>rewardBubbleDurationMs = 2000</c>].</summary>
+        public double MageRewardBubbleSeconds;
+
+        /// <summary>가족 경고 말풍선 (초) [소스 <c>familyWarningBubbleDurationMs = 5000</c>].</summary>
+        public double FamilyWarningBubbleSeconds;
         public double HeroBlinkIntervalSeconds;
         public double HeroBlinkAlpha;
         public double HeroColliderX;

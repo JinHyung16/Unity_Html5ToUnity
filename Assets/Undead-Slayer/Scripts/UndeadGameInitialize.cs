@@ -49,6 +49,9 @@ namespace JinHyung.UndeadSlayer
         [Header("View")]
         [SerializeField] private UndeadWorldView _worldView;
         [SerializeField] private UndeadTerrainView _terrainView;
+
+        /// <summary>로비 — <b>전투와 같은 씬</b>이라 여기서 같이 세운다.</summary>
+        [SerializeField] private UndeadLobbyView _lobbyView;
         [SerializeField] private UndeadFloatingTextView _floatingText;
         [SerializeField] private UndeadCameraDirector _cameraDirector;
         [SerializeField] private UndeadMoveInput _moveInput;
@@ -95,11 +98,34 @@ namespace JinHyung.UndeadSlayer
             };
         }
 
+        /// <summary>
+        /// 마법사·가족·농부의 문구 — <b>순서가 <see cref="EUndeadNpcSpeech"/> 와 «한 쌍»</b>이다
+        /// (<c>None</c> 을 뺀 나머지).
+        /// <para>⚠ 순서를 바꾸면 다른 NPC 의 말이 나온다 — 그런데 오류는 안 난다.</para>
+        /// </summary>
+        private static string[] NpcSpeechTexts()
+        {
+            JinHyung.Data.UndeadTextDataContainer texts = GameRoot.Instance.UndeadTextDataContainer;
+
+            return new[]
+            {
+                texts.Ko("iLostTwoArcaneFragments"),
+                texts.Ko("youSavedMeReward"),
+                texts.Ko("weCantPassDarkSoul"),
+                texts.Ko("thanksNowWeCanContinue"),
+                texts.Ko("mySheepAreInDanger"),
+                texts.Ko("myHeroThankYou"),
+            };
+        }
+
         private void OnDestroy()
         {
             _cts.Cancel();
             _cts.Dispose();
         }
+
+        /// <summary>지금 화면에 물려 둔 바이옴 — <b>매 프레임 «지금 값»과 비교한다</b>.</summary>
+        private int _boundBiome = 1;
 
         private void LateUpdate()
         {
@@ -111,6 +137,18 @@ namespace JinHyung.UndeadSlayer
             // ★ 지형·카메라는 «카메라 피벗»을 따라간다 — 히어로가 아니다.
             //   원본 카메라는 히어로를 «뒤따르므로» 히어로를 그대로 쓰면 지형이 한 프레임 앞서 흐른다.
             UndeadVec2 pivot = simulation.CameraPivot;
+
+            // ★ 바이옴이 바뀌었으면 «그림 벌»을 갈아 끼운다.
+            //   ⚠ 「바꾼 쪽이 뷰를 부른다」로 두지 않는다 — 부르는 자리가 늘 때마다 하나씩 빠뜨린다.
+            //     매 프레임 한 번 비교하는 쪽이 «순서와 무관»하다.
+            int biome = UndeadGameRoot.Instance.Game.Biome;
+
+            if (biome != _boundBiome)
+            {
+                _boundBiome = biome;
+                _terrainView?.SetBiome(biome);
+                _worldView.SetBiome(biome);
+            }
 
             // ⚠ 지형을 «먼저» 따라가게 한다 — 카메라가 먼저 움직이면 한 프레임 동안 가장자리가 빈다.
             if (_terrainView != null)
@@ -128,23 +166,51 @@ namespace JinHyung.UndeadSlayer
         /// </summary>
         private async Task BindTerrainAsync(CancellationToken cancellationToken)
         {
-            const string sheet = "biome_graveyard_tiles";
-            const int cols = UndeadTerrainView.TilesetColumns;
-            const int rows = 1;
+            UndeadBiomeDataContainer biomes = GameRoot.Instance.UndeadBiomeDataContainer;
 
-            var tiles = new System.Collections.Generic.List<UnityEngine.Tilemaps.TileBase>(cols * rows);
-            var addresses = new System.Collections.Generic.List<string>(cols * rows);
-
-            for (int row = 0; row < rows; row++)
+            if (biomes == null || biomes.Count == 0)
             {
-                for (int col = 0; col < cols; col++)
-                    addresses.Add($"{sheet}[{sheet}_{row}_{col}]");
+                Log.Error("바이옴 표가 없다 — 지형 타일셋을 못 고른다");
+                return;
             }
 
-            Sprite[] sprites = await ArtLoader.LoadSpritesAsync(addresses);   // 25칸을 «한꺼번에»
+            // ★ 바이옴마다 한 벌 — 표가 이름을 준다. 여기서 시트 이름을 만들지 않는다.
+            UnityEngine.Tilemaps.TileBase[] graveyard = await LoadTilesetAsync(biomes.Get(1), cancellationToken);
+            UnityEngine.Tilemaps.TileBase[] winter = await LoadTilesetAsync(biomes.Get(2), cancellationToken);
+
+            if (cancellationToken.IsCancellationRequested || graveyard == null)
+                return;
+
+            _terrainView.Bind(_terrainView.GetComponent<UnityEngine.Tilemaps.Tilemap>(), graveyard, winter);
+            _terrainView.Follow(UndeadVec2.Zero);
+        }
+
+        /// <summary>
+        /// 타일셋 한 벌 — <b>격자로 잘린 칸을 한꺼번에</b> 읽는다.
+        /// <para>주소는 <c>&lt;시트&gt;[&lt;시트&gt;_0_&lt;열&gt;]</c> — 임포터 규약과 한 쌍이다.</para>
+        /// </summary>
+        private static async Task<UnityEngine.Tilemaps.TileBase[]> LoadTilesetAsync(
+            UndeadBiomeData biome, CancellationToken cancellationToken)
+        {
+            if (biome == null)
+            {
+                Log.Error("바이옴 행이 없다 — 그 바이옴의 지형이 통째로 빈다");
+                return null;
+            }
+
+            string sheet = biome.TilesetCode;
+            const int cols = UndeadTerrainView.TilesetColumns;
+            var addresses = new System.Collections.Generic.List<string>(cols);
+
+            for (int col = 0; col < cols; col++)
+                addresses.Add($"{sheet}[{sheet}_0_{col}]");
+
+            Sprite[] sprites = await ArtLoader.LoadSpritesAsync(addresses);   // 46칸을 «한꺼번에»
 
             if (cancellationToken.IsCancellationRequested)
-                return;
+                return null;
+
+            var tiles = new System.Collections.Generic.List<UnityEngine.Tilemaps.TileBase>(cols);
 
             for (int i = 0; i < sprites.Length; i++)
             {
@@ -156,14 +222,104 @@ namespace JinHyung.UndeadSlayer
                 tiles.Add(tile);
             }
 
-            if (tiles.Count == 0)
+            if (tiles.Count != cols)
             {
-                Log.Error("지형 타일을 하나도 못 읽었다 — 임포터의 격자 자르기를 본다");
+                Log.Error($"{sheet}: 타일 {tiles.Count}칸만 읽혔다 — {cols}칸이어야 한다 (임포터의 격자 자르기를 본다)");
+                return tiles.Count == 0 ? null : tiles.ToArray();
+            }
+
+            return tiles.ToArray();
+        }
+
+        /// <summary>
+        /// 로비 타일 — 전투 타일셋과 <b>같은 규약</b>(격자로 잘린 스프라이트 주소)이다.
+        /// <para>⚠ 칸 수는 <b>맵이 정한다</b> — 여기서 숫자를 만들지 않는다.</para>
+        /// </summary>
+        /// <summary>
+        /// 로비를 세운다 — 맵·타일·아트·시뮬을 물린다.
+        ///
+        /// <para>
+        /// ⚠ <b>로비 뷰가 없으면 조용히 넘어가지 않는다</b> — 씬에 안 붙어 있으면
+        /// 로비 화면이 «빈 화면»이 되는데 아무 오류도 안 난다.
+        /// </para>
+        /// </summary>
+        private async Task SetupLobbyAsync(UndeadGameRoot root, CancellationToken cancellationToken)
+        {
+            if (_lobbyView == null)
+                _lobbyView = FindFirstObjectByType<UndeadLobbyView>(FindObjectsInactive.Include);
+
+            if (_lobbyView == null)
+            {
+                Log.Error("로비 뷰가 씬에 없다 — 로비가 빈 화면이 된다");
                 return;
             }
 
-            _terrainView.Bind(_terrainView.GetComponent<UnityEngine.Tilemaps.Tilemap>(), tiles.ToArray());
-            _terrainView.Follow(UndeadVec2.Zero);
+            UndeadLobbyMapDataContainer maps = GameRoot.Instance.UndeadLobbyMapDataContainer;
+            UndeadLobbyMapData map = maps == null ? null : maps.Map;
+
+            if (map == null)
+            {
+                Log.Error("로비 맵 표가 없다 — 로비를 못 세운다");
+                return;
+            }
+
+            UndeadArtDataContainer art = GameRoot.Instance.UndeadArtDataContainer;
+
+            Task<UndeadSpriteSet> heroTask = UndeadSpriteSet.LoadAsync(art.Get("hero"));
+            Task<UndeadSpriteSet> npc1Task = UndeadSpriteSet.LoadAsync(art.Get("lobby_task_npc_groundskeeper"));
+            Task<UndeadSpriteSet> npc2Task = UndeadSpriteSet.LoadAsync(art.Get("lobby_task_npc_herbalist"));
+            Task<UndeadSpriteSet> portal1Task = UndeadSpriteSet.LoadAsync(art.Get("lobby_portal_graveyard_open"));
+            Task<UndeadSpriteSet> lockedTask = UndeadSpriteSet.LoadAsync(art.Get("lobby_portal_winter_locked"));
+            Task<UndeadSpriteSet> openTask = UndeadSpriteSet.LoadAsync(art.Get("lobby_portal_winter_open"));
+
+            UnityEngine.Tilemaps.TileBase[] tiles = await LoadLobbyTilesAsync(map.SourceTiles.Count);
+
+            if (cancellationToken.IsCancellationRequested)
+                return;
+
+            // ★ 시뮬을 «먼저» 세우고 뷰를 한 번만 물린다 — 두 번 물리면 타일맵을 두 번 짓는다
+            root.Lobby.Setup(root.Game.Simulation, _lobbyView, maps,
+                             GameRoot.Instance.UndeadConfigDataContainer.Config.HeroMoveSpeedWorld);
+
+            _lobbyView.Bind(root.Lobby.Simulation, maps, tiles, await heroTask,
+                            new[] { await npc1Task, await npc2Task },
+                            await portal1Task, await lockedTask, await openTask);
+
+            if (_moveInput != null)
+                root.Lobby.MoveInputSource = _moveInput.Read;
+
+            _lobbyView.SetVisible(false);
+        }
+
+        private static async Task<UnityEngine.Tilemaps.TileBase[]> LoadLobbyTilesAsync(int cols)
+        {
+            const string sheet = "biome_lobby_tiles";
+            var addresses = new System.Collections.Generic.List<string>(cols);
+
+            for (int col = 0; col < cols; col++)
+                addresses.Add($"{sheet}[{sheet}_0_{col}]");
+
+            Sprite[] sprites = await ArtLoader.LoadSpritesAsync(addresses);
+            var tiles = new UnityEngine.Tilemaps.TileBase[sprites.Length];
+            int missing = 0;
+
+            for (int i = 0; i < sprites.Length; i++)
+            {
+                if (sprites[i] == null)
+                {
+                    missing++;
+                    continue;
+                }
+
+                var tile = ScriptableObject.CreateInstance<UnityEngine.Tilemaps.Tile>();
+                tile.sprite = sprites[i];
+                tiles[i] = tile;
+            }
+
+            if (missing > 0)
+                Log.Error($"로비 타일 {missing}칸을 못 읽었다 — 그 자리는 빈다");
+
+            return tiles;
         }
 
         private async Task InitAsync(CancellationToken cancellationToken)
@@ -221,11 +377,15 @@ namespace JinHyung.UndeadSlayer
             Task<UndeadSpriteSet> treeTask = UndeadSpriteSet.LoadAsync(art.Get("graveyard_evil_tree"));
             Task<UndeadSpriteSet> treeOnTask = UndeadSpriteSet.LoadAsync(art.Get("graveyard_evil_tree_activated"));
             Task<UndeadSpriteSet> treeOffTask = UndeadSpriteSet.LoadAsync(art.Get("graveyard_evil_tree_inactive"));
+            Task<UndeadSpriteSet> snowTask = UndeadSpriteSet.LoadAsync(art.Get("snowman"));
+            Task<UndeadSpriteSet> snowOnTask = UndeadSpriteSet.LoadAsync(art.Get("snowman_activated"));
+            Task<UndeadSpriteSet> snowOffTask = UndeadSpriteSet.LoadAsync(art.Get("snowman_inactive"));
             Task<UndeadSpriteSet> meteorTask = UndeadSpriteSet.LoadAsync(art.Get("meteor"));
             Task<UndeadSpriteSet> fireTask = UndeadSpriteSet.LoadAsync(art.Get("fire"));
             Task<UndeadSpriteSet> fireOffTask = UndeadSpriteSet.LoadAsync(art.Get("fire_inactive"));
             Task<UndeadSpriteSet> heartTask = UndeadSpriteSet.LoadAsync(art.Get("heart"));
             Task<UndeadSpriteSet> lightningTask = UndeadSpriteSet.LoadAsync(art.Get("lightning"));
+            Task<UndeadSpriteSet> trailTask = UndeadSpriteSet.LoadAsync(art.Get("skill_effect_blazing_trail"));
             Task<UndeadSpriteSet> hpTask = UndeadSpriteSet.LoadAsync(art.Get("hp_segment_bg"));
             // ★ 체력 칸은 «두 겹»이다 — 어두운 바탕은 늘 있고 빨간 채움만 줄었다 늘었다 한다 [소스 rebuildSegments]
             Task<UndeadSpriteSet> hpFillTask = UndeadSpriteSet.LoadAsync(art.Get("hp_segment_fill"));
@@ -257,7 +417,10 @@ namespace JinHyung.UndeadSlayer
 
             // ⚠ 주입은 Bootstrap «뒤»다 — 매니저 실체가 그때 생긴다.
             if (_moveInput != null)
+            {
                 root.Game.MoveInputSource = _moveInput.Read;
+                root.Game.SkillInputSource = _moveInput.ReadSkillPress;
+            }
 
             // ⑤ 월드 뷰 — 개체당 컴포넌트 0. 풀링된 SpriteRenderer 만 쓴다 (확정표 G).
             if (_worldView != null)
@@ -272,8 +435,10 @@ namespace JinHyung.UndeadSlayer
                 // 지형이 놓는 나무·모닥불과 나무의 유성 [소스 — 청크 노이즈]
                 _worldView.BindWorldObjects(await treeTask, await treeOnTask, await treeOffTask, await meteorTask,
                                             await fireTask, await fireOffTask, await heartTask);
+                _worldView.BindWinterObjects(await snowTask, await snowOnTask, await snowOffTask);
 
                 _worldView.BindLightning(await lightningTask);
+                _worldView.BindTrail(await trailTask);
                 _worldView.BindLifeBar(await hpTask, await hpFillTask, GameRoot.Instance.UndeadConfigDataContainer.Config.HeroMaxHp);
 
                 _worldView.BindQuestTarget(warrior, await warriorIdleTask, await warriorRunTask,
@@ -281,8 +446,12 @@ namespace JinHyung.UndeadSlayer
                                            await kunaiTask, await bubbleMediumTask,
                                            await questProgressTask,
                                            WarriorSpeechTexts(),
+                                           NpcSpeechTexts(),
                                            UnityEngine.Resources.Load<TMPro.TMP_FontAsset>("Font/UndeadSlayer SDF"));
             }
+
+            // ══════════════════════════════ 로비 — 전투와 «같은 씬»이라 여기서 같이 세운다
+            await SetupLobbyAsync(root, cancellationToken);
 
             if (_cameraDirector != null)
             {
@@ -348,6 +517,21 @@ namespace JinHyung.UndeadSlayer
                 iconAddresses.Add(upgrade.IconAddress);
             }
 
+            // ★ 스킬 아이콘도 같이 받는다 — 로비의 «보상» 자리와 보상 팝업이 쓴다.
+            //   ⚠ 따로 받으면 그 자리만 «비어 있는데» 아무 오류도 안 난다.
+            UndeadSkillDataContainer skillTable = GameRoot.Instance.UndeadSkillDataContainer;
+
+            if (skillTable != null)
+            {
+                for (int i = 0; i < skillTable.AllValues.Count; i++)
+                {
+                    string address = skillTable.AllValues[i].IconAddress;
+
+                    if (iconAddresses.Contains(address) == false)
+                        iconAddresses.Add(address);
+                }
+            }
+
             Sprite[] iconSprites = await ArtLoader.LoadSpritesAsync(iconAddresses);
 
             for (int i = 0; i < iconAddresses.Count; i++)
@@ -362,6 +546,15 @@ namespace JinHyung.UndeadSlayer
             var management = AddManagement<UndeadManagement>();
             management.BindUpgradeIcons(upgradeIcons);
             management.Bind(root);
+
+            // ★ 로비 UI 는 «문구·아이콘 창구»를 통해서만 표를 본다
+            management.BindLobbyTexts(new UndeadLobbyTexts(
+                GameRoot.Instance.UndeadTextDataContainer,
+                GameRoot.Instance.UndeadTaskDataContainer,
+                GameRoot.Instance.UndeadSkillDataContainer,
+                upgradeIcons));
+
+            management.BindLobbyCamera(_gameCamera);
             management.Initialize();
 
             // ⑦ 첫 화면 — 원본은 바이옴에 들어오면 <b>「시작」 버튼이 뜬 대기 상태</b>다 [실측].

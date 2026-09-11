@@ -1,0 +1,46 @@
+[
+  {
+    "Id": 1,
+    "Code": "activate_trees",
+    "Order": 0,
+    "TitleKey": "taskActivateTreesTitle",
+    "RequirementKey": "taskActivateTreesRequirement",
+    "MetricId": "graveyard_evil_trees_activated",
+    "GoalOffset": 10,
+    "RewardSkill": "dash",
+    "PrerequisiteSkills": ""
+  },
+  {
+    "Id": 2,
+    "Code": "restore_hp",
+    "Order": 1,
+    "TitleKey": "taskRestoreHpTitle",
+    "RequirementKey": "taskRestoreHpRequirement",
+    "MetricId": "fireplace_hp_restored",
+    "GoalOffset": 4,
+    "RewardSkill": "blazing_trail",
+    "PrerequisiteSkills": ""
+  },
+  {
+    "Id": 3,
+    "Code": "kill_enemies_with_dash",
+    "Order": 2,
+    "TitleKey": "taskKillEnemiesWithDashTitle",
+    "RequirementKey": "taskKillEnemiesWithDashRequirement",
+    "MetricId": "enemies_killed_with_dash",
+    "GoalOffset": 30,
+    "RewardSkill": "winter_pulse",
+    "PrerequisiteSkills": "dash"
+  },
+  {
+    "Id": 4,
+    "Code": "save_sheep",
+    "Order": 3,
+    "TitleKey": "taskSaveSheepTitle",
+    "RequirementKey": "taskSaveSheepRequirement",
+    "MetricId": "sheep_returned_to_farmers",
+    "GoalOffset": 5,
+    "RewardSkill": "flash_move",
+    "PrerequisiteSkills": ""
+  }
+]

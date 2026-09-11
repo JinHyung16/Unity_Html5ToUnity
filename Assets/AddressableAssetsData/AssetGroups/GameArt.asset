@@ -75,6 +75,18 @@ MonoBehaviour:
     m_SerializedLabels:
     - game_art
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0c462bf571cd53f4bb0036c37fbe57fa
+    m_Address: snowman_activated
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0d86726d7edb0de4f967ac5dd493d5e3
+    m_Address: skill_flash_move
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 0f54d14550e00544ba0977892999e8a0
     m_Address: graveyard_evil_tree_activated
     m_ReadOnly: 0
@@ -147,8 +159,20 @@ MonoBehaviour:
     m_SerializedLabels:
     - game_art
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 20b39e6018b3ff041911d603227cdb0b
+    m_Address: lobby_task_npc_groundskeeper
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 20e61308baf9a134685822f9ac831330
     m_Address: blob_body
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2192e308372a44943979074e2d4ea50a
+    m_Address: skill_winter_pulse
     m_ReadOnly: 0
     m_SerializedLabels:
     - game_art
@@ -161,6 +185,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 241c0b712b7df184490349bbb59336dc
     m_Address: icon_lightning_damage
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 29831bec97207af4d81f1e2ae23c591d
+    m_Address: lobby_portal_winter_locked
     m_ReadOnly: 0
     m_SerializedLabels:
     - game_art
@@ -195,8 +225,20 @@ MonoBehaviour:
     m_SerializedLabels:
     - game_art
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2c357f3efa813584d8c0578a8a2d470b
+    m_Address: snowman
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 30124caa6333a904195c7097075a153b
     m_Address: BlumgiBlock
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 31a5fb9b7a2d43b4fa76937f3142bfd5
+    m_Address: skill_effect_blazing_trail
     m_ReadOnly: 0
     m_SerializedLabels:
     - game_art
@@ -305,6 +347,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 4e01b98fdedf93f45a4bdd18fb899da1
     m_Address: fx_teleport_4
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 504d9d2f8db303842bb55c0b643042c0
+    m_Address: skill_dash
     m_ReadOnly: 0
     m_SerializedLabels:
     - game_art
@@ -483,6 +531,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - game_art
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8449545aa7b26544d9591a793c74c1c8
+    m_Address: lobby_portal_winter_open
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 86b5d5a2a3b169b4a88db6a5e75a2cf7
     m_Address: ghost
     m_ReadOnly: 0
@@ -513,8 +567,20 @@ MonoBehaviour:
     m_SerializedLabels:
     - game_art
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9035f2d6b6c5d7241bdcb1900186a702
+    m_Address: lobby_portal_graveyard_open
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 935434171dd70054a9e52d083db47fe6
     m_Address: enemy2
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 949bc8e77eaceb94d814237a83131825
+    m_Address: biome_winter_tiles
     m_ReadOnly: 0
     m_SerializedLabels:
     - game_art
@@ -609,6 +675,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - game_art
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c399ed7806044d54fad9d1c56d4a8c35
+    m_Address: lobby_task_npc_herbalist
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c5299ec9801bdaa49b90a465506385d6
     m_Address: kunai
     m_ReadOnly: 0
@@ -693,6 +765,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - game_art
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: df61d7a6aa3dd3244a2d2f3a676dd51c
+    m_Address: biome_lobby_tiles
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e394d33e77a574b418fef369187b7ac0
     m_Address: icon_lightning_radius
     m_ReadOnly: 0
@@ -701,6 +779,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e3b6cb69ebc066d48bcf9122e2b33c23
     m_Address: candy_yellow
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e5e8380f44d806047b34349768f3ea0b
+    m_Address: snowman_inactive
     m_ReadOnly: 0
     m_SerializedLabels:
     - game_art
@@ -737,6 +821,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ef107f911343b534cb6219303da89699
     m_Address: candy_blue
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_art
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f2494906894531143a22ac052dec0bc2
+    m_Address: skill_blazing_trail
     m_ReadOnly: 0
     m_SerializedLabels:
     - game_art

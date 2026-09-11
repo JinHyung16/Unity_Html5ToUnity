@@ -21,6 +21,32 @@ namespace JinHyung.UndeadSlayer
         private const string BestLevelKey = "Undead.BestLevel";
         private const string BestTimeKey = "Undead.BestTimeSeconds";
 
+        /// <summary>
+        /// 로비가 열렸나 [소스 <c>isLobbyUnlocked</c>].
+        ///
+        /// <para>
+        /// ★ <b>부활 없이 한 번 죽어야</b> 열린다 — 그전에는 판을 시작하면 바로 바이옴 1 이다.
+        /// 판을 넘어 남는 값이라 기록에 둔다 (원본도 meta 상태다).
+        /// </para>
+        /// </summary>
+        private const string LobbyUnlockedKey = "Undead.LobbyUnlocked";
+
+        /// <summary>로비가 열렸나 — 초기값 <b>거짓</b> [소스].</summary>
+        public static bool LobbyUnlocked
+        {
+            get { return PlayerPrefs.GetInt(LobbyUnlockedKey, 0) != 0; }
+        }
+
+        /// <summary>로비를 연다 — <b>최종 사망</b>에서 한 번 부른다 [소스].</summary>
+        public static void UnlockLobby()
+        {
+            if (LobbyUnlocked)
+                return;
+
+            PlayerPrefs.SetInt(LobbyUnlockedKey, 1);
+            PlayerPrefs.Save();
+        }
+
         /// <summary>[소스] 초기값 1.</summary>
         public static int BestLevel
         {
