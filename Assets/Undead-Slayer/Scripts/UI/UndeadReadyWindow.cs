@@ -32,8 +32,25 @@ namespace JinHyung.UndeadSlayer
         [SerializeField] private TMP_Text _startText;
         [SerializeField] private UiScalePulse _pulse;
 
+        /// <summary>
+        /// <b>원본에 없는 버튼</b> — 로컬에 남긴 기록을 지운다 (의도된 차이).
+        /// <para>⚠ 저장이 있는 게임은 «지우는 길»을 반드시 낸다 — 없으면 「처음 켠 사람」 화면을 다시 못 본다.</para>
+        /// </summary>
+        [SerializeField] private Button _wipeButton;
+
+        [SerializeField] private TMP_Text _wipeText;
+
         /// <summary>「시작」을 눌렀다.</summary>
         public event Action OnStart;
+
+        /// <summary>「기록 지우기」를 눌렀다.</summary>
+        public event Action OnWipeSave;
+
+        /// <summary>
+        /// <b>우리 문구다</b> — 원본 로케일 표에 넣지 않는다.
+        /// <para>⚠ 그 표는 <b>원본 전수 60줄</b>이 «분모»라, 우리 것을 섞으면 이관율이 거짓이 된다.</para>
+        /// </summary>
+        public const string WipeLabel = "기록 지우기";
 
         private bool _started;
 
@@ -41,6 +58,12 @@ namespace JinHyung.UndeadSlayer
         {
             if (_startText != null)
                 _startText.text = label;
+        }
+
+        public void SetWipeLabel(string label)
+        {
+            if (_wipeText != null)
+                _wipeText.text = label;
         }
 
         /// <summary>지금 버튼 배율 — 검사가 «숨쉬는지» 잰다.</summary>
@@ -63,6 +86,12 @@ namespace JinHyung.UndeadSlayer
 
             _startButton.onClick.RemoveAllListeners();
             _startButton.onClick.AddListener(Press);
+
+            if (_wipeButton == null)
+                return;
+
+            _wipeButton.onClick.RemoveAllListeners();
+            _wipeButton.onClick.AddListener(() => OnWipeSave?.Invoke());
         }
 
         /// <summary>⚠ 연 곳에서 건 것을 <b>여기서 반드시 끊는다</b>.</summary>
@@ -70,6 +99,9 @@ namespace JinHyung.UndeadSlayer
         {
             if (_startButton != null)
                 _startButton.onClick.RemoveAllListeners();
+
+            if (_wipeButton != null)
+                _wipeButton.onClick.RemoveAllListeners();
 
             base.OnClosing();
         }

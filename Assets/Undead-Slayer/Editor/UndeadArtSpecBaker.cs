@@ -149,33 +149,41 @@ namespace JinHyung.EditorTools
             }
 
             Texture2D tex = newTexture(a.SheetWidth, a.SheetHeight);
+
+            // ★★ <b>보폭은 «시트의 열 수» 하나뿐이다.</b>
+            //   ⚠⚠ [사고] 예전에는 «몇 칸을 그릴까»를 <c>UsedCols × Rows</c> 로 세면서
+            //     자리는 <c>i % Cols</c> 로 잡았다 — <b>보폭이 둘</b>이었다. 그래서 6열 시트를
+            //     10칸만 그리고 멈췄고, <b>마지막 줄의 4·5열이 투명하게 남았다</b>.
+            //     4열은 <b>게임이 도는 칸</b>이라 <b>히어로가 이동할 때마다 한 컷씩 사라졌다</b> —
+            //     「움직이면 깜빡인다」로 사람이 알려 줬다 (재발방지 #182).
+            //   ⇒ <c>UsedCols</c> 는 <b>«도는» 칸 수</b>지 «굽는» 칸 수가 아니다.
             int perRow = Math.Max(1, a.Cols);
-            int want = Math.Max(1, a.UsedCols) * Math.Max(1, a.Rows);
+            int rows = Math.Max(1, a.Rows);
+            int cells = perRow * rows;
+            int used = Math.Min(perRow, a.UsedCols <= 0 ? perRow : a.UsedCols);
 
             // ★ 원본이 «앞에서부터» 안 쓰는 시트가 있다 [표 CutOffset — warrior_lay 는 2번 컷부터].
             //   ⚠ 이걸 빼먹으면 «다른 자세»가 조용히 구워진다 — 크기도 컷 수도 맞아서 검사에 안 걸린다.
             int from = Math.Max(0, a.CutOffset);
-            int count = Math.Min(want, Math.Max(0, spec.Cuts.Count - from));
+            int available = Math.Max(0, spec.Cuts.Count - from);
 
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < cells; i++)
             {
                 int col = i % perRow;
                 int row = i / perRow;
-                int ox = col * a.FrameWidth;
+
+                // 규격이 모자라면 — <b>«도는» 칸</b>만 마지막 컷으로 메운다.
+                // 안 도는 칸은 비워 둔다(원본에도 없는 칸이다).
+                int source = i < available ? i
+                    : col < used && available > 0 ? available - 1
+                    : -1;
+
+                if (source < 0)
+                    continue;
 
                 // ⚠ 유니티 텍스처는 «아래»가 0 이다 — 시트의 첫 줄이 위로 가게 뒤집어 놓는다
-                int oy = a.SheetHeight - (row + 1) * a.FrameHeight;
-
-                DrawCut(tex, ox, oy, spec.Cuts[from + i], put);
-            }
-
-            // 컷이 모자라면 마지막 것을 반복한다 — 빈 칸은 «투명 프레임»이 되어 깜빡인다
-            for (int i = count; i < want && count > 0; i++)
-            {
-                int col = i % perRow;
-                int row = i / perRow;
                 DrawCut(tex, col * a.FrameWidth, a.SheetHeight - (row + 1) * a.FrameHeight,
-                        spec.Cuts[from + count - 1], put);
+                        spec.Cuts[from + source], put);
             }
 
             return tex;

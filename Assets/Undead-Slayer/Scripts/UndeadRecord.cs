@@ -1,3 +1,4 @@
+using JinHyung.Core;
 using UnityEngine;
 
 namespace JinHyung.UndeadSlayer
@@ -18,6 +19,28 @@ namespace JinHyung.UndeadSlayer
     /// </summary>
     public static class UndeadRecord
     {
+        /// <summary>이 게임이 로컬에 남기는 <b>키 전부</b> — 지우는 쪽과 <b>한 쌍</b>이다.</summary>
+        public static readonly string[] Keys = { BestLevelKey, BestTimeKey, LobbyUnlockedKey };
+
+        /// <summary>
+        /// 지우는 일을 <see cref="SaveWipe"/> 에 건다 — <b>게임을 세울 때 한 번</b> 부른다.
+        /// <para>⚠ 안 부르면 버튼이 있어도 <b>아무것도 안 지운다</b>(그런데 오류는 안 난다).</para>
+        /// </summary>
+        public static void RegisterWipe()
+        {
+            SaveWipe.Register("Undead-Slayer", Wipe, Keys);
+        }
+
+        /// <summary>
+        /// 로컬에 남긴 것을 지운다 — <b>최고 레벨 · 최고 시간 · 로비 해금</b>.
+        /// <para>★ 지우고 나면 «처음 켠 사람»의 화면이 된다 — 로비도 다시 잠긴다.</para>
+        /// </summary>
+        public static void Wipe()
+        {
+            for (int i = 0; i < Keys.Length; i++)
+                PlayerPrefs.DeleteKey(Keys[i]);
+        }
+
         private const string BestLevelKey = "Undead.BestLevel";
         private const string BestTimeKey = "Undead.BestTimeSeconds";
 

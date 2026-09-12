@@ -104,6 +104,12 @@ namespace JinHyung.EditorTools
                     failed++;
                 }
 
+                if (BlankCycledCut(a, tex, out string blank))
+                {
+                    Log.Error($"{a.Code}: {blank} 이 통째로 투명하다 — 도는 칸이라 화면에서 «깜빡인다»");
+                    failed++;
+                }
+
                 string dir = a.Category == UndeadArtDataContainer.CategoryUi ? UiDir : GameDir;
                 Save(tex, $"{dir}/{a.Code}.png");
                 baked++;
@@ -158,6 +164,60 @@ namespace JinHyung.EditorTools
             texture.Apply();
             Save(texture, path);
             return true;
+        }
+
+        /// <summary>
+        /// <b>게임이 «도는» 칸 중에 통째로 투명한 것이 있나</b> — 있으면 그 프레임에 그림이 사라진다.
+        ///
+        /// <para>
+        /// ★★ 이 검사가 없어서 <b>히어로가 이동할 때마다 깜빡였다</b> — 시트 크기도 맞고 컷 수도 맞고
+        /// 픽셀 일치도 100% 였다. <b>「비어 있다」는 아무 검사에도 안 걸리는 결함</b>이다 (재발방지 #182).
+        /// </para>
+        ///
+        /// <para>⚠ <c>UsedCols</c> 밖은 «원본도 안 쓰는 칸»이라 비어 있어도 맞다 — 도는 칸만 본다.</para>
+        /// </summary>
+        private static bool BlankCycledCut(UndeadArtData a, Texture2D tex, out string where)
+        {
+            where = string.Empty;
+
+            if (a.FrameWidth <= 0 || a.FrameHeight <= 0)
+                return false;
+
+            int used = Math.Min(Math.Max(1, a.Cols), a.UsedCols <= 0 ? Math.Max(1, a.Cols) : a.UsedCols);
+            Color[] pixels = tex.GetPixels();
+
+            for (int row = 0; row < Math.Max(1, a.Rows); row++)
+            {
+                for (int col = 0; col < used; col++)
+                {
+                    // ⚠ 시트의 «첫 줄»이 텍스처의 위다 — 굽는 쪽과 같은 뒤집기를 탄다
+                    int oy = tex.height - (row + 1) * a.FrameHeight;
+
+                    if (AnyOpaque(pixels, tex.width, col * a.FrameWidth, oy, a.FrameWidth, a.FrameHeight))
+                        continue;
+
+                    where = $"{row}행 {col}열";
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static bool AnyOpaque(Color[] pixels, int width, int ox, int oy, int w, int h)
+        {
+            for (int y = 0; y < h; y++)
+            {
+                for (int x = 0; x < w; x++)
+                {
+                    int index = (oy + y) * width + ox + x;
+
+                    if ((uint)index < (uint)pixels.Length && pixels[index].a > 0f)
+                        return true;
+                }
+            }
+
+            return false;
         }
 
         // ══════════════════════════════ 개체별 굽기 — 표의 Code 로 갈린다

@@ -547,6 +547,9 @@ namespace JinHyung.UndeadSlayer
             management.BindUpgradeIcons(upgradeIcons);
             management.Bind(root);
 
+            // ★ 로컬에 남기는 게임은 «지우는 길»을 등록한다 — 버튼만 있고 등록이 없으면 아무것도 안 지운다
+            UndeadRecord.RegisterWipe();
+
             // ★ 로비 UI 는 «문구·아이콘 창구»를 통해서만 표를 본다
             management.BindLobbyTexts(new UndeadLobbyTexts(
                 GameRoot.Instance.UndeadTextDataContainer,

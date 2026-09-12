@@ -355,9 +355,27 @@ namespace JinHyung.EditorTools
             Stretch(label.rectTransform);
             label.rectTransform.anchoredPosition = new Vector2(0f, -2f * Scale);
 
+            // ★★ <b>원본에 없는 버튼</b> — 로컬 기록을 지운다 (의도된 차이 · 저장이 있는 게임의 공통 규칙).
+            //   ⚠ 원본 요소와 헷갈리지 않게 «구석에 · 작게» 둔다. 맥동·호버 연출도 안 건다.
+            GameObject wipe = Sprite9(root.transform, "WipeSave", "btn_shadowed");
+            RectTransform wipeRect = wipe.GetComponent<RectTransform>();
+            wipeRect.anchorMin = Vector2.zero;
+            wipeRect.anchorMax = Vector2.zero;
+            wipeRect.pivot = Vector2.zero;
+            wipeRect.sizeDelta = new Vector2(WipeButtonW * Scale, WipeButtonH * Scale);
+            wipeRect.anchoredPosition = new Vector2(BestPadding * Scale, BestPadding * Scale);
+
+            Button wipeButton = MakeButton(wipe);
+            TMP_Text wipeLabel = Text(wipe.transform, "Label", UndeadReadyWindow.WipeLabel,
+                                      WipeLabelFont, Color.white);
+            Fit(wipeLabel, (WipeButtonW - 24f) * Scale, 20f * Scale);
+            Stretch(wipeLabel.rectTransform);
+
             SetRef(window, "_startButton", startButton);
             SetRef(window, "_startText", label);
             SetRef(window, "_pulse", pulse);
+            SetRef(window, "_wipeButton", wipeButton);
+            SetRef(window, "_wipeText", wipeLabel);
 
             SavePrefab(root, $"{UiPrefabRoot}/{nameof(UndeadReadyWindow)}.prefab");
         }
@@ -558,6 +576,13 @@ namespace JinHyung.EditorTools
 
             // ── 수령 링 [소스 Ad — 히어로 기준 (0,75) · 배율 1.8]
             GameObject ring = SpriteImage(root.transform, "ClaimRing", "quest_progress");
+
+            // ★ 링은 «컷을 갈아 끼운다» [소스 Cd 9컷] — 채워지는 바가 아니다
+            Sprite[] ringCuts = LoadCuts("quest_progress", ClaimRingCuts);
+            SetRefArray(window, "_claimRingCuts", ringCuts);
+
+            if (ringCuts.Length > 0)
+                ring.GetComponent<Image>().sprite = ringCuts[0];
             var ringRect = ring.GetComponent<RectTransform>();
             ringRect.anchorMin = new Vector2(0.5f, 0.5f);
             ringRect.anchorMax = new Vector2(0.5f, 0.5f);
@@ -870,6 +895,16 @@ namespace JinHyung.EditorTools
 
         private const float BestPadding = 8f;
 
+        /// <summary>「기록 지우기」 — <b>우리 버튼</b>이라 원본 치수가 없다. 구석에 작게 둔다.</summary>
+        private const float WipeButtonW = 104f;
+
+        private const float WipeButtonH = 34f;
+
+        private const float WipeLabelFont = 15f;
+
+        /// <summary>수령 링 컷 수 [소스 <c>Cd</c> 길이].</summary>
+        private const int ClaimRingCuts = 9;
+
         /// <summary>
         /// 화면 <b>아래 모서리</b>에 붙인다 — 원본 앵커가 <c>(0,1)</c>/<c>(1,1)</c>(좌·우 하단)이다.
         /// <para>⚠ 가운데 정렬로 두면 문구 길이가 바뀔 때 «자리»가 흔들린다 — 모서리 기준이라 안 흔들린다.</para>
@@ -1149,14 +1184,53 @@ namespace JinHyung.EditorTools
             return go;
         }
 
+        /// <summary>
+        /// UI 가 쓰는 스프라이트 한 장.
+        /// <para>
+        /// ⚠⚠ <b>UI 창이 쓴다고 «UI 폴더»에 있는 것이 아니다</b> — 굽는 자리는 표의 <c>Category</c> 가 정한다.
+        /// [사고] 로비 수령 링(<c>quest_progress</c>)은 <c>Game</c> 인데 여기서 <c>UI</c> 만 봐서
+        /// <b>조용히 <c>null</c></b> 이 됐다. 그래서 <b>두 곳을 다 본다.</b>
+        /// </para>
+        /// </summary>
         private static Sprite LoadUiSprite(string art)
         {
             var sprite = AssetDatabase.LoadAssetAtPath<Sprite>($"{UiArtRoot}/{art}.png");
 
             if (sprite == null)
-                Log.Error($"UI 스프라이트가 없다: {UiArtRoot}/{art}.png — 먼저 UndeadSpriteBuilder 를 돌린다");
+                sprite = AssetDatabase.LoadAssetAtPath<Sprite>($"{GameArtRoot}/{art}.png");
+
+            if (sprite == null)
+                Log.Error($"스프라이트가 없다: {art} (UI·Game 둘 다 없다) — 먼저 UndeadSpriteBuilder 를 돌린다");
 
             return sprite;
+        }
+
+        private const string GameArtRoot = "Assets/Undead-Slayer/Art/Game";
+
+        /// <summary>
+        /// 격자로 잘린 <b>컷 전부</b>를 이름 순으로 읽는다 — <c>&lt;코드&gt;_&lt;행&gt;_&lt;열&gt;</c>.
+        /// <para>⚠ <c>LoadAllAssetsAtPath</c> 는 순서를 보장하지 않는다 — <b>이름으로 정렬</b>한다.</para>
+        /// </summary>
+        private static Sprite[] LoadCuts(string art, int expected)
+        {
+            string path = System.IO.File.Exists($"{UiArtRoot}/{art}.png")
+                ? $"{UiArtRoot}/{art}.png"
+                : $"{GameArtRoot}/{art}.png";
+
+            var cuts = new List<Sprite>(expected);
+
+            foreach (Object asset in AssetDatabase.LoadAllAssetsAtPath(path))
+            {
+                if (asset is Sprite cut)
+                    cuts.Add(cut);
+            }
+
+            cuts.Sort((a, b) => string.CompareOrdinal(a.name, b.name));
+
+            if (cuts.Count != expected)
+                Log.Error($"{art}: 컷이 {cuts.Count}개다 — {expected}개여야 한다 (임포터의 격자 자르기를 본다)");
+
+            return cuts.ToArray();
         }
 
         private static TMP_Text Text(Transform parent, string name, string value, float originFont, Color color)
@@ -1250,7 +1324,15 @@ namespace JinHyung.EditorTools
         /// 화면 전체를 덮는 검은 반투명 — 원본 창마다 «자기 알파»가 있다 [소스 — 시작 .5 · 레벨업 .7 · 해금 .75 · 부활 .78].
         /// 맨 아래 형제로 넣어 다른 요소가 그 위에 그려진다. 레이캐스트를 먹어 뒤 화면 클릭을 막는다.
         /// </summary>
-        private static void Dimmer(Transform parent, float alpha)
+        /// <summary>
+        /// 화면을 덮는 검은 반투명.
+        ///
+        /// <para>
+        /// ★★ <b><paramref name="gammaAlpha"/> 는 «원본 값» 그대로 넣는다</b> — 역산은 여기서 한다.
+        /// 호출부마다 역산값을 적으면 <b>원본 숫자가 코드에서 사라져</b> 나중에 대조할 수 없다.
+        /// </para>
+        /// </summary>
+        private static void Dimmer(Transform parent, float gammaAlpha)
         {
             var go = new GameObject("Dimmer", typeof(RectTransform), typeof(Image));
             go.transform.SetParent(parent, false);
@@ -1258,8 +1340,57 @@ namespace JinHyung.EditorTools
             Stretch(go.GetComponent<RectTransform>());
 
             var image = go.GetComponent<Image>();
-            image.color = new Color(0f, 0f, 0f, alpha);
+            image.color = new Color(0f, 0f, 0f, LinearDimAlpha(gammaAlpha));
             image.raycastTarget = true;
+        }
+
+        /// <summary>
+        /// 배경색 기준 — <b>지형 바닥</b>이다. 딤이 실제로 덮는 것이 대부분 이 색이다.
+        /// <para>[실측 <c>biome_graveyard_tiles</c> 0열 = <c>#64779B</c>].</para>
+        /// </summary>
+        private static readonly Color DimReference = new Color(100f / 255f, 119f / 255f, 155f / 255f, 1f);
+
+        /// <summary>
+        /// 감마 알파 → <b>리니어에서 «같게 보이는»</b> 알파.
+        ///
+        /// <para>
+        /// ★★ <b>원본 캔버스는 감마(sRGB)에서 합성하고 유니티는 리니어에서 합성한다</b>
+        /// (<c>Fx.md</c> 「색공간」 · 이 프로젝트는 Linear 로 확정).
+        /// 같은 α.5 라도 결과가 다르다 — <b>실측</b>: 지형 <c>#64779B</c> 위에 검정 α.5 를 씌우면
+        /// 원본은 <c>#323C4E</c>, 우리는 <c>#47556F</c> 였다. <b>우리 화면이 훨씬 밝았다.</b>
+        /// </para>
+        ///
+        /// <para>
+        /// ⚠⚠ <b>방향을 헷갈리면 안 된다.</b> <c>Fx.md</c> 에는 <c>a^2.2</c>(내린다)만 적혀 있었는데
+        /// 그건 <b>밝은·가산</b> 오버레이 이야기다. <b>어두운 오버레이는 반대로 «올려야»</b> 한다 —
+        /// 리니어 합성이 어두운 것을 <b>덜 어둡게</b> 만들기 때문이다.
+        /// </para>
+        ///
+        /// <para>
+        /// ⚠ <b>정확한 값은 배경색에 따라 다르다</b> — 닫힌 해가 없다. 그래서 <see cref="DimReference"/>
+        /// 한 색을 기준으로 채널 평균을 쓴다. 배경이 아주 밝거나 아주 어두운 자리에서는 <b>몇 단위 어긋난다.</b>
+        /// </para>
+        /// </summary>
+        private static float LinearDimAlpha(float gammaAlpha)
+        {
+            float keep = 1f - Mathf.Clamp01(gammaAlpha);
+            float sum = 0f;
+
+            for (int i = 0; i < 3; i++)
+            {
+                float background = i == 0 ? DimReference.r : i == 1 ? DimReference.g : DimReference.b;
+                float want = ToLinear(keep * background);
+                float had = ToLinear(background);
+                sum += had <= 0f ? gammaAlpha : 1f - want / had;
+            }
+
+            return Mathf.Clamp01(sum / 3f);
+        }
+
+        /// <summary>sRGB → 선형 (유니티가 텍스처·색에 쓰는 그 곡선).</summary>
+        private static float ToLinear(float value)
+        {
+            return value <= 0.04045f ? value / 12.92f : Mathf.Pow((value + 0.055f) / 1.055f, 2.4f);
         }
 
         private static void Stretch(RectTransform rect)

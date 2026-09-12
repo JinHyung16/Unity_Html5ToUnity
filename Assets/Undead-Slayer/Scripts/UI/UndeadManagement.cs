@@ -335,10 +335,22 @@ namespace JinHyung.UndeadSlayer
             window.SetLabel(GameRoot.Instance.UndeadTextDataContainer.Ko("start"));
             window.OnStart -= HandleStart;
             window.OnStart += HandleStart;
+            window.SetWipeLabel(UndeadReadyWindow.WipeLabel);
+            window.OnWipeSave -= HandleWipeSave;
+            window.OnWipeSave += HandleWipeSave;
             window.Open();
 
             // ★ 원본은 시작 게이트 «위»에 HUD(0/15 · 00:00 · 레벨)가 보인다 [원본 캡처] — 대기 창 뒤에 열어 앞에 온다.
             GetWindow(UndeadBattleHudWindow.Key).Open();
+        }
+
+        /// <summary>
+        /// <b>원본에 없는 동작</b> — 로컬 기록을 지운다 (의도된 차이).
+        /// <para>★ HUD 의 최고 기록은 <b>매 프레임 다시 그린다</b> — 여기서 따로 새로 그릴 필요가 없다.</para>
+        /// </summary>
+        private void HandleWipeSave()
+        {
+            SaveWipe.WipeAll();
         }
 
         private void HandleStart()

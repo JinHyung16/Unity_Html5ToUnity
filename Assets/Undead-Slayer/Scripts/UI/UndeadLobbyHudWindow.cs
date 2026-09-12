@@ -46,6 +46,17 @@ namespace JinHyung.UndeadSlayer
         [Header("Claim")]
         [SerializeField] private Image _claimRing;
 
+        /// <summary>
+        /// 수령 링의 <b>9컷</b> [소스 <c>Cd</c> — <c>quest_progress_0 … _1000</c>].
+        ///
+        /// <para>
+        /// ★★ <b>채워지는 바가 아니라 «컷을 갈아 끼우는» 링</b>이다 [소스 <c>getTextureNameForProgress</c>].
+        /// ⚠ [사고] <c>Image.fillAmount</c> 로 두었다 — <c>type</c> 이 <c>Filled</c> 가 아니면 <b>아무 일도 안 난다</b>.
+        /// 게다가 스프라이트를 <c>Art/UI</c> 에서 찾아 <b>통째로 비어 있었다</b>(링이 «있다»는 검사는 통과했다).
+        /// </para>
+        /// </summary>
+        [SerializeField] private Sprite[] _claimRingCuts;
+
         [Header("Reward")]
         [SerializeField] private RectTransform _rewardPopup;
         [SerializeField] private TMP_Text _rewardSkillName;
@@ -213,7 +224,14 @@ namespace JinHyung.UndeadSlayer
             if (show == false)
                 return;
 
-            _claimRing.fillAmount = (float)progress;
+            // [소스] progress ≤ 0 이면 0번, 아니면 ceil(progress × (컷수−1))
+            if (_claimRingCuts != null && _claimRingCuts.Length > 0)
+            {
+                int last = _claimRingCuts.Length - 1;
+                int cut = progress <= 0.0 ? 0 : Mathf.Min(last, Mathf.CeilToInt((float)progress * last));
+                _claimRing.sprite = _claimRingCuts[cut];
+            }
+
             Place(_claimRing.rectTransform, lobby.HeroPosition, ClaimRingOffsetY);
         }
 
