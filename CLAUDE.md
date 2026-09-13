@@ -2,193 +2,140 @@
 
 ## 이 저장소
 
-HTML5 게임을 Unity 로 이관하는 저장소다. **게임을 여러 개 이관한다.**
+HTML5 게임 여러 개를 Unity 로 이관한다.
 
 | 무엇 | 어디 |
 |---|---|
-| **이관 오케스트레이션** | **`HtmlToUnity/`** — 스킬 본문. **이 저장소의 본체이자 커밋 대상** |
-| Unity 프로젝트 | 저장소 루트 (`Assets/` · `Packages/` · `ProjectSettings/`) · Unity 6000.3.13f1 · URP 17.3.0 |
-| 원본 HTML5 게임 풀 | **`Html Games 모음/`** — 출처: [he-is-talha/html-css-javascript-games](https://github.com/he-is-talha/html-css-javascript-games) · MIT |
-| **URL 원본 게임 풀 (코드 없음)** | **`Html Games URL 모음/`** — 링크만 있는 상용 게임. 게임당 `<NN>-<게임명>/`. **라이브 URL 실측이 원본이다** (`PD.md` 「원본 형태 판정」). ⚠ **아트를 어디까지 맞추나는 «게임마다» 사람이 정한다** — 그 답은 그 게임 확정표에 있다 |
-| 스킬 **작업본** | `.claude/skills/htmltounity/` — 내용은 위와 **같게 유지**한다 |
-| 게임별 원장 | `.claude/HtmlToUnity_작업내역_<게임명>.md` — **개인 기록이라 커밋하지 않는다** |
+| 이관 오케스트레이션 (본체, 커밋 대상) | `HtmlToUnity/` |
+| Unity 프로젝트 | 루트 `Assets/` · `Packages/` · `ProjectSettings/` · Unity 6000.3.13f1 · URP 17.3.0 |
+| 원본 게임 풀 | `Html Games 모음/` — [he-is-talha/html-css-javascript-games](https://github.com/he-is-talha/html-css-javascript-games) · MIT |
+| URL 원본 풀 (코드 없음) | `Html Games URL 모음/<NN>-<게임명>/`. 라이브 URL 실측이 원본 (`PD.md` 「원본 형태 판정」). 아트 일치 범위는 게임마다 사람이 정하고 그 게임 확정표에 있다 |
+| 스킬 작업본 | `.claude/skills/htmltounity/` — `HtmlToUnity/skills/` 와 같게 유지 |
+| 게임별 원장 | `.claude/HtmlToUnity_작업내역_<게임명>.md` — 개인 기록, 커밋 안 함 |
 
-### ★★ 오케스트레이션은 **두 곳에 똑같이** 둔다
+### 오케스트레이션은 두 곳에 똑같이 둔다
 
-`.claude/` 는 **`.gitignore` 에 있는데**(MCP 설정에 비밀값이 들어갈 수 있다), Claude Code 는
-**스킬을 `.claude/skills/` 에서만 찾는다.** 그래서 **같은 문서를 두 곳에 둔다.**
+Claude Code 는 스킬을 `.claude/skills/` 에서만 찾는데 `.claude/` 는 `.gitignore` 대상이다(MCP 비밀값). 그래서 둘 다 둔다.
 
-| 어디 | 왜 | 커밋 |
+| 어디 | 역할 | 커밋 |
 |---|---|---|
-| `.claude/skills/htmltounity/` | Claude Code 가 여기서 찾는다 — **폴더 이름이 곧 스킬 이름** | ❌ |
-| **`HtmlToUnity/skills/`** | 커밋되고 남의 손에 건네진다 | ✅ **여기만** |
+| `.claude/skills/htmltounity/` | Claude Code 가 읽는 곳. 폴더 이름이 스킬 이름 | 안 함 |
+| `HtmlToUnity/skills/` | 커밋되어 남에게 건네진다 | 여기만 |
 
-```bash
-bash HtmlToUnity/sync.sh --check
-```
+- 문서를 고치면 두 곳을 같이 고친다.
+- 끝내기 전에 `bash HtmlToUnity/sync.sh --check` 를 돌린다. 완료 조건은 「둘이 같다」다.
+- `sync.sh` 기본은 `HtmlToUnity → .claude`, 반대는 `--from-claude`.
+- 원장은 동기화·커밋하지 않는다.
 
-⚠ **문서를 고치면 두 곳을 «같이» 최신화한다.** 한쪽만 고치면 다음 게임이 낡은 쪽을 읽는다.
-**작업을 끝내기 전에 `--check` 를 돌린다** — 「고쳤다」가 아니라 **「둘이 같다」**가 완료 조건이다.
-(`sync.sh` 기본은 `HtmlToUnity → .claude`, 되돌리려면 `--from-claude`.)
+## 커밋은 시킬 때만 한다
 
-⚠ **원장은 동기화 대상이 아니다.** 사람마다·회차마다 다른 개인 작업 기록이라
-오케스트레이션에 끼우면 받는 사람에게는 남의 기록일 뿐이다 — **커밋하지 않는다.**
-
-## ★★ 커밋은 **시킬 때만** 한다
-
-**깃 커밋·브랜치·푸시를 스스로 판단해서 하지 않는다.** 사람이 **「커밋해라」라고 말한 그 범위만** 커밋한다.
-
-| ✗ | ✓ |
-|---|---|
-| 「정리된 김에 커밋해 두자」 | 시킬 때까지 **작업 트리에 그대로 둔다** |
-| 시킨 것 + 내 판단으로 더 담기 | **시킨 것만** 담는다 |
-| 브랜치를 임의로 파고 옮겨 두기 | 브랜치도 **시킬 때만** |
-
-⚠ **브랜치를 옮기면 작업 트리의 파일이 사라질 수 있다** — 시키지 않은 브랜치 조작을 하지 않는 이유가 이것이다.
+커밋·브랜치·푸시는 사람이 「커밋해라」라고 말한 범위만 한다. 그 전엔 작업 트리에 두고, 시킨 것 외에 더 담지 않는다.
+이유: 브랜치를 옮기면 작업 트리 파일이 사라질 수 있다.
 
 ## 이관 작업
 
-**HTML5 → Unity 이관·파리티 검증 요청이면 `htmltounity` 스킬을 먼저 연다.**
-
-절차는 여기 적지 않는다. 두 곳에 있으면 한쪽이 반드시 낡는다 —
-**확정 · 배분 · 게이트 · QA 는 전부 `HtmlToUnity/skills/PD.md` 가 정본이다.**
-
-**이관에서만 쓰는 규칙도 여기 두지 않는다.** 이 파일은 매번 읽히고, 스킬은 이관할 때만 열린다.
+HTML5 → Unity 이관·파리티 검증 요청이면 `htmltounity` 스킬을 먼저 연다.
+절차와 이관 전용 규칙은 여기 두지 않는다. 확정 · 배분 · 게이트 · QA 정본은 `HtmlToUnity/skills/PD.md`.
 
 | 무엇 | 정본 |
 |---|---|
 | 색공간 · 원본 알파 역산 | `Fx.md` 「색공간」 |
-| 원본을 여는 도구의 한계 (홀드 압축 · 핫링크 · `file://`) | `공통절차.md` 「원본을 여는 도구를 먼저 고른다」 |
-| 확정값을 어디에 적나 · 프로젝트 설정 반영 | `PD.md` 「확정표」 · `GameFramework.md` |
-
----
+| 원본 여는 도구의 한계 (홀드 압축 · 핫링크 · `file://`) | `공통절차.md` 「원본을 여는 도구를 먼저 고른다」 |
+| 확정값 기록 · 프로젝트 설정 반영 | `PD.md` 「확정표」 · `GameFramework.md` |
 
 ## 폴더 규칙
 
 ```
 Assets/
-├─ Scripts/                 ← 공용. 어떤 게임이 와도 클라가 쓴다
-│   ├─ Core/                   GameRoot · Manager · Management
-│   ├─ UI/                     Window · Panel · Component · 풀링
-│   ├─ Data/                   JSON 로더 · Container
-│   ├─ Extensions/             Extensions.cs 등 확장 메서드
-│   └─ Editor/                 공용 에디터 툴 · 프리팹 빌더 베이스
-└─ <게임명>/                 ← 게임 하나당 한 폴더
-    ├─ Scripts/ · Art/ · Data/ · Scenes/
-    ├─ Resources/              UI 프리팹 · **구운** 폰트 에셋 (로드 규칙 참고)
-    └─ Editor/                 그 게임의 프리팹 빌더 · 굽는 «입력» 데이터(빌드에 안 들어간다)
-                               — 원본 TTF · 실측 규격 JSON 처럼 «굽고 나면 안 쓰는» 것
+├─ Scripts/        공용
+│  ├─ Core/        GameRoot · Manager · Management
+│  ├─ UI/          Window · Panel · Component · 풀링
+│  ├─ Data/        JSON 로더 · Container
+│  ├─ Extensions/  Extensions.cs 등 확장 메서드
+│  └─ Editor/      공용 에디터 툴 · 프리팹 빌더 베이스
+└─ <게임명>/       게임당 한 폴더
+   ├─ Scripts/ · Art/ · Data/ · Scenes/
+   ├─ Resources/   UI 프리팹 · 구운 폰트 에셋
+   └─ Editor/      프리팹 빌더 · 굽는 입력(원본 TTF · 실측 규격 JSON). 빌드 제외
 ```
 
-- **게임 폴더 이름에서 번호를 뗀다.** `01-Candy-Crush-Game` → **`Assets/Candy-Crush-Game/`**
-- **공용은 게임 폴더 밖이다.** 두 번째 게임이 그대로 쓸 수 없으면 공용이 아니다.
-- 게임 하나에서만 쓰는 것을 `Assets/Scripts/` 에 올리지 않는다.
-
-> 「최소 세트로 쌓고 두 번째 게임이 요구할 때 공용으로 승격」은 `GameFramework.md` 가 정본이다.
+- 게임 폴더명에서 번호를 뗀다: `01-Candy-Crush-Game` → `Assets/Candy-Crush-Game/`
+- 두 번째 게임이 그대로 못 쓰면 공용이 아니다. 한 게임 전용은 `Assets/Scripts/` 에 두지 않는다.
+- 「최소 세트로 쌓고 두 번째 게임이 요구할 때 공용으로 승격」은 `GameFramework.md` 가 정본.
 
 ## 코드 규칙
 
-**확장 메서드로 판정을 읽히게 쓴다** — `Assets/Scripts/Extensions/Extensions.cs`
-(`if (list.IsNullOrEmpty())`). 새로 만들기 전에 **같은 것이 있는지 먼저 본다** —
-중복이 두 개 생기면 호출부마다 다른 쪽을 쓰게 되고 동작이 갈린다.
+판정은 `Assets/Scripts/Extensions/Extensions.cs` 확장 메서드로 쓴다 (`if (list.IsNullOrEmpty())`). 새로 만들기 전에 같은 것이 있는지 본다.
 
 ### 네이밍 · 네임스페이스
 
-**`~/.claude/skills/coding-conventions.md` 가 정본이다.** 여기 사본을 두지 않는다.
-자주 부딪히는 둘만 못 박는다.
-
-| 규칙 | 값 |
-|---|---|
-| **enum** | **`E` 접두사** — `EWindowType` · `EGameScreenType` |
-| 네임스페이스 | 루트 `JinHyung` · 하위 `JinHyung.Core` · `.UI` · `.Data` · `.Extensions` |
+정본은 `~/.claude/skills/coding-conventions.md`. 요점만:
+- enum 은 `E` 접두사 (`EWindowType` · `EGameScreenType`)
+- 네임스페이스 루트 `JinHyung`, 하위 `JinHyung.Core` · `.UI` · `.Data` · `.Extensions`
 
 ### 로그 — `Log.cs`
 
-**`Debug.Log` 를 직접 쓰지 않는다.** `JinHyung.Core.Log` 의 `Success` · `Warning` · `Error` 를 쓴다.
-셋 다 `[Conditional("UNITY_EDITOR")]` 라 **빌드에서 호출부와 인자가 통째로 제거**된다 —
-지우는 것을 깜빡해도 빌드에 안 들어간다.
+`Debug.Log` 대신 `JinHyung.Core.Log` 의 `Success` · `Warning` · `Error` 를 쓴다. `[Conditional("UNITY_EDITOR")]` 라 빌드에서 호출째 제거된다.
+주의: 출시 빌드에 남아야 하는 오류 로그에는 쓰지 않는다(별도 경로).
 
-> ⚠ **출시 빌드에 남아야 하는 오류 로그에는 쓰지 않는다.** 그건 별도 경로가 필요하다.
+### 만든 것에는 읽는 곳이 있어야 한다
 
-### ★★ 만든 것에는 **«읽는 곳»이 있어야 한다**
-
-**데이터·에셋·컴포넌트를 만들면 그것을 «소비하는 지점»을 같이 확인한다.**
-만든 쪽에서만 보면 전부 통과하고, **화면에서만 틀린다.**
+만든 데이터·에셋·컴포넌트는 소비 지점까지 확인한다.
 
 | 만든 것 | 확인할 것 |
 |---|---|
-| 표에 컬럼/행을 넣었다 | 그 값을 **읽는 코드**가 있나 (주소·키만이 아니다 — **문구·플래그도**) |
-| 시트·프리팹을 구웠다 | 그것을 **쓰는 뷰**가 있나. 상태별로 구웠으면 **상태를 바꿔 그림이 갈리는지** 본다 |
-| 컴포넌트를 붙였다 | 실제로 **동작하나** (버튼이면 눌리나 — 붙였다고 눌리는 게 아니다) |
-| 지표를 만들었다 | 그 지표가 **결과물의 최소 단위**를 재나 (그림이면 픽셀) |
+| 표 컬럼/행 | 읽는 코드가 있나 (주소·키뿐 아니라 문구·플래그도) |
+| 구운 시트·프리팹 | 쓰는 뷰가 있나. 상태별이면 상태를 바꿔 그림이 갈리나 |
+| 붙인 컴포넌트 | 실제로 동작하나 (버튼이면 눌리나) |
+| 만든 지표 | 결과물 최소 단위를 재나 (그림이면 픽셀) |
 
-> ⚠ 이 넷을 안 봐서 한 회차에 **모달 4종 먹통 · 시트 안 쓰임 · UI 통째 누락 · 다른 그림**이
-> 동시에 있었고 **모든 검사가 통과했다.** 네 번 다 사람이 화면을 보고 알려 줬다.
-> 자세한 것은 `재발방지.md` `#159`.
+사례: 모달 먹통 · 시트 미사용 · UI 누락 · 다른 그림이 모든 검사를 통과했다 (재발방지 #159)
 
 ### 컴파일 확인
 
-**에디터 없이 된다.** 절차와 함정은 `공통절차.md` 「에디터를 못 돌려도 컴파일 판정은 된다」.
+에디터 없이 된다. `공통절차.md` 「에디터를 못 돌려도 컴파일 판정은 된다」.
 
 ## 로드 규칙
 
 | 무엇 | 어디서 |
 |---|---|
-| **UI 프리팹** (Window · Panel · Component) | **Resources** |
-| **구운 폰트 에셋** (TMP SDF) | **Resources** — UI 프리팹이 참조한다 |
-| **원본 서체 파일 (TTF/OTF)** | **`Editor/`** — 굽는 «입력»이다 |
-| **그 밖의 아트** (스프라이트 · 배경 · 이펙트 · 사운드) | **Addressables** |
-| **데이터 JSON** | Addressables 라벨 (`DataManager` 가 라벨 하나로 읽는다) |
+| UI 프리팹 (Window · Panel · Component) | Resources |
+| 구운 폰트 에셋 (TMP SDF) | Resources |
+| 원본 서체 (TTF/OTF) | `Editor/` |
+| 그 밖의 아트 (스프라이트 · 배경 · 이펙트 · 사운드) | Addressables |
+| 데이터 JSON | Addressables 라벨 (`DataManager` 가 라벨 하나로 읽는다) |
 
-⚠⚠ **«굽는 입력»을 `Resources/` 에 두지 않는다 — 쓰지 않아도 빌드에 들어간다.**
-구운 폰트 에셋은 소스 TTF 를 런타임에 참조하지 않는다(정적 아틀라스면 그 참조가 비어 있다) —
-그래서 TTF 는 `Editor/` 가 제자리다. 실측 사례로 **안 쓰는 서체 한 벌이 통째로 실려** 있었다.
-
-**섞이는 것은 의도된 것이다.** 다만 코드에서 어느 쪽인지 보여야 한다 —
-어드레서블 키에 `~Address`/`~Key` 를 붙여 Resources 경로와 구분한다.
-(근거는 `UIFramework.md` 「로드 방식 — 확정표 10-c 가 가른다」.)
+주의: 굽는 입력을 `Resources/` 에 두지 않는다. 안 써도 빌드에 들어간다(구운 폰트는 TTF 를 런타임에 참조하지 않는다).
+어드레서블 키에는 `~Address`/`~Key` 를 붙여 Resources 경로와 구분한다 (`UIFramework.md` 「로드 방식 — 확정표 10-c 가 가른다」).
 
 ## 검증 산출물
 
-**검증용 파일·에셋을 유니티 프로젝트 «안»에 만들지 않는다.**
-채점기는 `Tools/Verify/` · **산출물은 `Tools/Verify/out/`** (둘 다 Assets 밖) —
-**이관이 끝나면 `Tools/Verify/` 를 통째로 지운다.** `Tools/unity-batch.sh` 는 남는다(어느 게임에도 안 묶인다).
-
-⚠ **「이관이 끝나면」이지 「회차마다」가 아니다.** 회차용 검사기는 그 회차 끝에 지우되,
-**게임별 하네스와 회귀 검사는 이관이 끝날 때까지 남긴다** — 회차마다 지우면 같은 스캐폴딩을
-매번 다시 쓰게 되고, 그때마다 «검사기 쪽 버그»가 새로 생긴다
-(`Transfer_Programmer.md` 「이관이 끝나면이지 회차마다가 아니다」). `out/` 은 회차마다 비운다.
-
-> ⚠ **`Temp/` 에 쓰지 않는다**(유니티가 시작할 때 비운다) · **검증 소스는 런타임 어셈블리로 컴파일된다**
-> (게임 폴더 `Editor/` 의 타입을 못 쓴다). 둘 다 `Transfer_Programmer.md` 「만드는 도구는 두 갈래다」가 정본.
-
----
+- 검증 파일·에셋은 Unity 프로젝트 안에 만들지 않는다. 채점기 `Tools/Verify/`, 산출물 `Tools/Verify/out/`.
+- `out/` 은 회차마다 비우고 회차용 검사기는 회차 끝에 지운다. 게임별 하네스·회귀 검사는 이관 끝까지 남긴다 (`Transfer_Programmer.md` 「이관이 끝나면이지 회차마다가 아니다」).
+- 이관이 끝나면 `Tools/Verify/` 를 통째로 지운다. `Tools/unity-batch.sh` 는 남긴다.
+- `Temp/` 에 쓰지 않는다(시작 때 비워진다). 검증 소스는 런타임 어셈블리라 게임 `Editor/` 타입을 못 쓴다 (`Transfer_Programmer.md` 「만드는 도구는 두 갈래다」).
 
 ## 도구 제약 — 지금 이 환경
 
-| 항목 | 상태 | 그래서 어떻게 |
-|---|---|---|
-| **에디터 제어 (대화형)** | 없다 (MCP 미연결) | 아래로 대체한다 |
-| **에디터 다리 (기본)** | **된다** | 에디터가 **열려 있으면** `Tools/unity-batch.sh` 가 **끄지 않고** 시킨다 (`EditorCommandBridge`) |
-| **배치모드 (예외)** | **된다** | 에디터가 꺼져 있거나 `BRIDGE=0`·`PLAYMODE=1` 일 때 헤드리스 실행 |
-| **재생(Play) 검사** | **된다 — 다리로** | `PLAYMODE=1 Tools/unity-batch.sh …` · **에디터를 껐다 켜지 않는다.** ⚠ 검사기가 시작할 때 **`Application.runInBackground = true`** 를 켜야 한다 — 안 켜면 포커스 없는 재생이 throttle 되어 「다리는 느리다」로 오해한다(재발방지 #156 · 실측 5~8분 → **53초**). ⚠ 검사기는 `SessionState "JinHyung.EditorBridge.Driving"` 이 참이면 `Exit` 대신 `ExitPlaymode`(#140). ⚠ **입력·레이캐스트는 여기서만 잰다.** 배치로 돌리려면 `BRIDGE_PLAY=0` |
+| 항목 | 상태 |
+|---|---|
+| 에디터 제어 (대화형) | 없다 (MCP 미연결) |
+| 에디터 다리 (기본) | 에디터가 열려 있으면 `Tools/unity-batch.sh` 가 끄지 않고 시킨다 (`EditorCommandBridge`) |
+| 배치모드 (예외) | 에디터가 꺼져 있거나 `BRIDGE=0`·`PLAYMODE=1` 일 때 헤드리스 |
+| 재생(Play) 검사 | 다리로 `PLAYMODE=1 Tools/unity-batch.sh …`. 에디터를 껐다 켜지 않는다. 입력·레이캐스트는 여기서만 잰다. 배치는 `BRIDGE_PLAY=0` |
 
-> **원본을 «여는» 도구**(헤드리스 브라우저 · Playwright · 이미지 비교)는 이관에서만 쓴다 —
-> 되는지 여부는 착수 때 찔러 보고 **그 게임 원장의 확정표 13** 에, 함정은
-> `공통절차.md` 「원본을 여는 도구를 먼저 고른다」에 적는다.
+재생 검사기는 시작 때 `Application.runInBackground = true` 를 켜고(안 켜면 throttle, 재발방지 #156), `SessionState "JinHyung.EditorBridge.Driving"` 이 참이면 `Exit` 대신 `ExitPlaymode` 한다(#140).
 
-**러너 스위치** — `CLOSE_EDITOR=1` (닫고 시작 — **저장 후 정상 종료**를 먼저 시킨다 · `SHUTDOWN_TIMEOUT`) · `REOPEN=1` (끝나고 연다 — 복구 백업을 치워 「_recovery backup scene?」 을 «No» 로 처리) · `BRIDGE=0` · `PLAYMODE=1` · `GRAPHICS=1` (레이캐스트·캡처) · **`BRIDGE_PLAY=0`** (재생을 배치로 되돌린다 — 기본은 다리) · `PLAYMODE_TIMEOUT` · `BRIDGE_TIMEOUT`.
-**재생 검사 화면** — `SCREEN_W`/`SCREEN_H` (기본 1920×1080). ⚠ **배치 재생의 기본 게임 뷰는 4:3(640×480)** 이라
-가장자리에 붙는 HUD 가 통째로 다른 자리에 선다 — 원본 화면비를 못 박지 않으면 좌표 대조가 전부 어긋난다.
-⚠ **이관 중 에디터를 끄는 것은 빌드·재생 검사처럼 배치가 «필수»일 때뿐이다** — 편집 모드 검사·굽기는 전부 다리로 돌린다. 끌 때도 곱게(위).
+원본을 여는 도구(헤드리스 브라우저 · Playwright · 이미지 비교)는 이관 전용이다. 가능 여부는 착수 때 확인해 원장 확정표 13 에, 함정은 `공통절차.md` 「원본을 여는 도구를 먼저 고른다」에 적는다.
 
-**빌드** — `bash Tools/build.sh` (게임 목록) · `bash Tools/build.sh <게임>` · `bash Tools/build.sh all`.
-⚠ **저장소에 게임이 여럿인데 프로젝트 설정은 하나다** — 빌드 직전에 그 게임 확정표를 적용하지 않으면
-**마지막에 만진 게임의 방향·패키지·씬이 그대로 나간다**. 손으로 빌드해도 전처리가 시작 씬을 보고 맞춘다
-(`GameFramework.md` 「저장소에 게임이 여럿이면」).
+러너 스위치: `CLOSE_EDITOR=1` (저장 후 정상 종료하고 시작 · `SHUTDOWN_TIMEOUT`) · `REOPEN=1` (끝나고 연다. 복구 백업을 치워 「_recovery backup scene?」 을 No 로) · `BRIDGE=0` · `PLAYMODE=1` · `GRAPHICS=1` (레이캐스트·캡처) · `BRIDGE_PLAY=0` (재생을 배치로) · `PLAYMODE_TIMEOUT` · `BRIDGE_TIMEOUT` · `SCREEN_W`/`SCREEN_H` (재생 화면, 기본 1920×1080).
+주의: 배치 재생 기본 게임 뷰는 4:3(640×480)이다. 원본 화면비를 지정하지 않으면 가장자리 HUD 가 옮겨져 좌표 대조가 어긋난다.
 
-⚠ **말없이 프로세스를 죽이지 않는다. 이름으로도 죽이지 않는다** —
-같은 엔진으로 연 **다른 프로젝트가 함께 죽는다**(`재발방지` #75). 러너는 이 프로젝트 PID 만 고른다.
+에디터는 빌드·재생 검사처럼 배치가 필수일 때만 곱게 끈다. 편집 모드 검사·굽기는 다리로 한다.
 
-> **사람에게 엔진 조작을 요구하지 않는다**(메뉴·인스펙터·설치)와 **재부팅 문구**는
-> `공통절차.md` 「사람에게 엔진 조작을 요구하지 않는다」가 정본이다.
+빌드: `bash Tools/build.sh` (게임 목록) · `bash Tools/build.sh <게임>` · `bash Tools/build.sh all`.
+주의: 프로젝트 설정은 하나다. 빌드 직전 그 게임 확정표를 적용하지 않으면 마지막에 만진 게임의 방향·패키지·씬이 나간다. 손 빌드도 전처리가 시작 씬을 보고 맞춘다 (`GameFramework.md` 「저장소에 게임이 여럿이면」).
+
+프로세스를 말없이, 또는 이름으로 죽이지 않는다. 같은 엔진의 다른 프로젝트도 죽는다 (재발방지 #75). 러너는 이 프로젝트 PID 만 고른다.
+
+사람에게 엔진 조작(메뉴·인스펙터·설치)을 요구하지 않는다. 재부팅 문구와 함께 `공통절차.md` 「사람에게 엔진 조작을 요구하지 않는다」가 정본.
