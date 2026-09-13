@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using JinHyung.Core;
 using JinHyung.UndeadSlayer;
 using UnityEngine;
@@ -50,11 +51,12 @@ namespace JinHyung.EditorTools
         // ══════════════════════════════ 시작 화면 — 딤과 버튼
 
         /// <summary>
-        /// <b>사람이 「버튼 주변에 어두운 글로우가 있다」고 알려 준 자리</b> (회차 36).
+        /// <b>사람이 「버튼 주변에 어두운 글로우가 있다 — 없애라」고 «세 번» 알려 준 자리</b> (회차 23 · 36 · 37).
         ///
         /// <para>
-        /// ★ 원인은 버튼이 아니라 <b>뒤에 깔린 딤</b>이었다 — 리니어 합성이라 감마값 그대로 두면
-        /// <b>화면이 훨씬 밝고</b>, 그 위에서 버튼 스프라이트의 원본 그림자가 도드라진다 (재발방지 <c>#183</c>).
+        /// ★★ 버튼 스프라이트의 <b>외곽선 바깥 반투명 띠가 없어야</b> 한다 [사람 확정 · 의도된 차이].
+        /// 원본 텍스처에는 있다 — 그걸 근거로 두 번 되돌렸다 (재발방지 <c>#184</c>).
+        /// 딤 역산(<c>#183</c>)은 그와 별개로 맞는 수정이라 같이 본다.
         /// </para>
         ///
         /// <para>⚠ 버튼은 <b>맥동한다</b> — 한 프레임만 보면 «그 순간의 배율»을 규격으로 적게 된다.</para>
@@ -98,6 +100,31 @@ namespace JinHyung.EditorTools
                  + $" · 그려지는 테두리 {drawn:0.0} ({ratio:P1} · 원본 16/104 = 15.4%)");
             Check(Math.Abs(ratio - 16f / 104f) < 0.01f, $"9슬라이스 테두리 비율이 {ratio:P1} 다 — 원본은 15.4%");
 
+            // ★★ 바깥 띠 — 에셋 «파일»을 직접 연다 (UI 텍스처는 런타임에 못 읽는다)
+            string png = Path.Combine(Application.dataPath, "Undead-Slayer/Art/UI", start.sprite.texture.name + ".png");
+            var file = new Texture2D(2, 2);
+
+            if (File.Exists(png) == false || file.LoadImage(File.ReadAllBytes(png)) == false)
+            {
+                Fail.Add($"버튼 PNG 를 못 열었다 — {png}");
+            }
+            else
+            {
+                Color32[] px = file.GetPixels32();
+                int halo = OuterHaloPixels(px, file.width, file.height);
+                int row = file.height / 2 * file.width;
+                int inset = 0;
+
+                while (inset < file.width && px[row + inset].a < 255)
+                    inset++;
+
+                Line($"버튼 바깥 반투명 띠 {halo} px (사람 확정 0) · 외곽선 시작 {inset} px (원본 21)");
+                Check(halo == 0, $"버튼 외곽선 바깥에 반투명 픽셀이 {halo} 개 있다 — 「어두운 글로우」가 다시 구워졌다");
+                Check(inset == 21, $"외곽선이 {inset} px 에서 시작한다 — 텍스처를 잘라 버튼 크기가 바뀌었다");
+            }
+
+            UnityEngine.Object.Destroy(file);
+
             // ★ 딤은 «역산값»이어야 한다 — 감마 .5 를 그대로 두면 화면이 밝다
             float alpha = dimmer == null ? -1f : dimmer.color.a;
             Line($"딤 알파 {alpha:0.00} (원본 감마 .50 → 리니어 역산 ≈ .76)");
@@ -117,6 +144,50 @@ namespace JinHyung.EditorTools
 
             Line($"12 프레임 배율 {min:0.000} ~ {max:0.000} (소스 1.000 ~ 1.130)");
             Check(max - min > 0.02f, $"배율이 {min:0.000}~{max:0.000} 로 거의 안 변했다 — 맥동이 안 돈다");
+        }
+
+        /// <summary>가장자리에서 이어진 «불투명하지 않은» 픽셀 중 알파가 0 이 아닌 것의 수.</summary>
+        private static int OuterHaloPixels(Color32[] px, int w, int h)
+        {
+            var seen = new bool[px.Length];
+            var queue = new Queue<int>();
+
+            for (int x = 0; x < w; x++)
+            {
+                queue.Enqueue(x);
+                queue.Enqueue((h - 1) * w + x);
+            }
+
+            for (int y = 0; y < h; y++)
+            {
+                queue.Enqueue(y * w);
+                queue.Enqueue(y * w + w - 1);
+            }
+
+            int count = 0;
+
+            while (queue.Count > 0)
+            {
+                int i = queue.Dequeue();
+
+                if (seen[i] || px[i].a == 255)
+                    continue;
+
+                seen[i] = true;
+
+                if (px[i].a > 0)
+                    count++;
+
+                int cx = i % w;
+                int cy = i / w;
+
+                if (cx > 0) queue.Enqueue(i - 1);
+                if (cx < w - 1) queue.Enqueue(i + 1);
+                if (cy > 0) queue.Enqueue(i - w);
+                if (cy < h - 1) queue.Enqueue(i + w);
+            }
+
+            return count;
         }
 
         // ══════════════════════════════ 전투 — 입자가 «그려지나»

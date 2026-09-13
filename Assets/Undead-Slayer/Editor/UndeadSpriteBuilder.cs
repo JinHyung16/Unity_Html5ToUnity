@@ -58,6 +58,22 @@ namespace JinHyung.EditorTools
         /// </summary>
         public const string LobbyTilesetCode = "biome_lobby_tiles";
 
+        /// <summary>
+        /// <b>외곽선 바깥의 반투명 띠를 굽지 않는 시트</b> [사람 확정 · 의도된 차이 — 회차 37].
+        ///
+        /// <para>
+        /// ★★ 원본 <c>btn_shadowed</c> 텍스처에는 검은 외곽선 바깥으로 <b>폭 18px · 알파 7~181</b> 짜리
+        /// 남색 그림자가 있다. 사람이 <b>세 번</b>(회차 23 · 36 · 37) 「버튼 주변 어두운 글로우를 없애라」고 했고,
+        /// 두 번을 «원본에 있다»는 측정으로 되돌렸다 — <b>사람이 정한 것을 측정으로 뒤집지 않는다</b> (재발방지 #184).
+        /// </para>
+        ///
+        /// <para>
+        /// ⚠ 텍스처 크기·9슬라이스 인셋·외곽선 자리는 <b>그대로</b> 둔다 — 띠만 투명으로 바꾼다.
+        /// 잘라 내면 버튼이 «보이는 크기»가 원본보다 커진다.
+        /// </para>
+        /// </summary>
+        private static readonly HashSet<string> NoOuterHalo = new HashSet<string> { "btn_shadowed" };
+
         // ── 공통 팔레트. 원본 «화면»에서 집은 색조다 (아트 재제작 — 픽셀 동일이 아니라 «퀄리티 동일»이 기준 · 확정표 12).
         private static readonly Color Clear = new Color(0f, 0f, 0f, 0f);
         private static readonly Color Outline = Hex("1A1423");
@@ -97,6 +113,9 @@ namespace JinHyung.EditorTools
                     tex = Placeholder(a);
                     failed++;
                 }
+
+                if (NoOuterHalo.Contains(a.Code) && StripOuterHalo(tex) == 0)
+                    Log.Warning($"{a.Code}: 걷어낼 바깥 띠가 없다 — 규격이 바뀌었는지 본다");
 
                 if (tex.width != a.SheetWidth || tex.height != a.SheetHeight)
                 {
@@ -202,6 +221,60 @@ namespace JinHyung.EditorTools
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// 텍스처 «가장자리에서 이어진» 불투명하지 않은 픽셀을 전부 투명으로 바꾼다 — 걷어 낸 픽셀 수를 돌려준다.
+        /// <para>불투명(α 255) 외곽선에서 멈추므로 <b>안쪽 그림은 건드리지 않는다.</b></para>
+        /// </summary>
+        private static int StripOuterHalo(Texture2D tex)
+        {
+            int w = tex.width;
+            int h = tex.height;
+            Color32[] pixels = tex.GetPixels32();
+            var seen = new bool[pixels.Length];
+            var queue = new Queue<int>();
+
+            for (int x = 0; x < w; x++)
+            {
+                queue.Enqueue(x);
+                queue.Enqueue((h - 1) * w + x);
+            }
+
+            for (int y = 0; y < h; y++)
+            {
+                queue.Enqueue(y * w);
+                queue.Enqueue(y * w + w - 1);
+            }
+
+            int stripped = 0;
+
+            while (queue.Count > 0)
+            {
+                int i = queue.Dequeue();
+
+                if (seen[i] || pixels[i].a == 255)
+                    continue;
+
+                seen[i] = true;
+
+                if (pixels[i].a > 0)
+                    stripped++;
+
+                pixels[i] = new Color32(0, 0, 0, 0);
+
+                int x = i % w;
+                int y = i / w;
+
+                if (x > 0) queue.Enqueue(i - 1);
+                if (x < w - 1) queue.Enqueue(i + 1);
+                if (y > 0) queue.Enqueue(i - w);
+                if (y < h - 1) queue.Enqueue(i + w);
+            }
+
+            tex.SetPixels32(pixels);
+            tex.Apply();
+            return stripped;
         }
 
         private static bool AnyOpaque(Color[] pixels, int width, int ox, int oy, int w, int h)
