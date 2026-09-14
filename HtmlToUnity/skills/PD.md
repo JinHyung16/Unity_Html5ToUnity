@@ -42,7 +42,7 @@ HtmlToUnity_PD  (이 문서 — 확정 · 배분 · 게이트 · 최종 QA)
 | 규약 | [GameFramework](GameFramework.md) | GameInitialize · Manager · Management |
 | 규약 | [UIFramework](UIFramework.md) | Window · Panel · Component · 풀링 |
 | 규약 | [PrefabRule](PrefabRule.md) | 프리팹 배치·캔버스 설정·조립 단위 |
-| 규약 | [ResourceRule](ResourceRule.md) | `_Art` 폴더링·해상도·어드레서블 |
+| 규약 | [ResourceRule](ResourceRule.md) | `Art` 폴더링·해상도·어드레서블 |
 | 공통 | [공통절차](공통절차.md) | 측정·캡처·감사·컴파일 판정 · 원본에서 답 찾는 법 |
 | 재발방지 | [재발방지](재발방지.md) | 반복 사고와 막는 장치. 착수 전에 훑고 회고 대책을 올린다 |
 | 생성 규격 | [분석로직](분석로직.md) | 프로젝트마다 만드는 문서 2종의 작성 규격 |
