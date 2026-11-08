@@ -1,7 +1,8 @@
 # paths.md — 밟은 경로 지도 (Undead Slayer · 회차 12)
 
 원본을 실제로 플레이하며 사건이 난 프레임의 씬 그래프를 텍스트로 뜬 것.
-규격은 `분석로직.md` 「frames/ · motion/ · paths.md」. 뜨는 도구는 스크래치패드 `dump/dump.js`(Playwright + PixiJS 씬 그래프 후킹), 우리 쪽은 `Tools/Verify/UndeadFrameDumpPlayCheck.cs`.
+규격은 `분석로직 - 사건 프레임 덤프.md` 「덤프 규격」. 뜨는 도구는 스크래치패드 `dump/dump.js`(Playwright + PixiJS 씬 그래프 후킹), 우리 쪽은 `Tools/Verify/UndeadFrameDumpPlayCheck.cs`.
+⚠ 아래 `Tools/Verify/…` 는 그때 무엇으로 쟀는지의 기록이다. 그 폴더는 2026-09-21 에 통째로 지웠다 (사람 지시).
 
 ## 경로
 

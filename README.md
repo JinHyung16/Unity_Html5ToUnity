@@ -7,7 +7,7 @@ HTML5 게임을 Unity 로 이관하는 오케스트레이션과, 그것이 도�
 
 | 무엇 | 어디 | 설명 |
 |---|---|---|
-| 오케스트레이션 (본체) | [`HtmlToUnity/skills/`](HtmlToUnity/skills/) | 문서 16종. 이것만으로 다른 저장소에서 돈다 |
+| 이관 지식 (본체) | 옵시디언 볼트 [`Jinhyeong_Obsidian/HtmlToUnity/`](https://github.com/JinHyung16/Jinhyeong_Obsidian) | 공통 구조 · 장르별 구조 · 절차 · 재발방지 |
 | Unity 프로젝트 | `Assets/` · `Packages/` · `ProjectSettings/` | Unity 6000.3.13f1 · URP |
 | 공용 프레임워크 | `Assets/Scripts/` | 모든 게임이 쓴다 |
 | 이관 결과 | `Assets/<게임명>/` | 게임당 한 폴더 |
@@ -15,38 +15,12 @@ HTML5 게임을 Unity 로 이관하는 오케스트레이션과, 그것이 도�
 | 원본 풀 — URL 만 | `Html Games URL 모음/` | 링크만 있는 상용 게임 |
 | 저장소 규약 | [`CLAUDE.md`](CLAUDE.md) | 폴더·네이밍·로그·이 환경의 도구 제약 |
 
-## 오케스트레이션 문서
+## 이관 지식
 
-시작은 [`SKILL.md`](HtmlToUnity/skills/SKILL.md). 원본 형태별 갈래가 여기서 정해진다.
+이 저장소는 결과물이다. 이관 방법은 옵시디언 볼트 `HtmlToUnity/` 에 있고 별도 GitHub 저장소로 관리한다.
 
-### 총괄
-
-| 문서 | 무엇 |
-|---|---|
-| [`SKILL.md`](HtmlToUnity/skills/SKILL.md) | 진입점 · 입력 형태 분기 · 전체 뼈대 |
-| [`PD.md`](HtmlToUnity/skills/PD.md) | 총괄 정본 — 확정표 · 착수 질문 · 작업 분해표 · 게이트 · QA |
-| [`분석로직.md`](HtmlToUnity/skills/분석로직.md) | 학습 산출물 9종과 원장의 규격 |
-| [`공통절차.md`](HtmlToUnity/skills/공통절차.md) | 측정·검수 절차 · 런타임에서 직접 캐내는 법 |
-| [`재발방지.md`](HtmlToUnity/skills/재발방지.md) | 실제 실패와 대책 124건 |
-
-### 담당자 — 학습(4) + 이관(2)
-
-| 문서 | 담당 |
-|---|---|
-| [`Design.md`](HtmlToUnity/skills/Design.md) | 기획 — 데이터·밸런스·문구 |
-| [`Client.md`](HtmlToUnity/skills/Client.md) | 클라 — 로직·수치·물리 |
-| [`UIUX.md`](HtmlToUnity/skills/UIUX.md) | UI/UX — 좌표·계층·폰트 |
-| [`Fx.md`](HtmlToUnity/skills/Fx.md) | 연출 — 그리기·애니메이션·색공간 |
-| [`Transfer_Programmer.md`](HtmlToUnity/skills/Transfer_Programmer.md) | 이관 ①③ — 코드·데이터·배선 · 정답지와 채점기 |
-| [`Transfer_Artist.md`](HtmlToUnity/skills/Transfer_Artist.md) | 이관 ② — 프리팹·리소스·연출 |
-
-### 프레임워크 규약
-
-[`GameFramework.md`](HtmlToUnity/skills/GameFramework.md) ·
-[`UIFramework.md`](HtmlToUnity/skills/UIFramework.md) ·
-[`DataFramework.md`](HtmlToUnity/skills/DataFramework.md) ·
-[`PrefabRule.md`](HtmlToUnity/skills/PrefabRule.md) ·
-[`ResourceRule.md`](HtmlToUnity/skills/ResourceRule.md)
+- 지식 저장소: [Jinhyeong_Obsidian](https://github.com/JinHyung16/Jinhyeong_Obsidian) — 볼트 안 `HtmlToUnity/`
+- 시작 노트: `00 시작/지도.md`
 
 ## 어떻게 도나
 
@@ -68,6 +42,7 @@ HTML5 게임을 Unity 로 이관하는 오케스트레이션과, 그것이 도�
 | 1 | Candy Crush | 코드 제공형 — `index.html` + JS | `Html Games 모음/01-Candy-Crush-Game/` | `Assets/Candy-Crush-Game/` |
 | 2 | Pac-Man | 코드 제공형 | `Html Games 모음/02-Pac-Man-Game/` | `Assets/Pac-Man-Game/` |
 | 3 | Blumgi Bounce | URL 제공형 — 코드 없음 | `Html Games URL 모음/01-Blumgi-Bounce/` · [poki.com](https://poki.com/kr/g/blumgi-bounce) | `Assets/Blumgi-Bounce/` |
+| 4 | Undead Slayer | URL 제공형 — 코드 없음 | `Html Games URL 모음/02-Undead-Slayer/` · [poki.com](https://poki.com/kr/g/undead-slayer) | `Assets/Undead-Slayer/` |
 
 게임별 작업 기록(원장)은 `.claude/HtmlToUnity_작업내역_<게임명>.md` 에 있다. 개인 기록이라 커밋하지 않는다.
 
@@ -96,8 +71,6 @@ URL 제공형도 블랙박스가 아니다. 웹 게임 엔진 런타임은 대�
 
 ## 다른 저장소에서 쓰려면
 
-`HtmlToUnity/skills/` 16개만 가져가면 된다. 서로만 참조해 자립한다.
-
-1. `.claude/skills/htmltounity/` 에 놓는다. 폴더 이름이 스킬 이름이다.
-2. 그 저장소 `CLAUDE.md` 에 「도구 제약」 표를 채운다. 스킬은 「무엇을 하는가」만 적고 「어떤 도구로 하는가」는 그 표에 넘긴다.
-3. 이관을 시작하면 `SKILL.md` 가 열리고 나머지는 `PD.md` 가 이끈다.
+1. 지식 저장소(볼트)를 받는다.
+2. 그 저장소 `.claude/skills/htmltounity/SKILL.md` 에 발화용 스텁을 둔다 — 볼트 `00 시작/SKILL.md` 「다른 프로젝트에 붙이는 법」.
+3. 그 저장소 `CLAUDE.md` 에 볼트 경로와 「도구 제약」 표를 둔다.

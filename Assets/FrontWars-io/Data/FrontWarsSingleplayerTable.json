@@ -1,0 +1,25 @@
+[
+  {
+    "Id": 1,
+    "Map": "World",
+    "Difficulty": "Medium",
+    "GameMode": "FFA",
+    "EconomyMode": "Classic",
+    "NumberOfTeams": 2,
+    "Bots": 400,
+    "BotsMax": 400,
+    "NationsMax": 400,
+    "InstantBuild": false,
+    "DonateGold": true,
+    "DonateTroops": true,
+    "InfiniteGold": false,
+    "InfiniteTroops": false,
+    "CompactMap": false,
+    "WaterNukes": false,
+    "RandomSpawn": false,
+    "DisableAlliances": false,
+    "GoldMultiplier": 2,
+    "StartingGoldMillions": 5,
+    "GameLengthMinutes": 30
+  }
+]

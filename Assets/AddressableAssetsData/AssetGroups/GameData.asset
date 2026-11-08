@@ -15,8 +15,26 @@ MonoBehaviour:
   m_GroupName: GameData
   m_GUID: 42d88665a7c8e1b4880f07b591617a8b
   m_SerializeEntries:
+  - m_GUID: 01570639529ea3b449a9ad625202bdaa
+    m_Address: FrontWarsBotNameTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_data
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 04305875637a80d4c931723837f3cd68
+    m_Address: FrontWarsAttitudeTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_data
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 0954fb8766ae5ef47a97aeba8187eea2
     m_Address: UndeadSkillTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_data
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 101cb5b69c569e342912eff98bc00d2e
+    m_Address: FrontWarsPersonalityTable
     m_ReadOnly: 0
     m_SerializedLabels:
     - game_data
@@ -33,6 +51,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - game_data
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1e04db3e0bea4564c99d6fa4fa5852b8
+    m_Address: FrontWarsNationTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_data
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 2b46269eff59c1f4783b666d12ca29a4
     m_Address: UndeadArtTable
     m_ReadOnly: 0
@@ -41,6 +65,24 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 2ca995c22451359459c41e527a401f35
     m_Address: BlumgiBlockTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_data
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 33b23deb6b791564b8333066b9af0cae
+    m_Address: FrontWarsConfigTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_data
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 398d37311413e1a4693445d5ae8f3e95
+    m_Address: FrontWarsTextTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_data
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3a7ab2dfbfdf61a4ab96e61c81f6ca08
+    m_Address: FrontWarsDifficultyTable
     m_ReadOnly: 0
     m_SerializedLabels:
     - game_data
@@ -81,6 +123,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - game_data
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 671f89402e44da240b24a4a5abb23223
+    m_Address: FrontWarsSingleplayerTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_data
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8dd2c3e36d23ce041bec67951fd29786
     m_Address: GhostTable
     m_ReadOnly: 0
@@ -99,8 +147,26 @@ MonoBehaviour:
     m_SerializedLabels:
     - game_data
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b13dbc58400b7a640bdc08732d8a7cd2
+    m_Address: FrontWarsTutorialTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_data
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: be1fdeb1368b0554eb880bd26a807403
     m_Address: GameConfigTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_data
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: beb1fa6a86547194a96f28cbad6a02e5
+    m_Address: FrontWarsUnitTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_data
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c0844559e427d4e45a345c5c946e7134
+    m_Address: FrontWarsTerrainTable
     m_ReadOnly: 0
     m_SerializedLabels:
     - game_data
@@ -119,6 +185,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f6feb7e3cb938a24a8fd30679f88d566
     m_Address: UndeadTaskTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - game_data
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f7c361374dac8e744a771d32cae8979b
+    m_Address: FrontWarsNukeTable
     m_ReadOnly: 0
     m_SerializedLabels:
     - game_data

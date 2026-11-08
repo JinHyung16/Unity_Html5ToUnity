@@ -1,0 +1,6 @@
+[
+  { "Code": "Hostile", "Order": 0, "RelationBelow": -50, "AllianceWeight": -0.6 },
+  { "Code": "Distrustful", "Order": 1, "RelationBelow": 0, "AllianceWeight": -0.3 },
+  { "Code": "Neutral", "Order": 2, "RelationBelow": 50, "AllianceWeight": 0 },
+  { "Code": "Friendly", "Order": 3, "RelationBelow": 1000, "AllianceWeight": 0.45 }
+]

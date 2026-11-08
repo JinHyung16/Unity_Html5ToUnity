@@ -1,0 +1,21 @@
+[
+  {
+    "Id": 1,
+    "Map": "Australia",
+    "CompactMap": true,
+    "Difficulty": "Easy",
+    "GameMode": "FFA",
+    "EconomyMode": "Classic",
+    "DisableNations": false,
+    "Bots": 200,
+    "InfiniteGold": true,
+    "InfiniteTroops": false,
+    "InstantBuild": true,
+    "DonateGold": false,
+    "DonateTroops": false,
+    "DisabledUnits": "",
+    "SpawnPhaseTurns": 70,
+    "DisableAlliances": true,
+    "StartingTroops": 25000
+  }
+]

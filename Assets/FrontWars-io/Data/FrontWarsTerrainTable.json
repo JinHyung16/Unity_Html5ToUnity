@@ -1,0 +1,5 @@
+[
+  { "Code": "Plains", "MinMagnitude": 0, "DefenseValue": 80, "SpeedValue": 16.5 },
+  { "Code": "Highland", "MinMagnitude": 10, "DefenseValue": 100, "SpeedValue": 20 },
+  { "Code": "Mountain", "MinMagnitude": 20, "DefenseValue": 120, "SpeedValue": 25 }
+]

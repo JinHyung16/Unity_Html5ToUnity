@@ -13,7 +13,8 @@ namespace JinHyung.EditorTools
         CandyCrush,
         PacMan,
         BlumgiBounce,
-        UndeadSlayer
+        UndeadSlayer,
+        FrontWarsIo
     }
 
     /// <summary>
@@ -37,9 +38,11 @@ namespace JinHyung.EditorTools
                            bool autorotateLandscapeLeft,
                            bool autorotateLandscapeRight,
                            int defaultWidth,
-                           int defaultHeight)
+                           int defaultHeight,
+                           BuildTarget target = BuildTarget.Android)
         {
             Id = id;
+            Target = target;
             AssetFolder = assetFolder;
             ProductName = productName;
             PackageName = packageName;
@@ -53,6 +56,18 @@ namespace JinHyung.EditorTools
         }
 
         public EGameProfile Id { get; }
+
+        /// <summary>
+        /// 확정표 1·1-b — 구체 플랫폼. 앞의 네 게임은 Android, FrontWars-io 는 Windows 다.
+        /// <para>빌드 타깃 · 식별자 · 출력 확장자가 이 값으로 갈린다.</para>
+        /// </summary>
+        public BuildTarget Target { get; }
+
+        /// <summary>식별자 · 스크립팅 설정을 넣을 이름 붙은 타깃.</summary>
+        public NamedBuildTarget NamedTarget
+        {
+            get { return NamedBuildTarget.FromBuildTargetGroup(BuildPipeline.GetBuildTargetGroup(Target)); }
+        }
 
         /// <summary>`Assets/&lt;게임명&gt;/` — 번호를 뗀 게임 폴더 이름.</summary>
         public string AssetFolder { get; }
@@ -121,9 +136,7 @@ namespace JinHyung.EditorTools
         // ── 전 게임 공통 (저장소 규약 이월) ─────────────────────
         private const string CompanyName = "JinHyung";
 
-        /// <summary>확정표 1·1-b — 모바일 / Android.</summary>
-        private const BuildTarget TargetPlatform = BuildTarget.Android;
-        private const BuildTargetGroup TargetGroup = BuildTargetGroup.Android;
+        // 확정표 1·1-b — 구체 플랫폼은 «게임마다» 다르다 (GameProfile.Target).
 
         /// <summary>확정표 6 — Linear 유지.</summary>
         private const ColorSpace Space = ColorSpace.Linear;
@@ -215,6 +228,28 @@ namespace JinHyung.EditorTools
             defaultHeight: 1080);
 
         /// <summary>
+        /// 원장 `HtmlToUnity_작업내역_FrontWars-io.md` 확정표 1·1-b·1-c·2·3 —
+        /// <b>PC · Windows 스탠드얼론 · Landscape · 1920×1080</b>.
+        /// <para>
+        /// 원본은 브라우저 창 크기 그대로 그린다(고정 논리 해상도 없음 [실측]). 창은 늘릴 수 있게 둔다.
+        /// 자동 회전 항목은 모바일 전용이라 PC 에는 효과가 없지만, 같은 가로 짝으로 적어 둔다.
+        /// </para>
+        /// </summary>
+        private static readonly GameProfile FrontWarsIo = new GameProfile(
+            EGameProfile.FrontWarsIo,
+            "FrontWars-io",
+            "FrontWars-io",
+            "com.jinhyung.frontwarsio",
+            UIOrientation.LandscapeLeft,
+            autorotatePortrait: false,
+            autorotatePortraitUpsideDown: false,
+            autorotateLandscapeLeft: true,
+            autorotateLandscapeRight: true,
+            defaultWidth: 1920,
+            defaultHeight: 1080,
+            target: BuildTarget.StandaloneWindows64);
+
+        /// <summary>
         /// 확정표를 담은 게임 전부. <b>배선 검증이 여기서 기대값을 읽는다</b> —
         /// 검사 쪽에 값을 다시 적으면 두 벌이 갈린다.
         /// </summary>
@@ -226,6 +261,7 @@ namespace JinHyung.EditorTools
                 case EGameProfile.PacMan: return PacMan;
                 case EGameProfile.BlumgiBounce: return BlumgiBounce;
                 case EGameProfile.UndeadSlayer: return UndeadSlayer;
+                case EGameProfile.FrontWarsIo: return FrontWarsIo;
                 default: throw new ArgumentOutOfRangeException(nameof(game), game, "프로필이 없는 게임이다.");
             }
         }
@@ -265,6 +301,12 @@ namespace JinHyung.EditorTools
             Apply(UndeadSlayer);
         }
 
+        /// <summary>FrontWars-io 확정표를 적용한다 (Windows 스탠드얼론).</summary>
+        public static void SetupFrontWarsIo()
+        {
+            Apply(FrontWarsIo);
+        }
+
         // ────────────────────────────── 적용
 
         public static void Apply(GameProfile profile)
@@ -274,10 +316,10 @@ namespace JinHyung.EditorTools
 
             ApplyCommon(profile);
             ApplyAndroid(profile);
-            ApplyStandalone();
+            ApplyStandalone(profile);
 
             AssetDatabase.SaveAssets();
-            SwitchTarget();
+            SwitchTarget(profile);
 
             Log.Success(BuildReport(profile));
         }
@@ -332,27 +374,32 @@ namespace JinHyung.EditorTools
             EditorUserBuildSettings.androidBuildSubtarget = MobileTextureSubtarget.ASTC;
         }
 
-        private static void ApplyStandalone()
+        private static void ApplyStandalone(GameProfile profile)
         {
-            // PC 는 «에디터 검증용»이다. 타깃이 아니므로 최소만 맞춘다.
+            // 모바일 게임에게 PC 는 «에디터 검증용»이다. PC 가 타깃인 게임(FrontWars-io)도 같은 값을 쓴다 —
+            // 원본이 창 크기대로 그리는 브라우저 게임이라 창을 늘릴 수 있어야 한다.
+            PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Standalone, profile.PackageName);
             PlayerSettings.SetScriptingBackend(NamedBuildTarget.Standalone, ScriptingImplementation.Mono2x);
             PlayerSettings.resizableWindow = true;
             PlayerSettings.fullScreenMode = FullScreenMode.Windowed;
         }
 
-        private static void SwitchTarget()
+        private static void SwitchTarget(GameProfile profile)
         {
-            if (EditorUserBuildSettings.activeBuildTarget == TargetPlatform)
+            BuildTarget target = profile.Target;
+            BuildTargetGroup group = BuildPipeline.GetBuildTargetGroup(target);
+
+            if (EditorUserBuildSettings.activeBuildTarget == target)
                 return;
 
-            if (BuildPipeline.IsBuildTargetSupported(TargetGroup, TargetPlatform) == false)
+            if (BuildPipeline.IsBuildTargetSupported(group, target) == false)
             {
-                Log.Warning($"{TargetPlatform} 모듈이 설치돼 있지 않다. 설정만 반영하고 타깃은 안 바꾼다.");
+                Log.Warning($"{target} 모듈이 설치돼 있지 않다. 설정만 반영하고 타깃은 안 바꾼다.");
                 return;
             }
 
             // ⚠ 타깃 전환은 전 에셋 재임포트를 부른다. 느린 것이 정상이다.
-            EditorUserBuildSettings.SwitchActiveBuildTarget(TargetGroup, TargetPlatform);
+            EditorUserBuildSettings.SwitchActiveBuildTarget(group, target);
         }
 
         // ────────────────────────────── 보고
@@ -366,6 +413,7 @@ namespace JinHyung.EditorTools
                    + $"  적용 프로필    : {profile.Id} · Assets/{profile.AssetFolder}/ "
                    + $"(기본 진입 Setup() 의 활성 게임 = {ActiveGame})\n"
                    + $"  제품명         : {PlayerSettings.productName}\n"
+                   + $"  확정 타깃      : {profile.Target} (식별자 {PlayerSettings.GetApplicationIdentifier(profile.NamedTarget)})\n"
                    + $"  활성 빌드 타깃 : {EditorUserBuildSettings.activeBuildTarget}\n"
                    + $"  색공간         : {PlayerSettings.colorSpace}\n"
                    + $"  화면 방향      : {PlayerSettings.defaultInterfaceOrientation} "

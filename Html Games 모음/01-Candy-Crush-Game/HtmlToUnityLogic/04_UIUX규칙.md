@@ -1,6 +1,6 @@
 # 04 UIUX규칙 — UI/UX
 
-규격: `.claude/skills/htmltounity/references/분석로직.md`
+규격: 지식 볼트 `50 공통/분석로직.md`
 원본 라인은 인용할 때마다 grep 으로 재확정한다. 아래 라인은 1회차 grep 확정값이다.
 
 상태: 1회차 작성

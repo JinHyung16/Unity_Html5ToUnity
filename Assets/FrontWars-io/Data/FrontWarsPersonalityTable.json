@@ -1,0 +1,7 @@
+[
+  { "Code": "Balanced", "PickBelow": 32, "AttackRateMul": 1, "TriggerRatioDelta": 0, "ReserveRatioDelta": 0, "ExpandRatioDelta": 0, "EconomyRatioMul": 1, "SamRatioMul": 1 },
+  { "Code": "Warmonger", "PickBelow": 49, "AttackRateMul": 0.8, "TriggerRatioDelta": -0.1, "ReserveRatioDelta": -0.05, "ExpandRatioDelta": 0, "EconomyRatioMul": 0.85, "SamRatioMul": 1 },
+  { "Code": "Turtle", "PickBelow": 66, "AttackRateMul": 1.15, "TriggerRatioDelta": 0.08, "ReserveRatioDelta": 0.08, "ExpandRatioDelta": 0.03, "EconomyRatioMul": 1, "SamRatioMul": 1.6 },
+  { "Code": "Economist", "PickBelow": 83, "AttackRateMul": 1.1, "TriggerRatioDelta": 0.04, "ReserveRatioDelta": 0, "ExpandRatioDelta": 0, "EconomyRatioMul": 1.3, "SamRatioMul": 1 },
+  { "Code": "Opportunist", "PickBelow": 100, "AttackRateMul": 0.95, "TriggerRatioDelta": -0.04, "ReserveRatioDelta": 0, "ExpandRatioDelta": 0.05, "EconomyRatioMul": 1, "SamRatioMul": 1 }
+]

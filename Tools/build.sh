@@ -31,6 +31,7 @@ GAMES=(
   "pacman:BuildPacMan:Portrait 1080×1920"
   "blumgi:BuildBlumgiBounce:Landscape 1920×1080"
   "undead:BuildUndeadSlayer:Landscape 1920×1080"
+  "frontwars:BuildFrontWarsIo:Landscape 1920×1080 (Windows exe)"
 )
 
 usage() {

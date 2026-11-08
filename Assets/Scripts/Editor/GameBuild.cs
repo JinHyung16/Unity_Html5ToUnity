@@ -41,6 +41,9 @@ namespace JinHyung.EditorTools
         /// <summary>Undead Slayer 를 굽는다.</summary>
         public static void BuildUndeadSlayer() => Build(EGameProfile.UndeadSlayer);
 
+        /// <summary>FrontWars-io 를 굽는다 (Windows 스탠드얼론 · exe).</summary>
+        public static void BuildFrontWarsIo() => Build(EGameProfile.FrontWarsIo);
+
         /// <summary>전 게임을 차례로 굽는다. 하나라도 실패하면 <b>거기서 멈춘다.</b></summary>
         public static void BuildAll()
         {
@@ -67,9 +70,10 @@ namespace JinHyung.EditorTools
 
             string outDir = Path.Combine(OutputRoot, profile.AssetFolder);
             Directory.CreateDirectory(outDir);
-            string outPath = Path.Combine(outDir, profile.PackageName + ".apk");
+            string outPath = OutputPath(profile, outDir);
 
             Log.Success($"[GameBuild] {profile.ProductName} 굽기 시작\n"
+                        + $"  타깃   : {profile.Target}\n"
                         + $"  방향   : {profile.Orientation} ({profile.DefaultWidth}×{profile.DefaultHeight})\n"
                         + $"  패키지 : {profile.PackageName}\n"
                         + $"  씬     : {scene}\n"
@@ -79,8 +83,8 @@ namespace JinHyung.EditorTools
             {
                 scenes = new[] { scene },
                 locationPathName = outPath,
-                target = BuildTarget.Android,
-                targetGroup = BuildTargetGroup.Android,
+                target = profile.Target,
+                targetGroup = BuildPipeline.GetBuildTargetGroup(profile.Target),
                 options = BuildOptions.None
             };
 
@@ -97,11 +101,37 @@ namespace JinHyung.EditorTools
             // ⚠ <b>summary.totalSize 는 «배포물 크기»가 아니다</b> — Android 는 gradle 중간 산출물까지 세어
             //   47 MB 짜리 APK 를 «1041 MB» 로 찍는다. 사람은 그 숫자를 보고 이관이 잘못됐다고 읽는다.
             //   실제로 나가는 파일을 재서 찍는다.
-            var built = new System.IO.FileInfo(outPath);
-            long bytes = built.Exists ? built.Length : (long)summary.totalSize;
+            //   Windows 는 exe 옆에 데이터 폴더가 같이 나가므로 «폴더 전체»를 잰다.
+            long bytes = MeasureOutput(profile, outPath, (long)summary.totalSize);
 
             Log.Success($"[GameBuild] {profile.ProductName} 완료 — {outPath} "
                         + $"({bytes / (1024 * 1024)} MB · {summary.totalTime.TotalSeconds:F0}초)");
+        }
+
+        /// <summary>출력 경로 — Android 는 apk 한 파일, Windows 는 제품명 폴더 안의 exe.</summary>
+        private static string OutputPath(GameProfile profile, string outDir)
+        {
+            if (profile.Target == BuildTarget.Android)
+                return Path.Combine(outDir, profile.PackageName + ".apk");
+
+            string folder = Path.Combine(outDir, profile.ProductName);
+            Directory.CreateDirectory(folder);
+            return Path.Combine(folder, profile.ProductName + ".exe");
+        }
+
+        private static long MeasureOutput(GameProfile profile, string outPath, long fallback)
+        {
+            if (profile.Target == BuildTarget.Android)
+            {
+                var apk = new FileInfo(outPath);
+                return apk.Exists ? apk.Length : fallback;
+            }
+
+            string folder = Path.GetDirectoryName(outPath);
+            if (string.IsNullOrEmpty(folder) || Directory.Exists(folder) == false)
+                return fallback;
+
+            return new DirectoryInfo(folder).GetFiles("*", SearchOption.AllDirectories).Sum(f => f.Length);
         }
 
         // ────────────────────────────── 확인
@@ -143,7 +173,7 @@ namespace JinHyung.EditorTools
                     + $"확정 {profile.Orientation} · 실제 {PlayerSettings.defaultInterfaceOrientation}");
             }
 
-            string pkg = PlayerSettings.GetApplicationIdentifier(NamedBuildTarget.Android);
+            string pkg = PlayerSettings.GetApplicationIdentifier(profile.NamedTarget);
             if (pkg != profile.PackageName)
             {
                 throw new BuildFailedException(

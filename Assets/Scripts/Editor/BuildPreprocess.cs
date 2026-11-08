@@ -49,7 +49,7 @@ namespace JinHyung.EditorTools
             }
 
             UIOrientation before = PlayerSettings.defaultInterfaceOrientation;
-            string beforePkg = PlayerSettings.GetApplicationIdentifier(NamedBuildTarget.Android);
+            string beforePkg = PlayerSettings.GetApplicationIdentifier(profile.NamedTarget);
 
             PlatformSetup.Apply(profile);
 

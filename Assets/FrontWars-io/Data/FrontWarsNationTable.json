@@ -1,0 +1,9 @@
+[
+  { "Id": 1, "Map": "Australia", "Name": "Western Australia", "Flag": "aus_wesaus", "X": 460, "Y": 720, "Strength": 2 },
+  { "Id": 2, "Map": "Australia", "Name": "Northern Territory", "Flag": "aus_norter", "X": 965, "Y": 340, "Strength": 2 },
+  { "Id": 3, "Map": "Australia", "Name": "South Australia", "Flag": "aus_souaus", "X": 920, "Y": 915, "Strength": 1 },
+  { "Id": 4, "Map": "Australia", "Name": "Victoria", "Flag": "aus_vic", "X": 1435, "Y": 1220, "Strength": 2 },
+  { "Id": 5, "Map": "Australia", "Name": "Queensland", "Flag": "aus_quelan", "X": 1490, "Y": 555, "Strength": 2 },
+  { "Id": 6, "Map": "Australia", "Name": "New South Wales", "Flag": "aus_nsw", "X": 1605, "Y": 1025, "Strength": 2 },
+  { "Id": 7, "Map": "Australia", "Name": "Tasmania", "Flag": "aus_tas", "X": 1595, "Y": 1380, "Strength": 2 }
+]

@@ -1,0 +1,42 @@
+[
+  {
+    "Code": "Easy", "Order": 0,
+    "NationStartTroops": 2500, "NationMaxTroopsMul": 0.5, "NationTroopIncreaseMul": 0.9, "DifficultyModifier": 1,
+    "NationAttackRateMin": 70, "NationAttackRateMaxExclusive": 110, "NationTriggerRatioDelta": 0.05,
+    "AllianceBaseline": -0.1, "AllianceNoise": 0.55, "AllianceFear": 0, "AllianceEarlyWindowTicks": 3000, "AllianceEarlyBonus": 0.8, "AllianceTeamVeto": 0.25, "AllianceCapMin": 99, "AllianceCapMaxExclusive": 99, "AlliancePartnerShare": 0, "AllianceStrengthBar": 0.65,
+    "MirvHesitation": 50, "MirvSoloDenialShare": 0.7, "MirvTeamDenialShare": 0.9, "MirvCityGap": 2, "MirvCityFloor": 20,
+    "Plays": "claimFallout;purgeBots;strikeBack;honorAllies;turnOnAlly;settleGrudge;pickOnWeakest",
+    "EmbargoForgiveAt": "Neutral", "SamPerCity": 0.15, "RandomUpgradePercent": 70, "RailScorePercent": 0, "WarshipRetaliatePercent": 0,
+    "RunawayCrownShare": 0.4, "TroopSendCapShare": 0, "BotSweepMin": 1, "BotSweepMax": 1, "NukeAimSamples": 10, "NukeSamAvoidTop": 0
+  },
+  {
+    "Code": "Medium", "Order": 1,
+    "NationStartTroops": 5000, "NationMaxTroopsMul": 1, "NationTroopIncreaseMul": 1, "DifficultyModifier": 3,
+    "NationAttackRateMin": 55, "NationAttackRateMaxExclusive": 70, "NationTriggerRatioDelta": 0,
+    "AllianceBaseline": -0.3, "AllianceNoise": 0.3, "AllianceFear": 0.5, "AllianceEarlyWindowTicks": 1800, "AllianceEarlyBonus": 0.5, "AllianceTeamVeto": 0.5, "AllianceCapMin": 4, "AllianceCapMaxExclusive": 6, "AlliancePartnerShare": 0, "AllianceStrengthBar": 0.75,
+    "MirvHesitation": 25, "MirvSoloDenialShare": 0.6, "MirvTeamDenialShare": 0.8, "MirvCityGap": 1.5, "MirvCityFloor": 10,
+    "Plays": "purgeBots;claimFallout;strikeBack;honorAllies;turnOnAlly;settleGrudge;consumeAfk;punishTraitor;pickOnWeakest;raidNearestIsland;supportTeam",
+    "EmbargoForgiveAt": "Neutral", "SamPerCity": 0.2, "RandomUpgradePercent": 40, "RailScorePercent": 60, "WarshipRetaliatePercent": 15,
+    "RunawayCrownShare": 0.3, "TroopSendCapShare": 0, "BotSweepMin": 1, "BotSweepMax": 2, "NukeAimSamples": 10, "NukeSamAvoidTop": 0
+  },
+  {
+    "Code": "Hard", "Order": 2,
+    "NationStartTroops": 10000, "NationMaxTroopsMul": 1.5, "NationTroopIncreaseMul": 1.1, "DifficultyModifier": 9,
+    "NationAttackRateMin": 45, "NationAttackRateMaxExclusive": 60, "NationTriggerRatioDelta": 0,
+    "AllianceBaseline": -0.3, "AllianceNoise": 0.15, "AllianceFear": 0.7, "AllianceEarlyWindowTicks": 1800, "AllianceEarlyBonus": 0.3, "AllianceTeamVeto": 0.75, "AllianceCapMin": 3, "AllianceCapMaxExclusive": 5, "AlliancePartnerShare": 0.5, "AllianceStrengthBar": 0.8,
+    "MirvHesitation": 12, "MirvSoloDenialShare": 0.5, "MirvTeamDenialShare": 0.7, "MirvCityGap": 1.25, "MirvCityFloor": 10,
+    "Plays": "purgeBots;strikeBack;honorAllies;turnOnAlly;claimFallout;punishTraitor;consumeAfk;settleGrudge;finishCrippled;joinPileOn;pickOnWeakest;raidNearestIsland;supportTeam",
+    "EmbargoForgiveAt": "Friendly", "SamPerCity": 0.25, "RandomUpgradePercent": 25, "RailScorePercent": 75, "WarshipRetaliatePercent": 50,
+    "RunawayCrownShare": 0.2, "TroopSendCapShare": 0.75, "BotSweepMin": 3, "BotSweepMax": 3, "NukeAimSamples": 10, "NukeSamAvoidTop": 3
+  },
+  {
+    "Code": "Impossible", "Order": 3,
+    "NationStartTroops": 25000, "NationMaxTroopsMul": 2, "NationTroopIncreaseMul": 1.2, "DifficultyModifier": 18,
+    "NationAttackRateMin": 28, "NationAttackRateMaxExclusive": 45, "NationTriggerRatioDelta": -0.05,
+    "AllianceBaseline": -0.3, "AllianceNoise": 0, "AllianceFear": 0.9, "AllianceEarlyWindowTicks": 600, "AllianceEarlyBonus": 0.15, "AllianceTeamVeto": 1, "AllianceCapMin": 2, "AllianceCapMaxExclusive": 4, "AlliancePartnerShare": 0.25, "AllianceStrengthBar": 0.85,
+    "MirvHesitation": 6, "MirvSoloDenialShare": 0.4, "MirvTeamDenialShare": 0.6, "MirvCityGap": 1.15, "MirvCityFloor": 8,
+    "Plays": "strikeBack;purgeBots;finishCrippled;honorAllies;punishTraitor;consumeAfk;turnOnAlly;joinPileOn;claimFallout;settleGrudge;pickOnWeakest;raidNearestIsland;supportTeam",
+    "EmbargoForgiveAt": "", "SamPerCity": 0.35, "RandomUpgradePercent": 10, "RailScorePercent": 100, "WarshipRetaliatePercent": 85,
+    "RunawayCrownShare": 0.1, "TroopSendCapShare": 0.9, "BotSweepMin": 100, "BotSweepMax": 100, "NukeAimSamples": 30, "NukeSamAvoidTop": 5
+  }
+]

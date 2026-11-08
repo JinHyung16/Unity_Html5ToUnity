@@ -1,0 +1,5 @@
+[
+  { "Code": "AtomBomb", "InnerRadius": 12, "OuterRadius": 30, "AiCostMarkupPercent": 150 },
+  { "Code": "HydrogenBomb", "InnerRadius": 80, "OuterRadius": 100, "AiCostMarkupPercent": 125 },
+  { "Code": "MIRVWarhead", "InnerRadius": 12, "OuterRadius": 18, "AiCostMarkupPercent": 100 }
+]

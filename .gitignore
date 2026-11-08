@@ -101,7 +101,6 @@ InitTestScene*.unity*
 # Claude Code workspace + MCP secrets (contains OAuth client secret)
 #
 # ⚠ 여기 있는 것은 «설치본»이라 무시해도 된다.
-#   이관 오케스트레이션의 «정본»은 HtmlToUnity/ 에 있고 그쪽이 커밋된다.
-#   설치: bash HtmlToUnity/install.sh
+#   이관 지식의 정본은 옵시디언 볼트(별도 저장소)다. .claude/skills/htmltounity/ 에는 발화용 스텁만 둔다.
 .claude/
 .mcp.json

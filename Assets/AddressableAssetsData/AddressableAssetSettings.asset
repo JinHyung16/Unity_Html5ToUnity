@@ -65,6 +65,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 9587d1eaaf50eea4891b93c8bd0b5523, type: 2}
   - {fileID: 11400000, guid: 5c6a1729569624546a721dfdcbfe1a5f, type: 2}
   - {fileID: 11400000, guid: 9ef86da0f8554ff45a206ff0ed7716ae, type: 2}
+  - {fileID: 11400000, guid: 433ecfbe9a1e3694990a9cd0596b237f, type: 2}
+  - {fileID: 11400000, guid: 7e3ce6d89adfaf5428b834fe37490dd3, type: 2}
   m_BuildSettings:
     m_LogResourceManagerExceptions: 1
     m_BundleBuildPath: Temp/com.unity.addressables/AssetBundles
@@ -106,6 +108,8 @@ MonoBehaviour:
     - default
     - game_data
     - game_art
+    - fw_map
+    - fw_art
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: 9dc8454f7ce85ed459cd4785a24f1ea1, type: 2}

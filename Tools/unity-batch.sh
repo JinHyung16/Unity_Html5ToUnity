@@ -328,10 +328,15 @@ echo "$RESULT" | sed -n '1,140p'
 echo "$RESULT" | grep -E "═══ .*(통과|완료)" | tail -3
 # ⚠ 유니티는 «시작할 때» Temp 를 비운다 — 아래 open_editor 가 이 로그를 지운다.
 #   그래서 «다시 열기 전에» 살려 둔다.
-mkdir -p "$ROOT/Tools/Verify/out"
-LOG_KEPT="$ROOT/Tools/Verify/out/$(basename "$LOG_SH")"
-cp "$LOG_SH" "$LOG_KEPT" 2>/dev/null
-echo "── 전문: $LOG_KEPT ── (Temp 사본은 다음 실행이 지운다)"
+# ⚠ Tools/Verify 가 없으면 만들지 않는다 — 이관이 끝나면 통째로 지우는 폴더다.
+if [ -d "$ROOT/Tools/Verify" ]; then
+  mkdir -p "$ROOT/Tools/Verify/out"
+  LOG_KEPT="$ROOT/Tools/Verify/out/$(basename "$LOG_SH")"
+  cp "$LOG_SH" "$LOG_KEPT" 2>/dev/null
+  echo "── 전문: $LOG_KEPT ── (Temp 사본은 다음 실행이 지운다)"
+else
+  echo "── 전문: $LOG_SH ── (Tools/Verify 가 없어 사본을 남기지 않는다. 다음 실행이 지운다)"
+fi
 
 # 여러 단계를 이어 돌릴 때는 «마지막 단계에서만» 연다 — 중간마다 열면 다음 단계가 락에 막힌다.
 if [ "${REOPEN:-0}" = "1" ]; then

@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: FrontWarsMaps
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: FrontWarsMaps
+  m_GUID: fca40cb5084ca4148a23d660a918dac5
+  m_SerializeEntries:
+  - m_GUID: 0b1261db06cc57b4b887d8e1203aa480
+    m_Address: Australia/manifest
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - fw_map
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: df82472ed07e97f4fab654830846b2e5
+    m_Address: Australia/map
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - fw_map
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fe112451c4b3fc64a9060f3139db490f
+    m_Address: Australia/map4x
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - fw_map
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 2e134cad0b4fc5540a3ae785303447bb, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 3bab0a38192a8844caa49ef2bba562ff, type: 2}
+    - {fileID: 11400000, guid: 30115bf2bd5c847438c56a2fd7b5372f, type: 2}

@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: FrontWarsArt
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: FrontWarsArt
+  m_GUID: ec72b637de2fe3f439802f5532db634b
+  m_SerializeEntries:
+  - m_GUID: 015f392bb040e7143ab13169ac11284a
+    m_Address: Australia/thumbnail
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - fw_art
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 2e134cad0b4fc5540a3ae785303447bb, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 3844b018e6b811245b34f94a802230de, type: 2}
+    - {fileID: 11400000, guid: d3367a0f65808c140b2cd846c02e85d5, type: 2}
